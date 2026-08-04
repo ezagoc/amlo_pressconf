@@ -1,0 +1,230 @@
+\section{Model}
+
+\label{sec:model}
+
+\subsection{Overview}
+
+The model formalizes the Ma\~nanera as a mechanism of credible narrative control. The government wants the public to treat the conference as informative rather than as a purely scripted event. However, credibility requires that the public believe that dissent can appear on air when the political state is unfavorable. The government therefore faces a trade-off. On the one hand, it can use access to the conference and future advertising allocations to reduce the probability that critical questions become visible. On the other hand, if it suppresses dissent completely, the conference loses credibility and the public stops using it as an informative signal.
+
+The model builds on Bayesian persuasion models in which senders commit to information structures that shape receiver beliefs \citep{KamenicaGentzkow2011}. In this setting, however, the government does not choose the signal directly. Instead, the signal is produced by strategic intermediaries whose behavior depends on access and financial incentives. The media side of the model is related to work on media bias and advertiser pressure, where outlets balance reputational or market returns against financial costs \citep{GentzkowShapiro2006, EllmanGermano2009}. Finally, the model connects to theories of authoritarian and hybrid-regime information control, where governments often preserve some public criticism because full censorship can undermine credibility \citep{GehlbachSonin2014, ShadmehrBernhardt2015}.
+
+The model has three main actors: the government, media outlets, and the public. Each day, the political environment is either favorable or unfavorable to the government. Media outlets differ in their editorial type and in the market reward they receive from asking critical questions. The government has two instruments. First, it controls access to the microphone, although after the introduction of the seat lottery this access is partly delegated to a randomization mechanism. Second, it can discipline outlets through future advertising allocations. The central idea is that the lottery can serve as a commitment device: by giving up full control over access, the government credibly allows the possibility of visible dissent, while still using advertising to shape the incentives of media outlets.
+
+\subsection{Players, State, and Timing}
+
+Time is indexed by $t \in \{1, \ldots, T\}$. On each day $t$, there is a Ma\~nanera session. The players are a government, a continuum of media outlets indexed by $i$, and a representative public. The political environment is summarized by a binary state
+\begin{equation}
+    \theta_t \in \{G,B\},
+\end{equation}
+where $G$ denotes a state favorable to the government and $B$ denotes an unfavorable state. The prior probability of the favorable state is
+\begin{equation}
+    q \equiv \Prob(\theta_t = G), \qquad 1-q \equiv \Prob(\theta_t = B).
+\end{equation}
+Each media outlet has a fixed and publicly known editorial type $t_i \in \{A,N\}$, where $A$ denotes aligned outlets and $N$ denotes non-aligned outlets.
+
+The government shapes the information environment through two instruments. The first is access, denoted by $Z_{it}$, which captures the seat-lottery assignment and affects the probability that outlet $i$ receives the microphone. After April 2022, this assignment is randomized within media strata and is therefore exogenous to the government's day-to-day strategic choices. The second is advertising discipline, denoted by $\phi \geq 0$. An outlet that asks a friendly question receives an advertising premium relative to an outlet that asks a critical question. The government commits to this discipline schedule before the session.
+
+The timing within day $t$ is as follows. First, the state $\theta_t$ is realized. Second, the government has pre-committed to an advertising discipline level $\phi$. Third, the seat lottery assigns access $Z_{it}$ to attending outlets, which determines microphone access $Ask_{it} \in \{0,1\}$. Fourth, outlets that receive the microphone choose question tone $c_{it} \in \{0,1\}$, where $c_{it}=1$ denotes a critical question and $c_{it}=0$ denotes a friendly question. Fifth, the public observes the aggregate broadcast signal $m_t \in \{S,O\}$ and updates beliefs. Finally, at horizon $h \geq 1$, the government allocates advertising $x_{i,t+h}$ as a function of observed behavior in the conference.
+
+\subsection{Information and Public Beliefs}
+
+The broadcast signal summarizes whether dissent is visible during the conference. Let
+\begin{equation}
+    m_t = S \iff \sum_{i: Ask_{it}=1} c_{it}=0,
+\end{equation}
+so that $S$ denotes a scripted-looking conference with no visible dissent. Similarly,
+\begin{equation}
+    m_t = O \iff \sum_{i: Ask_{it}=1} c_{it} \geq 1,
+\end{equation}
+so that $O$ denotes an open conference with at least one critical question.
+
+\begin{assumption}[No dissent in the favorable state]
+If $\theta_t=G$, then $c_{it}=0$ for all outlets with $Ask_{it}=1$. Equivalently,
+\begin{equation}
+    \Prob(m_t=S \mid \theta_t=G)=1, \qquad \Prob(m_t=O \mid \theta_t=G)=0.
+\end{equation}
+\end{assumption}
+
+This assumption means that visible dissent is informative about unfavorable states. It also allows the information structure to be summarized by a single parameter:
+\begin{equation}
+    \beta_t \equiv \Prob(m_t=S \mid \theta_t=B).
+\end{equation}
+The parameter $\beta_t$ is the probability that the conference appears scripted even when the true state is unfavorable. In a standard Bayesian persuasion model, the sender chooses the signal structure directly. Here, $\beta_t$ is endogenous: it is generated by the behavior of media outlets responding to access and advertising incentives.
+
+After observing the signal, the public updates beliefs. If the public observes $S$, then
+\begin{equation}
+    \Prob(G \mid S)=\frac{q}{q+(1-q)\beta_t}.
+\end{equation}
+If the public observes $O$, then
+\begin{equation}
+    \Prob(G \mid O)=0.
+\end{equation}
+The public engages with the conference only if its posterior belief exceeds a threshold $\tau \in (0,1)$:
+\begin{equation}
+    Engage_t = \ind\{\Prob(G \mid m_t) \geq \tau\}.
+\end{equation}
+I assume $q<\tau$, so the prior alone is not enough to induce public engagement. Therefore, the government needs the conference to generate a sufficiently credible signal.
+
+\subsection{Media Incentives}
+
+Conditional on receiving the microphone, an outlet chooses whether to ask a critical or friendly question. A critical question generates a market reward, such as audience attention or reputational gains with viewers who value adversarial journalism. A friendly question generates an advertising premium. The payoff difference between asking a critical question and asking a friendly question is
+\begin{equation}
+    \pi_i(c=1)-\pi_i(c=0)=\Delta_{t_i}+\varepsilon_{it}-\gamma\phi,
+\end{equation}
+where $\Delta_{t_i}$ is the type-specific baseline market value of criticism, $\varepsilon_{it} \sim \mathcal{N}(0,1)$ is an idiosyncratic shock to the value of criticism, and $\gamma>0$ converts advertising transfers into outlet utility. I assume $\Delta_N>\Delta_A$, so non-aligned outlets have stronger baseline incentives to ask critical questions.
+
+The outlet asks a critical question if and only if
+\begin{equation}
+    \varepsilon_{it}>\gamma\phi-\Delta_{t_i}.
+\end{equation}
+Thus, the probability that an outlet of type $t_i$ asks a critical question is
+\begin{equation}
+    p_{t_i}(\phi) \equiv \Prob(c_{it}=1 \mid Ask_{it}=1,t_i)=\Phi(\Delta_{t_i}-\gamma\phi),
+\end{equation}
+where $\Phi(\cdot)$ denotes the standard normal cumulative distribution function. Advertising discipline reduces the probability of criticism because
+\begin{equation}
+    \frac{\partial p_{t_i}(\phi)}{\partial \phi}=-\gamma n(\Delta_{t_i}-\gamma\phi)<0,
+\end{equation}
+where $n(\cdot)$ is the standard normal density.
+
+For the main analysis, I focus on the benchmark case in which exactly one non-aligned outlet receives the microphone in the unfavorable state. In this case,
+\begin{equation}
+    \beta_t(\phi)=\Prob(c_{it}=0 \mid Ask_{it}=1,t_i=N)=\Phi(\gamma\phi-\Delta_N).
+\end{equation}
+With multiple called outlets, the probability of no visible dissent is
+\begin{equation}
+    \beta_t(\phi)=\prod_{i \in \mathcal{A}_t}\Phi(\gamma\phi-\Delta_{t_i}),
+\end{equation}
+where $\mathcal{A}_t=\{i:Ask_{it}=1\}$. The benchmark case keeps the model transparent while preserving the main comparative statics.
+
+\subsection{Government Objective}
+
+The government chooses advertising discipline $\phi\geq 0$ before the conference. It values public engagement but pays a cost for maintaining advertising discipline. Expected engagement is valuable only when the public observes the scripted signal $S$ and still finds it credible. Let $V>0$ denote the value of public engagement and let $\kappa>0$ denote the marginal cost of discipline. The government's problem is
+\begin{equation}
+    \max_{\phi \geq 0} \; \left[q+(1-q)\beta_t(\phi)\right]V \cdot \ind\{\beta_t(\phi)\leq \beta^*\}-\kappa\phi,
+\end{equation}
+where $\beta^*$ is the maximum level of scripted-looking behavior consistent with public engagement. In the benchmark case, this becomes
+\begin{equation}
+    \max_{\phi \in [0,\phi_{\max}]} \; V_G(\phi)=\left[q+(1-q)\Phi(\gamma\phi-\Delta_N)\right]V-\kappa\phi,
+\end{equation}
+where
+\begin{equation}
+    \phi_{\max}=\frac{\Delta_N+\Phi^{-1}(\beta^*)}{\gamma}.
+\end{equation}
+
+\section{Model Results}
+
+\subsection{Credibility Constraint}
+
+\begin{proposition}[Credibility requires visible dissent with positive probability]
+Suppose $q<\tau$. The public engages after observing the scripted signal $S$ if and only if
+\begin{equation}
+    \beta_t \leq \beta^* \equiv \frac{q(1-\tau)}{\tau(1-q)}.
+\end{equation}
+Since $q<\tau$, it follows that $\beta^*<1$. Therefore, full suppression of dissent is not credible.
+\end{proposition}
+
+The first result captures the central logic of the model. If the conference always appears scripted, the public infers that the signal contains no information. To preserve credibility, the government must allow some probability that dissent appears when the political state is unfavorable. The lottery helps solve this problem by making full control over access less plausible.
+
+\subsection{Media Response to Advertising Discipline}
+
+\begin{proposition}[Advertising discipline reduces criticism]
+Conditional on receiving the microphone, an outlet of type $t_i$ asks a critical question with probability
+\begin{equation}
+    p_{t_i}(\phi)=\Phi(\Delta_{t_i}-\gamma\phi).
+\end{equation}
+This probability is strictly decreasing in advertising discipline $\phi$. Moreover, if $\Delta_N>\Delta_A$, non-aligned outlets are more likely to ask critical questions than aligned outlets for any fixed $\phi$.
+\end{proposition}
+
+This result links the theory to the empirical objects of interest. Advertising affects media behavior not through a direct content mandate, but through the expected financial consequences of public dissent. The parameter $\Delta_{t_i}$ captures the market value of criticism, while $\gamma\phi$ captures the disciplining value of future advertising transfers.
+
+\subsection{Endogenous Signal Structure}
+
+\begin{proposition}[Advertising discipline endogenizes persuasion]
+In the benchmark case with one non-aligned called outlet in the unfavorable state, the probability that the conference appears scripted in the bad state is
+\begin{equation}
+    \beta_t(\phi)=\Phi(\gamma\phi-\Delta_N).
+\end{equation}
+This probability is strictly increasing in $\phi$.
+\end{proposition}
+
+This proposition shows how the persuasion parameter is generated by strategic media behavior. The government does not directly choose the signal that the public observes. Instead, it chooses an advertising discipline schedule that changes outlets' incentives, which in turn changes the probability that dissent appears on air.
+
+\subsection{Equilibrium}
+
+Define the normalized cost of advertising discipline as
+\begin{equation}
+    k \equiv \frac{\kappa}{(1-q)\gamma V}.
+\end{equation}
+Let
+\begin{equation}
+    z^* \equiv \sqrt{-2\ln(k\sqrt{2\pi})},
+\end{equation}
+which is defined when $k\leq 1/\sqrt{2\pi}$.
+
+\begin{proposition}[Equilibrium advertising discipline]
+In the benchmark model, the government's optimal choice of advertising discipline has three cases:
+
+\begin{enumerate}[label=(\roman*)]
+    \item \textbf{No discipline.} If $k>1/\sqrt{2\pi}$, then
+    \begin{equation}
+        \phi^*=0, \qquad \beta_t^*=\Phi(-\Delta_N).
+    \end{equation}
+
+    \item \textbf{Interior equilibrium.} If
+    \begin{equation}
+        n\left(\Phi^{-1}(\beta^*)\right) \leq k \leq \frac{1}{\sqrt{2\pi}},
+    \end{equation}
+    then
+    \begin{equation}
+        \phi^*=\frac{\Delta_N+z^*}{\gamma}, \qquad \beta_t^*=\Phi(z^*)<\beta^*.
+    \end{equation}
+
+    \item \textbf{Binding credibility constraint.} If
+    \begin{equation}
+        k<n\left(\Phi^{-1}(\beta^*)\right),
+    \end{equation}
+    then
+    \begin{equation}
+        \phi^*=\phi_{\max}=\frac{\Delta_N+\Phi^{-1}(\beta^*)}{\gamma}, \qquad \beta_t^*=\beta^*.
+    \end{equation}
+\end{enumerate}
+\end{proposition}
+
+The equilibrium highlights the government's trade-off. If advertising discipline is too costly, the government does not use it. If discipline is moderately costly, the government chooses an interior level of suppression and voluntarily allows more dissent than the credibility constraint requires. If discipline is cheap, the government would prefer to suppress dissent too much, but the credibility constraint binds. In this case, the government chooses the maximum level of discipline consistent with continued public engagement.
+
+\begin{table}[htbp]
+\centering
+\caption{Equilibrium Cases}
+\label{tab:equilibrium_cases}
+\begin{tabular}{lll}
+\toprule
+Case & Condition & Equilibrium \\
+\midrule
+No discipline & $k>1/\sqrt{2\pi}$ & $\phi^*=0$, $\beta_t^*=\Phi(-\Delta_N)$ \\
+Interior & $n(\Phi^{-1}(\beta^*))\leq k\leq 1/\sqrt{2\pi}$ & $\phi^*=(\Delta_N+z^*)/\gamma$, $\beta_t^*=\Phi(z^*)$ \\
+Constraint binds & $k<n(\Phi^{-1}(\beta^*))$ & $\phi^*=\phi_{\max}$, $\beta_t^*=\beta^*$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Comparative Statics}
+
+\begin{proposition}[Comparative statics in the interior equilibrium]
+In the interior equilibrium, the probability that the conference appears scripted in the bad state, $\beta_t^*$, satisfies the following comparative statics:
+\begin{align}
+    \frac{\partial \beta_t^*}{\partial \kappa} &<0, \\
+    \frac{\partial \beta_t^*}{\partial q} &<0, \\
+    \frac{\partial \beta_t^*}{\partial \gamma} &>0, \\
+    \frac{\partial \beta_t^*}{\partial V} &>0, \\
+    \frac{\partial \beta_t^*}{\partial \Delta_N} &=0.
+\end{align}
+\end{proposition}
+
+The model implies that more costly advertising discipline reduces suppression and increases visible dissent. A more favorable prior also reduces the government's incentive to suppress dissent, because the public is already more willing to view the government favorably. By contrast, when outlets are more financially sensitive to advertising, or when public engagement is more valuable to the government, the government suppresses more dissent. A striking implication is that the market reward for criticism, $\Delta_N$, affects the level of advertising discipline needed to achieve a given level of suppression, but not the equilibrium level of suppression itself in the interior case. The government offsets a higher market reward for criticism by increasing advertising discipline.
+
+\newpage
+
+
+
+

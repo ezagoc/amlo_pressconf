@@ -1,0 +1,64 @@
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Notebooks and editor state
+.ipynb_checkpoints/
+.vscode/
+.idea/
+.Rhistory
+.RData
+.Rproj.user/
+.claude/settings.local.json
+
+# Logs and temporary outputs
+logs/
+tmp/
+temp/
+*.log
+
+# Local data mirrors or accidental Dropbox copies
+Media/
+media/
+data/
+raw/
+processed/
+outputs/
+output/
+results/
+checkpoints/
+*.parquet
+*.parquet.gzip
+*.xlsx
+*.xls
+*.csv
+*.json
+*.png
+code/**/*.pdf
+
+# Keep source/config examples even though generated artifacts are ignored above
+!requirements.txt
+!**/requirements.txt
+!*.example
+!presentations/**/*.pdf
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini

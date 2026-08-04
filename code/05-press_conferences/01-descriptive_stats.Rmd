@@ -1,0 +1,1411 @@
+---
+title: "Press Conference Descriptive Statistics"
+date: "`r Sys.Date()`"
+output:
+  pdf_document:
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    latex_engine: xelatex
+    keep_tex: false
+header-includes:
+  - \usepackage{booktabs}
+  - \usepackage{float}
+  - \usepackage{longtable}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo      = FALSE,
+  warning   = FALSE,
+  message   = FALSE,
+  fig.align = "center",
+  out.width = "100%"
+)
+```
+
+```{r environment}
+rm(list = ls())
+
+library(arrow)
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(patchwork)
+library(knitr)
+library(kableExtra)
+source("../../project_paths.R")
+
+path_da  <- paste0(media_path('data', '02-conferences', 'raw', 'attendance'), '/')
+fig_path <- paste0(path_da, 'figures/')
+dir.create(fig_path, showWarnings = FALSE, recursive = TRUE)
+```
+
+```{r load-data}
+panel <- read_parquet(paste0(path_da, 'panel_attendance.parquet.gzip'))
+
+panel <- panel |>
+  mutate(fecha = as.Date(fecha))
+
+lottery_date <- as.Date("2022-04-12")
+```
+
+```{r helpers}
+my_theme <- function() {
+  theme_minimal() +
+    theme(
+      plot.title    = element_text(hjust = 0.5, face = "bold"),
+      plot.subtitle = element_text(hjust = 0.5),
+      axis.text.x   = element_text(angle = 45, hjust = 1)
+    )
+}
+
+save_plot <- function(p, filename, w = 12, h = 7) {
+  ggsave(paste0(fig_path, filename), plot = p, width = w, height = h, dpi = 150)
+}
+```
+
+# Conference Attendance Over Time
+
+After some painful he three panels below track the evolution of total attendance over the full sample period. The vertical dashed line marks the lottery cutoff date (2022-04-12).
+
+**Panel A** — Daily total attendance plots the raw day-to-day variation in the number of people present at each mañanera. The LOESS smoother (span = 0.15) highlights medium-run trends without imposing a specific functional form.
+
+**Panel B** — Monthly average attendance aggregates the data at the monthly level, reducing short-term volatility and making broader shifts around the cutoff easier to observe.
+
+A few patterns emerge from the figure. First, attendance exhibits several clear structural shifts over time. These are largely driven by institutional factors—such as changes in the venue’s overall capacity or the relocation of conferences to other states—rather than by changes in demand to attend the press conferences themselves. The large increase toward the end of the series corresponds to the beginning of President Claudia Sheinbaum’s administration, when capacity expanded while the lottery system remained in place during the first year.
+
+More importantly for the design, the daily series suggests that there is no meaningful change in venue capacity around the date when the lottery rule changed. In other words, the institutional change in the allocation mechanism does not appear to coincide with a change in the number of available seats. This implies that the shift in the assignment mechanism primarily affects who is able to ask a question, rather than how many people can attend.
+
+```{r fig1, fig.height=16, fig.width=12}
+conf_daily <- panel |>
+  distinct(fecha, n_total_attend, n_reporteros, n_youtubers) |>
+  arrange(fecha)
+
+# 1a. Daily total attendance
+p1a <- ggplot(conf_daily, aes(fecha, n_total_attend)) +
+  geom_line(colour = "steelblue", linewidth = 0.4, alpha = 0.7) +
+  geom_smooth(method = "loess", span = 0.15, colour = "firebrick",
+              se = FALSE, linewidth = 0.9) +
+  geom_vline(xintercept = lottery_date, linetype = "dashed",
+             colour = "firebrick", linewidth = 0.7) +
+  annotate("text", x = lottery_date + 30,
+           y = max(conf_daily$n_total_attend, na.rm = TRUE) * 0.95,
+           label = "Lottery cutoff\n(2022-04-12)", colour = "firebrick",
+           hjust = 0, size = 3) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Daily Total Attendance at Mañaneras",
+       x = NULL, y = "Total attendees") +
+  my_theme()
+
+# 1b. Monthly average attendance
+conf_monthly <- conf_daily |>
+  mutate(month_date = floor_date(fecha, "month")) |>
+  group_by(month_date) |>
+  summarise(avg_attend = mean(n_total_attend, na.rm = TRUE), .groups = "drop")
+
+p1b <- ggplot(conf_monthly, aes(month_date, avg_attend)) +
+  geom_line(colour = "steelblue", linewidth = 0.8) +
+  geom_point(colour = "steelblue", size = 1.5) +
+  geom_vline(xintercept = lottery_date, linetype = "dashed",
+             colour = "firebrick", linewidth = 0.7) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Monthly Average Attendance",
+       x = NULL, y = "Avg. attendees") +
+  my_theme()
+
+# 1c. Reporters vs YouTubers (monthly)
+conf_monthly_types <- conf_daily |>
+  mutate(month_date = floor_date(fecha, "month")) |>
+  group_by(month_date) |>
+  summarise(
+    Reporters  = mean(n_reporteros, na.rm = TRUE),
+    YouTubers  = mean(n_youtubers,  na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  pivot_longer(c(Reporters, YouTubers), names_to = "type", values_to = "avg_count")
+
+p1c <- ggplot(conf_monthly_types, aes(month_date, avg_count, colour = type)) +
+  geom_line(linewidth = 0.8) +
+  geom_vline(xintercept = lottery_date, linetype = "dashed",
+             colour = "firebrick", linewidth = 0.7) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_y_continuous(labels = comma) +
+  scale_colour_manual(values = c("Reporters" = "steelblue", "YouTubers" = "darkorange")) +
+  labs(title = "Monthly Avg. Reporters vs YouTubers",
+       x = NULL, y = "Avg. count", colour = NULL) +
+  my_theme()
+
+fig1 <- (p1a / p1b) +
+  plot_annotation(
+    title = "Conference Attendance Over Time",
+    theme = theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+  )
+
+save_plot(fig1, "01_conference_attendance_timeseries.png", w = 12, h = 16)
+fig1
+```
+
+
+\newpage
+
+# Outlet-Level Attendance Rates
+
+These plots shift the unit of analysis from the conference to the media outlet. For each outlet, the attendance rate is defined as the share of conferences it attended, computed separately for the pre- and post-lottery periods.
+
+**Panel A** — Top 30 outlets identifies the outlets with the highest overall attendance rates. In general we see a clear pattern: big outlets, irrespective of ideology or alignment, attended more the conference. Reforma (oppositional, right-wing), El Universal (oppositional), La Jornada (aligned, left-wing), Grupo Cantón (aligned) are amongst the outlets that ssisted the conference the most. Part of this is just the fact that they have mroe resources, as attending the conference is costly (in terms of salaries to reporters, time spent there, etc). Given this, the fact that there was a lottery and that I am able to control for attendance makes this setting particularly interesting as I am going to be able to leverage within day exogenous variation on which outlet gets to ask a question.
+
+**Panel B** — Pre vs. post scatter plots each outlet according to its attendance rate before and after the lottery. Points on the 45° dashed line indicate no change in attendance behavior; points above the line correspond to outlets that attended more frequently after the lottery, while points below indicate outlets that attended less often. This visualization offers a simple first-pass assessment of whether the lottery altered the selection of outlets present at the conference. The analysis can be further refined once additional metadata on outlets becomes available—for example, information on ideology, political alignment, or outlet size.
+
+**Panel C** — Density plot shows the full distribution of outlet attendance rates in each period. There is a small but noticeable rightward shift in the post-lottery distribution that could suggest that outlets that previously attended infrequently were able to increase their presence or were more incentivized to do so since the probability of asking a question increased. 
+
+```{r outlets-prep}
+n_conferences_total <- n_distinct(panel$fecha)
+n_conf_bef          <- panel |> filter(fecha < lottery_date)  |> distinct(fecha) |> nrow()
+n_conf_aft          <- panel |> filter(fecha >= lottery_date) |> distinct(fecha) |> nrow()
+
+outlet_rates <- panel |>
+  group_by(outlet_final) |>
+  summarise(
+    total_att  = sum(attended, na.rm = TRUE),
+    att_bef    = sum(attended[fecha < lottery_date],  na.rm = TRUE),
+    att_aft    = sum(attended[fecha >= lottery_date], na.rm = TRUE),
+    .groups    = "drop"
+  ) |>
+  mutate(
+    rate_total = total_att / n_conferences_total,
+    rate_bef   = att_bef  / n_conf_bef,
+    rate_aft   = att_aft  / n_conf_aft
+  )
+```
+
+```{r fig2a, fig.height=9, fig.width=11}
+top30 <- outlet_rates |>
+  slice_max(total_att, n = 30) |>
+  mutate(outlet_final = fct_reorder(outlet_final, total_att))
+
+p2a <- ggplot(top30, aes(total_att, outlet_final)) +
+  geom_col(fill = "steelblue") +
+  scale_x_continuous(labels = comma) +
+  labs(title = "Top 30 Outlets by Total Conferences Attended",
+       x = "Total conferences attended", y = NULL) +
+  my_theme() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+save_plot(p2a, "02a_top30_outlets.png", w = 11, h = 9)
+p2a
+```
+
+```{r fig2b, fig.height=8, fig.width=9}
+p2b <- ggplot(outlet_rates, aes(rate_bef, rate_aft)) +
+  geom_point(colour = "steelblue", alpha = 0.5, size = 1.8) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed", colour = "grey40") +
+  scale_x_continuous(labels = percent_format(accuracy = 1), limits = c(0, 1)) +
+  scale_y_continuous(labels = percent_format(accuracy = 1), limits = c(0, 1)) +
+  labs(title = "Outlet Attendance Rate: Pre vs Post Lottery",
+       subtitle = "Dashed line = no change; points above = more attendance after lottery",
+       x = "Attendance rate before 2022-04-12",
+       y = "Attendance rate from 2022-04-12") +
+  my_theme()
+
+save_plot(p2b, "02b_lottery_scatter.png", w = 9, h = 8)
+p2b
+```
+
+```{r fig2c, fig.height=6, fig.width=10}
+rates_long <- outlet_rates |>
+  select(outlet_final, rate_bef, rate_aft) |>
+  pivot_longer(c(rate_bef, rate_aft),
+               names_to  = "period",
+               values_to = "rate") |>
+  mutate(period = recode(period,
+                         rate_bef = "Pre-lottery (before 2022-04-12)",
+                         rate_aft = "Post-lottery (from 2022-04-12)"))
+
+p2c <- ggplot(rates_long, aes(rate, fill = period)) +
+  geom_density(alpha = 0.4, colour = NA) +
+  scale_x_continuous(labels = percent_format(accuracy = 1), limits = c(0, 1)) +
+  scale_fill_manual(values = c("Pre-lottery (before 2022-04-12)"  = "steelblue",
+                               "Post-lottery (from 2022-04-12)" = "darkorange")) +
+  labs(title = "Distribution of Outlet Attendance Rates",
+       x = "Attendance rate", y = "Density", fill = NULL) +
+  my_theme()
+
+save_plot(p2c, "02c_rate_distribution.png", w = 10, h = 6)
+p2c
+```
+
+\newpage
+
+# Composition of Attendance Over Time
+
+**Stacked area chart (Panel A)** tracks the *share* — not the level — of
+reporters and YouTubers each month. Expressing attendance as shares controls
+for overall attendance shocks and isolates changes in the credential mix. A
+rising YouTuber share after the lottery would be consistent with the lottery
+opening access to non-traditional media.
+
+**Unique outlets per conference (Panel B)** measures media diversity: how many
+distinct outlets were present at the average conference in a given month. This
+is conceptually distinct from total attendance (one outlet could send multiple
+journalists) and from the outlet rate (which is a per-outlet measure). A
+post-lottery increase in unique outlets would indicate broader representation,
+not just higher headcounts.
+
+```{r fig3, fig.height=12, fig.width=12}
+
+composition_monthly <- conf_daily |>
+  mutate(month_date = floor_date(fecha, "month")) |>
+  group_by(month_date) |>
+  summarise(
+    reporters = sum(n_reporteros, na.rm = TRUE),
+    youtubers = sum(n_youtubers,  na.rm = TRUE),
+    .groups   = "drop"
+  ) |>
+  mutate(total = reporters + youtubers) |>
+  filter(total > 0) |>
+  mutate(
+    share_reporters = reporters / total,
+    share_youtubers = youtubers / total
+  ) |>
+  select(month_date, share_reporters, share_youtubers) |>
+  pivot_longer(c(share_reporters, share_youtubers),
+               names_to  = "type",
+               values_to = "share") |>
+  mutate(type = recode(type,
+                       share_reporters = "Reporters",
+                       share_youtubers = "YouTubers"))
+
+p3a <- ggplot(composition_monthly, aes(month_date, share, fill = type)) +
+  geom_area(alpha = 0.8) +
+  geom_vline(xintercept = lottery_date, linetype = "dashed",
+             colour = "firebrick", linewidth = 0.7) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  scale_fill_manual(values = c("Reporters" = "steelblue", "YouTubers" = "darkorange")) +
+  labs(title = "Monthly Share: Reporters vs YouTubers",
+       x = NULL, y = "Share of attendees", fill = NULL) +
+  my_theme()
+
+outlets_monthly <- panel |>
+  filter(attended == 1) |>
+  mutate(month_date = floor_date(fecha, "month")) |>
+  group_by(month_date, fecha) |>
+  summarise(n_outlets = n_distinct(outlet_final), .groups = "drop") |>
+  group_by(month_date) |>
+  summarise(avg_outlets = mean(n_outlets, na.rm = TRUE), .groups = "drop")
+
+p3b <- ggplot(outlets_monthly, aes(month_date, avg_outlets)) +
+  geom_line(colour = "steelblue", linewidth = 0.8) +
+  geom_point(colour = "steelblue", size = 1.5) +
+  geom_vline(xintercept = lottery_date, linetype = "dashed",
+             colour = "firebrick", linewidth = 0.7) +
+  annotate("text", x = lottery_date + 30,
+           y = max(outlets_monthly$avg_outlets, na.rm = TRUE) * 0.95,
+           label = "Lottery cutoff", colour = "firebrick", hjust = 0, size = 3) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Avg. Unique Outlets per Conference (Monthly)",
+       x = NULL, y = "Avg. outlets") +
+  my_theme()
+
+fig3 <- (p3a / p3b) +
+  plot_annotation(
+    title = "Composition of Press Conference Attendance Over Time",
+    theme = theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+  )
+
+save_plot(fig3, "03_composition_timeseries.png", w = 12, h = 12)
+#fig3
+```
+
+\newpage
+
+# Summary Statistics
+
+The table below reports distributional summaries for all key variables in the
+panel. The statistics are chosen to jointly characterise the level, spread, and
+shape of each variable:
+
+- **n / n\_miss**: sample completeness — flags variables with non-trivial
+  missingness that could affect downstream analyses.
+- **Mean / SD**: first and second moments; the coefficient of variation
+  (SD/mean) is informative for count outcomes such as `n_total_attend`.
+- **Min, P25, Median, P75, Max**: the five-number summary captures skewness and
+  the presence of outliers without assuming a parametric distribution. For
+  binary variables (e.g., `attended`), the median and mean coincide with the
+  prevalence rate.
+
+Variables prefixed `n_` are conference-level counts (constant within a
+conference date), while `attended`, `attendance_bef`, and `attendance_after`
+are outlet-level measures.
+
+```{r summary-table}
+panel <- panel |> mutate(n_other = ifelse(n_total_attend - n_journalists 
+                         -n_reporteros - n_youtubers < 0, 0, 
+                         n_total_attend - n_journalists - 
+                           n_reporteros -n_youtubers)) 
+
+stat_cols <- c("n_journalists", "attended", "n_total_attend",
+               "n_reporteros", "n_youtubers",
+               "total_attendance", "attendance_bef", "attendance_after")
+
+stats_conf <- c("n_total_attend", 'n_other', 
+               "n_reporteros", "n_youtubers")
+
+summary_conf <- panel |> select(fecha, all_of(stats_conf)) |> 
+  distinct(fecha, .keep_all = T) |> select(-fecha)|>
+  pivot_longer(everything(), names_to = "variable") |>
+  group_by(variable) |>
+  summarise(
+    n      = sum(!is.na(value)),
+    n_miss = sum(is.na(value)),
+    mean   = mean(value,           na.rm = TRUE),
+    sd     = sd(value,             na.rm = TRUE),
+    min    = min(value,            na.rm = TRUE),
+    p25    = quantile(value, 0.25, na.rm = TRUE),
+    median = median(value,         na.rm = TRUE),
+    p75    = quantile(value, 0.75, na.rm = TRUE),
+    max    = max(value,            na.rm = TRUE),
+    .groups = "drop"
+  )
+
+stats_outlet <- c("total_attendance", "attendance_bef", 
+                  "attendance_after")
+
+summary_out <- panel |> select(outlet_final, all_of(stats_outlet)) |> 
+  distinct(outlet_final, .keep_all = T) |> select(-outlet_final)|>
+  pivot_longer(everything(), names_to = "variable") |>
+  group_by(variable) |>
+  summarise(
+    n      = sum(!is.na(value)),
+    n_miss = sum(is.na(value)),
+    mean   = mean(value,           na.rm = TRUE),
+    sd     = sd(value,             na.rm = TRUE),
+    min    = min(value,            na.rm = TRUE),
+    p25    = quantile(value, 0.25, na.rm = TRUE),
+    median = median(value,         na.rm = TRUE),
+    p75    = quantile(value, 0.75, na.rm = TRUE),
+    max    = max(value,            na.rm = TRUE),
+    .groups = "drop"
+  )
+
+summary_tbl <- rbind(summary_conf, summary_out)
+  
+
+write_csv(summary_tbl, paste0(path_da, 'descriptive_stats_summary.csv'))
+
+summary_tbl |> 
+  mutate(variable = case_when(variable == "attendance_after" ~ "Attendance After Lottery (Outlet)",
+                              variable == "attendance_bef" ~ "Att. Before Lottery (Outlet)",
+                              variable == "total_attendance" ~ "Total Attendance (Outlet)",
+                              variable == "n_other" ~ "Total Other Types (Conference)",
+                              variable == "n_reporteros" ~ "Total Reporters (Conference)",
+                              variable == "n_youtubers" ~ "Total Youtubers (Conference)", 
+                              variable == "n_total_attend" ~ "Total Attendance (Conference)")) |>
+  rename(
+    Variable = variable,
+    N        = n,
+    Missing  = n_miss,
+    Mean     = mean,
+    SD       = sd,
+    Min      = min,
+    P25      = p25,
+    Median   = median,
+    P75      = p75,
+    Max      = max
+  ) |>
+  mutate(across(where(is.double), \(x) round(x, 2))) |>
+  kbl(
+    format    = "latex",
+    booktabs  = TRUE,
+    longtable = FALSE,
+    caption   = "Descriptive Statistics for Panel Variables",
+    label     = "tab:desc-stats",
+    align     = c("l", rep("r", 9))
+  ) |>
+  kable_styling(
+    latex_options = c("hold_position", "scale_down"),
+    font_size     = 9
+  ) |>
+  column_spec(1, bold = TRUE) |>
+  add_header_above(c(" " = 3, "Distribution" = 7))
+```
+
+\newpage
+
+# Government Advertising Contracts (COMSOC)
+
+This section describes the structure and evolution of government advertising
+expenditure sourced from CompraNet/COMSOC records. The data cover contracts
+between the federal government and media outlets, making them the supply-side
+counterpart to the attendance panel analysed above.
+
+```{r comsoc-setup}
+library(readxl)
+
+path_comsoc <- paste0(media_path('data', '06-outcomes', 'comsoc'), '/')
+fig_path    <- paste0(path_comsoc, 'figures/')
+dir.create(fig_path, showWarnings = FALSE, recursive = TRUE)
+
+fix_dates <- function(df) {
+  df |>
+    mutate(
+      fecha.de.contratopedido = if_else(
+        !is.na(year.contrato) & !is.na(month.contrato) & !is.na(day.contrato),
+        make_date(year.contrato, month.contrato, day.contrato),
+        as.Date(fecha.de.contratopedido)
+      ),
+      fecha.de.gasto = if_else(
+        !is.na(year.gasto) & !is.na(month.gasto) & !is.na(day.gasto),
+        make_date(year.gasto, month.gasto, day.gasto),
+        as.Date(fecha.de.gasto)
+      )
+    )
+}
+
+df_c      <- read_parquet(paste0(path_comsoc, 'contracts_2018_2024.parquet')) |> fix_dates()
+df_c_full <- read_parquet(paste0(path_comsoc, 'contracts_2012_2024.parquet')) |> fix_dates()
+
+amlo_date <- as.Date("2019-01-01")
+
+election_events <- tibble(
+  date  = as.Date(c("2021-06-06", "2022-04-10", "2024-06-02")),
+  label = c("Intermediate elections", "Presidential Recall Referendum", "General Election"),
+  vjust = c(1.5, 5.5, 1.5)
+)
+```
+
+```{r comsoc-helpers}
+add_events <- function(p, events) {
+  for (i in seq_len(nrow(events))) {
+    p <- p +
+      geom_vline(xintercept = events$date[i], linetype = "dotted",
+                 colour = "grey40", linewidth = 0.6) +
+      annotate("text", x = events$date[i] + 25, y = Inf,
+               vjust = events$vjust[i], hjust = 0,
+               label = events$label[i], colour = "grey40", size = 2.5)
+  }
+  p
+}
+
+ts_count_weekly <- function(data, date_col, date_label, year_min, year_max,
+                            vline = NULL) {
+  p <- data |>
+    filter(!is.na(.data[[date_col]])) |>
+    mutate(.week = floor_date(.data[[date_col]], "week", week_start = 1)) |>
+    count(.week) |>
+    filter(.week >= as.Date(paste0(year_min, "-01-01")),
+           .week <= as.Date(paste0(year_max, "-12-31"))) |>
+    ggplot(aes(.week, n)) +
+    geom_col(fill = "#1F78B4", width = 5) +
+    scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+    scale_y_continuous(labels = comma) +
+    labs(title = paste("Weekly contracts —", date_label),
+         x = NULL, y = "# contracts") +
+    my_theme()
+
+  p <- add_events(p, election_events)
+
+  if (!is.null(vline))
+    p <- p +
+      geom_vline(xintercept = vline, linetype = "dashed",
+                 colour = "grey20", linewidth = 0.7) +
+      annotate("text", x = vline + 25, y = Inf, vjust = 9.5, hjust = 0,
+               label = "AMLO takes office", colour = "grey20", size = 2.5)
+  p
+}
+
+ts_costo_panels <- function(data, date_col, date_label, year_min, year_max,
+                            vline = NULL) {
+  d <- data |>
+    filter(!is.na(.data[[date_col]]), !is.na(costo)) |>
+    mutate(.date = .data[[date_col]])
+
+  quarterly <- d |>
+    mutate(.q     = quarter(.date),
+           .year  = year(.date),
+           .qdate = yq(paste0(.year, ": Q", .q))) |>
+    filter(.year >= year_min, .year <= year_max) |>
+    group_by(.qdate, .year) |>
+    summarise(total = sum(costo, na.rm = TRUE), .groups = "drop")
+
+  monthly <- d |>
+    mutate(.month = floor_date(.date, "month"),
+           .year  = year(.date)) |>
+    filter(.year >= year_min, .year <= year_max) |>
+    group_by(.month, .year) |>
+    summarise(total = sum(costo, na.rm = TRUE), .groups = "drop")
+
+  add_vline <- function(p) {
+    p <- add_events(p, election_events)
+    if (is.null(vline)) return(p)
+    p +
+      geom_vline(xintercept = vline, linetype = "dashed",
+                 colour = "grey20", linewidth = 0.7) +
+      annotate("text", x = vline + 25, y = Inf, vjust = 9.5, hjust = 0,
+               label = "AMLO takes office", colour = "grey20", size = 2.5)
+  }
+
+  p_quarterly <- add_vline(
+    ggplot(quarterly, aes(.qdate, total)) +
+      geom_col(fill = "#1F78B4") +
+      geom_line(aes(group = 1), colour = "grey30", linewidth = 0.5) +
+      scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+      scale_y_continuous(labels = dollar_format(prefix = "$")) +
+      labs(title = paste("Quarterly spending —", date_label),
+           x = NULL, y = "Total costo (MXN)") +
+      my_theme()
+  )
+
+  p_quarterly_log <- add_vline(
+    ggplot(quarterly, aes(.qdate, total)) +
+      geom_col(fill = "#1F78B4") +
+      geom_line(aes(group = 1), colour = "grey30", linewidth = 0.5) +
+      scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+      scale_y_log10(labels = dollar_format(prefix = "$")) +
+      labs(title = paste("Quarterly spending (log) —", date_label),
+           x = NULL, y = "Total costo (MXN, log scale)") +
+      my_theme()
+  )
+
+  p_monthly <- add_vline(
+    ggplot(monthly, aes(.month, total)) +
+      geom_col(fill = "#1F78B4") +
+      scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+      scale_y_continuous(labels = dollar_format(prefix = "$")) +
+      labs(title = paste("Monthly spending —", date_label),
+           x = NULL, y = "Total costo (MXN)") +
+      my_theme()
+  )
+
+  p_monthly_log <- add_vline(
+    ggplot(monthly, aes(.month, total)) +
+      geom_col(fill = "#1F78B4") +
+      scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+      scale_y_log10(labels = dollar_format(prefix = "$")) +
+      labs(title = paste("Monthly spending (log) —", date_label),
+           x = NULL, y = "Total costo (MXN, log scale)") +
+      my_theme()
+  )
+
+  list(quarterly     = p_quarterly,
+       quarterly_log = p_quarterly_log,
+       monthly       = p_monthly,
+       monthly_log   = p_monthly_log)
+}
+```
+
+## Weekly Contract Volume
+
+The weekly bar charts below count the number of contracts signed or expensed in
+each week. Using two date fields — *contract date* and *expense date* — is
+necessary because recording lags mean that the date a contract is formally
+registered can differ substantially from the date payment is disbursed. Dotted
+vertical lines mark the three major electoral events in the period; a dashed
+line marks the start of the AMLO administration. Spikes around elections are
+consistent with strategic pre-electoral spending.
+
+The 2012--2024 panel adds a longer baseline to distinguish the AMLO-era
+spending pattern from the preceding administrations.
+
+```{r comsoc-fig1, fig.height=10, fig.width=12}
+p_count_contrato <- ts_count_weekly(df_c, "fecha.de.contratopedido", "Contract date", 2018, 2024)
+p_count_gasto    <- ts_count_weekly(df_c, "fecha.de.gasto",          "Expense date",  2018, 2024)
+
+fig_c1 <- (p_count_contrato / p_count_gasto) +
+  plot_annotation(title = "Weekly Number of Contracts (2018\u20132024)",
+                  theme = theme(plot.title = element_text(hjust = 0.5, face = "bold")))
+
+save_plot(fig_c1, "01_count_weekly.png", w = 12, h = 10)
+fig_c1
+```
+
+```{r comsoc-fig1-full, fig.height=10, fig.width=12}
+p_count_contrato_full <- ts_count_weekly(df_c_full, "fecha.de.contratopedido",
+                                         "Contract date", 2012, 2024, vline = amlo_date)
+p_count_gasto_full    <- ts_count_weekly(df_c_full, "fecha.de.gasto",
+                                         "Expense date",  2012, 2024, vline = amlo_date)
+
+fig_c1_full <- (p_count_contrato_full / p_count_gasto_full) +
+  plot_annotation(title = "Weekly Number of Contracts (2012\u20132024)",
+                  theme = theme(plot.title = element_text(hjust = 0.5, face = "bold")))
+
+save_plot(fig_c1_full, "01_count_weekly_full.png", w = 12, h = 10)
+fig_c1_full
+```
+
+\newpage
+
+## Total Spending Over Time
+
+Spending is aggregated at both the quarterly and monthly level. The two
+frequency choices serve different purposes: quarterly smooths over month-end
+billing cycles, while monthly preserves intra-year seasonality. Each is shown
+on a linear and a log scale. The **linear scale** reveals the absolute magnitude
+of spending peaks; the **log scale** makes proportional changes and low-spending
+periods legible, both of which would be invisible under the linear scale given
+the extreme right-skew typical of government contracting data.
+
+```{r comsoc-fig2-contrato, fig.height=12, fig.width=12}
+panels_costo_contrato <- ts_costo_panels(df_c, "fecha.de.contratopedido",
+                                         "Contract date", 2018, 2024)
+
+fig_c2a_total <- (panels_costo_contrato$quarterly / panels_costo_contrato$monthly) +
+  plot_annotation(title = "Total Spending (2018\u20132024) \u2014 Contract date (linear scale)",
+                  theme = theme(plot.title = element_text(hjust = 0.5, face = "bold")))
+
+fig_c2a_log <- (panels_costo_contrato$quarterly_log / panels_costo_contrato$monthly_log) +
+  plot_annotation(title = "Total Spending (2018\u20132024) \u2014 Contract date (log scale)",
+                  theme = theme(plot.title = element_text(hjust = 0.5, face = "bold")))
+
+save_plot(fig_c2a_total, "02a_costo_contract_date.png",     w = 12, h = 12)
+save_plot(fig_c2a_log,   "02a_costo_contract_date_log.png", w = 12, h = 12)
+print(fig_c2a_total)
+#fig_c2a_log
+```
+
+```{r comsoc-fig2-gasto, fig.height=12, fig.width=12}
+panels_costo_gasto <- ts_costo_panels(df_c, "fecha.de.gasto",
+                                      "Expense date", 2018, 2024)
+
+fig_c2b_total <- (panels_costo_gasto$quarterly / panels_costo_gasto$monthly) +
+  plot_annotation(title = "Total Spending (2018\u20132024) \u2014 Expense date (linear scale)",
+                  theme = theme(plot.title = element_text(hjust = 0.5, face = "bold")))
+
+fig_c2b_log <- (panels_costo_gasto$quarterly_log / panels_costo_gasto$monthly_log) +
+  plot_annotation(title = "Total Spending (2018\u20132024) \u2014 Expense date (log scale)",
+                  theme = theme(plot.title = element_text(hjust = 0.5, face = "bold")))
+
+save_plot(fig_c2b_total, "02b_costo_expense_date.png",     w = 12, h = 12)
+save_plot(fig_c2b_log,   "02b_costo_expense_date_log.png", w = 12, h = 12)
+print(fig_c2b_total)
+#fig_c2b_log
+```
+
+```{r comsoc-fig2-full, fig.height=12, fig.width=12}
+panels_costo_contrato_full <- ts_costo_panels(df_c_full, "fecha.de.contratopedido",
+                                              "Contract date", 2012, 2024, vline = amlo_date)
+panels_costo_gasto_full    <- ts_costo_panels(df_c_full, "fecha.de.gasto",
+                                              "Expense date",  2012, 2024, vline = amlo_date)
+
+fig_c2_full_total <- (panels_costo_contrato_full$quarterly / panels_costo_contrato_full$monthly) +
+  plot_annotation(title = "Total Spending (2012\u20132024) \u2014 Contract date (linear scale)",
+                  theme = theme(plot.title = element_text(hjust = 0.5, face = "bold")))
+
+fig_c2_full_log <- (panels_costo_contrato_full$quarterly_log /
+                    panels_costo_contrato_full$monthly_log) +
+  plot_annotation(title = "Total Spending (2012\u20132024) \u2014 Contract date (log scale)",
+                  theme = theme(plot.title = element_text(hjust = 0.5, face = "bold")))
+
+save_plot(fig_c2_full_total, "02a_costo_contract_date_full.png",     w = 12, h = 12)
+save_plot(fig_c2_full_log,   "02a_costo_contract_date_full_log.png", w = 12, h = 12)
+print(fig_c2_full_total)
+#fig_c2_full_log
+```
+
+\newpage
+
+## Beneficiaries, Contract Sizes, and Product Types
+
+```{r comsoc-clean-load}
+df_c_clean <- read_parquet(paste0(path_comsoc, 'contracts_2018_2024_clean.parquet'))
+```
+
+**Top 20 beneficiaries** identifies the outlets that captured the largest share
+of total advertising spend. Concentration here — a small number of outlets
+receiving a disproportionate share — would be the expected pattern if government
+advertising is used to reward loyal media.
+
+```{r comsoc-fig3a, fig.height=8, fig.width=11}
+top20 <- df_c_clean |>
+  filter(!is.na(bene_final), !is.na(costo)) |>
+  group_by(bene_final) |>
+  summarise(total = sum(costo, na.rm = TRUE), .groups = "drop") |>
+  slice_max(total, n = 20) |>
+  mutate(bene_final = fct_reorder(bene_final, total))
+
+p3a <- ggplot(top20, aes(total, bene_final)) +
+  geom_col(fill = "#1F78B4") +
+  scale_x_continuous(labels = dollar_format(prefix = "$")) +
+  labs(title = "Top 20 Beneficiaries by Total Spending",
+       x = "Total costo (MXN)", y = NULL) +
+  my_theme() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+save_plot(p3a, "03a_top20_beneficiaries.png", w = 11, h = 8)
+p3a
+```
+
+**Contract size distribution** is plotted on a log$_{10}$ scale because
+government contract values span several orders of magnitude. The log-scale
+histogram makes it possible to see the full distributional shape — including
+whether there are distinct modes that might correspond to different procurement
+mechanisms (e.g., direct awards vs. tendered contracts).
+
+```{r comsoc-fig3b, fig.height=6, fig.width=10}
+df_c_pos <- df_c_clean |> filter(costo > 0, !is.na(costo))
+
+p3b <- ggplot(df_c_pos, aes(costo)) +
+  geom_histogram(bins = 80, fill = "#1F78B4", colour = "white", linewidth = 0.2) +
+  scale_x_log10(labels = dollar_format(prefix = "$")) +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Distribution of Contract Sizes (log\u2081\u2080 scale)",
+       x = "Contract amount \u2014 costo (MXN, log scale)", y = "Count") +
+  my_theme()
+
+save_plot(p3b, "03b_contract_size_distribution.png", w = 10, h = 6)
+p3b
+```
+
+**Spending by product type** identifies which categories of media output the
+government purchased most. This matters for interpretation: spending on
+broadcast airtime, print space, and digital content may have different
+reach and audience-targeting properties, so knowing the product mix informs
+which outlets and formats were disproportionately supported.
+
+```{r comsoc-fig3c, fig.height=7, fig.width=11}
+prod_col <- if ("descripcion.producto" %in% colnames(df_c_clean)) "descripcion.producto" else "producto"
+
+top_prod <- df_c_clean |>
+  filter(!is.na(.data[[prod_col]]), !is.na(costo)) |>
+  group_by(producto = .data[[prod_col]]) |>
+  summarise(total = sum(costo, na.rm = TRUE), .groups = "drop") |>
+  slice_max(total, n = 15) |>
+  mutate(producto = fct_reorder(producto, total))
+
+p3c <- ggplot(top_prod, aes(total, producto)) +
+  geom_col(fill = "#1F78B4") +
+  scale_x_continuous(labels = dollar_format(prefix = "$")) +
+  labs(title = "Top 15 Product Types by Total Spending",
+       x = "Total costo (MXN)", y = NULL) +
+  my_theme() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+save_plot(p3c, "03c_spending_by_product.png", w = 11, h = 7)
+p3c
+```
+
+## Summary Statistics — Monetary Variables
+
+The table covers the five monetary fields present in the contracts data. Beyond
+the standard five-number summary, **N neg.** counts contracts with a negative
+recorded value. Negative amounts arise from corrections, reversals, or
+data-entry errors; they are substantively important because including them
+lowers mean spending and may bias any analysis that treats `costo` as a pure
+payment amount. The column makes the prevalence of such records immediately
+visible.
+
+```{r comsoc-summary-table}
+amount_cols <- intersect(
+  c("costo", "importe", "iva", "costo.unitario", "iva.del.costo"),
+  colnames(df_c_clean)
+)
+
+comsoc_summary <- df_c_clean |>
+  select(all_of(amount_cols)) |>
+  pivot_longer(everything(), names_to = "variable") |>
+  group_by(variable) |>
+  summarise(
+    n        = sum(!is.na(value)),
+    n_miss   = sum(is.na(value)),
+    mean     = mean(value,           na.rm = TRUE),
+    sd       = sd(value,             na.rm = TRUE),
+    min      = min(value,            na.rm = TRUE),
+    p25      = quantile(value, 0.25, na.rm = TRUE),
+    median   = median(value,         na.rm = TRUE),
+    p75      = quantile(value, 0.75, na.rm = TRUE),
+    max      = max(value,            na.rm = TRUE),
+    n_neg    = sum(value < 0,        na.rm = TRUE),
+    .groups  = "drop"
+  )
+
+writeLines(
+  kbl(comsoc_summary, format = "latex", booktabs = TRUE, digits = 2,
+      caption = "Summary statistics for monetary variables",
+      col.names = c("Variable", "N", "Missing", "Mean", "SD",
+                    "Min", "P25", "Median", "P75", "Max", "N neg.")),
+  paste0(path_comsoc, 'descriptive_stats_summary.tex')
+)
+
+comsoc_summary |>
+  rename(Variable = variable, N = n, Missing = n_miss,
+         Mean = mean, SD = sd, Min = min, P25 = p25,
+         Median = median, P75 = p75, Max = max, `N neg.` = n_neg) |>
+  mutate(across(where(is.double), \(x) round(x, 2))) |>
+  kbl(
+    format    = "latex",
+    booktabs  = TRUE,
+    longtable = FALSE,
+    caption   = "Summary Statistics for COMSOC Monetary Variables",
+    label     = "tab:comsoc-stats",
+    align     = c("l", rep("r", 10))
+  ) |>
+  kable_styling(
+    latex_options = c("hold_position", "scale_down"),
+    font_size     = 9
+  ) |>
+  column_spec(1, bold = TRUE) |>
+  add_header_above(c(" " = 3, "Distribution" = 7, " " = 1))
+```
+
+## Contracts Over Time — Top 200 Outlets by Total Spend
+
+Restricting the sample to the 200 outlets that received the most total
+advertising money focuses the time-series analysis on the outlets that are
+substantively important for the study and removes the large mass of
+occasional or trivial recipients that would otherwise dilute the signal.
+
+The four panels below characterise how activity among these high-value
+outlets evolved:
+
+- **Weekly contract count** shows the rhythm of contracting — whether
+  the government distributed contracts in bursts (e.g., around elections)
+  or at a steady rate.
+- **Weekly total amount** tracks the peso value of those contracts. A
+  spike in count without a proportional spike in value (or vice versa)
+  indicates changes in the average contract size, which may reflect
+  different procurement strategies.
+- **Total spend per outlet** (bar chart, top 50 shown for legibility)
+  reveals concentration within the top-200 group — whether the group is
+  itself dominated by a handful of outlets or whether spending is
+  relatively diffuse.
+- **Contract-size distribution** for the top-200 outlets compared to the
+  rest of the data shows whether high-value recipients tend to receive
+  larger individual contracts or simply more frequent ones.
+
+```{r comsoc-top200-prep}
+top200_benes <- df_c_clean |>
+  filter(!is.na(bene_final), !is.na(costo)) |>
+  group_by(bene_final) |>
+  summarise(total_costo = sum(costo, na.rm = TRUE), .groups = "drop") |>
+  slice_max(total_costo, n = 200, with_ties = FALSE)
+
+df_top200 <- df_c_clean |>
+  filter(bene_final %in% top200_benes$bene_final,
+         !is.na(fecha.de.contratopedido))
+```
+
+```{r comsoc-top200-weekly, fig.height=10, fig.width=12}
+top200_weekly <- df_top200 |>
+  mutate(.week = floor_date(fecha.de.contratopedido, "week", week_start = 1)) |>
+  group_by(.week) |>
+  summarise(
+    n_contracts  = n(),
+    total_amount = sum(costo, na.rm = TRUE),
+    .groups      = "drop"
+  ) |>
+  filter(.week >= as.Date("2018-01-01"),
+         .week <= as.Date("2024-12-31"))
+
+p_t200_count <- ggplot(top200_weekly, aes(.week, n_contracts)) +
+  geom_col(fill = "#1F78B4", width = 5) +
+  geom_vline(data = election_events, aes(xintercept = date),
+             linetype = "dotted", colour = "grey40", linewidth = 0.6) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_y_continuous(labels = comma) +
+  labs(title = "Weekly number of contracts — top 200 outlets",
+       x = NULL, y = "# contracts") +
+  my_theme()
+
+for (i in seq_len(nrow(election_events))) {
+  p_t200_count <- p_t200_count +
+    annotate("text", x = election_events$date[i] + 25, y = Inf,
+             vjust = election_events$vjust[i], hjust = 0,
+             label = election_events$label[i], colour = "grey40", size = 2.5)
+}
+
+p_t200_amount <- ggplot(top200_weekly, aes(.week, total_amount)) +
+  geom_col(fill = "#E31A1C", width = 5) +
+  geom_vline(data = election_events, aes(xintercept = date),
+             linetype = "dotted", colour = "grey40", linewidth = 0.6) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_y_continuous(labels = dollar_format(prefix = "$")) +
+  labs(title = "Weekly total amount — top 200 outlets",
+       x = NULL, y = "Total costo (MXN)") +
+  my_theme()
+
+for (i in seq_len(nrow(election_events))) {
+  p_t200_amount <- p_t200_amount +
+    annotate("text", x = election_events$date[i] + 25, y = Inf,
+             vjust = election_events$vjust[i], hjust = 0,
+             label = election_events$label[i], colour = "grey40", size = 2.5)
+}
+
+fig_t200_ts <- (p_t200_count / p_t200_amount) +
+  plot_annotation(
+    title    = "Contract Activity Among Top 200 Outlets by Total Spend (2018\u20132024)",
+    subtitle = "Weekly aggregates; dotted lines mark electoral events",
+    theme    = theme(plot.title    = element_text(hjust = 0.5, face = "bold"),
+                     plot.subtitle = element_text(hjust = 0.5))
+  )
+
+save_plot(fig_t200_ts, "04a_top200_timeseries.png", w = 12, h = 10)
+fig_t200_ts
+```
+
+```{r comsoc-top200-bar, fig.height=9, fig.width=11}
+top50_within200 <- top200_benes |>
+  slice_max(total_costo, n = 50, with_ties = FALSE) |>
+  mutate(bene_final = fct_reorder(bene_final, total_costo))
+
+p_t200_bar <- ggplot(top50_within200, aes(total_costo, bene_final)) +
+  geom_col(fill = "#1F78B4") +
+  scale_x_continuous(labels = dollar_format(prefix = "$")) +
+  labs(title = "Total Spend per Outlet — Top 50 Within the Top-200 Group",
+       x = "Total costo (MXN, 2018\u20132024)", y = NULL) +
+  my_theme() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+save_plot(p_t200_bar, "04b_top200_bar.png", w = 11, h = 9)
+p_t200_bar
+```
+
+```{r comsoc-top200-dist, fig.height=6, fig.width=10}
+df_c_pos_flag <- df_c_clean |>
+  filter(!is.na(costo), costo > 0) |>
+  mutate(group = if_else(bene_final %in% top200_benes$bene_final,
+                         "Top 200 outlets", "All other outlets"))
+
+p_t200_dist <- ggplot(df_c_pos_flag, aes(costo, fill = group)) +
+  geom_density(alpha = 0.45, colour = NA) +
+  scale_x_log10(labels = dollar_format(prefix = "$")) +
+  scale_fill_manual(values = c("Top 200 outlets"  = "#E31A1C",
+                               "All other outlets" = "#1F78B4")) +
+  labs(title = "Contract-Size Distribution: Top 200 vs Rest (log\u2081\u2080 scale)",
+       x = "Contract amount — costo (MXN)", y = "Density", fill = NULL) +
+  my_theme()
+
+save_plot(p_t200_dist, "04c_top200_size_dist.png", w = 10, h = 6)
+p_t200_dist
+```
+
+\newpage
+
+# YouTube Channel Outcomes
+
+This section characterises the panel of Mexican newspaper YouTube channels used
+as the outcomes dataset. Understanding the baseline distribution of channel
+activity is a precondition for the main analysis: if channels are highly
+heterogeneous in size and posting frequency, specifications will need to
+account for that heterogeneity (e.g., via channel fixed effects or log
+transformations of the outcome).
+
+```{r yt-setup}
+PANEL_PATH <- media_path('data', '06-outcomes', 'youtube', 'panel_daily.parquet')
+DIM_PATH   <- media_path('data', '06-outcomes', 'youtube', 'mexican_newspapers_youtube.xlsx')
+OUT_FOLDER <- dirname(media_output_path('data', '06-outcomes', 'youtube', 'graphs', '.keep'))
+
+dir.create(OUT_FOLDER, recursive = TRUE, showWarnings = FALSE)
+
+panel_yt <- read_parquet(PANEL_PATH) |>
+  mutate(date = as.Date(date))
+
+dim_ch <- read_excel(DIM_PATH) |>
+  select(channel_id        = channelId,
+         name_page         = `name.page`,
+         yt_handle,
+         yt_subscriberCount,
+         yt_videoCount,
+         yt_viewCount,
+         yt_createdAt) |>
+  filter(!is.na(channel_id)) |>
+  distinct(channel_id, .keep_all = TRUE) |>
+  mutate(created_year = year(as.Date(substr(yt_createdAt, 1, 10))))
+
+save_fig <- function(p, name, w = 12, h = 7) {
+  ggsave(file.path(OUT_FOLDER, name), p, width = w, height = h,
+         dpi = 300, bg = "white")
+}
+```
+
+## Time Series: Videos, Views, and Engagement
+
+The three-panel time series aggregate all channels to a single weekly or
+monthly series. This macro view is useful for three reasons:
+
+- **Videos published** reveals whether total output from the industry grew,
+  shrank, or stayed flat over the sample period — a baseline for interpreting
+  per-channel results.
+- **Total views** is the primary reach metric; secular growth in views driven
+  by platform-level YouTube expansion must be separated from outlet-specific
+  effects in the main analysis.
+- **Likes + comments** (engagement) tracks audience interaction rather than
+  passive viewership. Engagement is often more sensitive to content decisions
+  than raw views, and is less affected by algorithmic recommendation noise.
+
+Both weekly and monthly aggregations are shown. Weekly reveals short-run
+volatility and potential news-cycle effects; monthly is easier to read for
+medium-run trends.
+
+```{r yt-fig1-weekly, fig.height=9, fig.width=13}
+make_timeseries_plot <- function(df_agg, freq_label) {
+  p1 <- ggplot(df_agg, aes(x = period, y = n_videos)) +
+    geom_line(colour = "#2C7BB6", linewidth = 0.6) +
+    geom_area(fill = "#2C7BB6", alpha = 0.15) +
+    scale_y_continuous(labels = comma) +
+    scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+    labs(title = "Videos published", x = NULL, y = "# videos") +
+    my_theme()
+
+  p2 <- ggplot(df_agg, aes(x = period, y = viewCount)) +
+    geom_line(colour = "#1A9641", linewidth = 0.6) +
+    geom_area(fill = "#1A9641", alpha = 0.15) +
+    scale_y_continuous(labels = label_number(scale_cut = cut_short_scale())) +
+    scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+    labs(title = "Total views", x = NULL, y = "views") +
+    my_theme()
+
+  df_eng <- df_agg |> mutate(engagement = likeCount + commentCount)
+  p3 <- ggplot(df_eng, aes(x = period, y = engagement)) +
+    geom_line(colour = "#D7191C", linewidth = 0.6) +
+    geom_area(fill = "#D7191C", alpha = 0.15) +
+    scale_y_continuous(labels = label_number(scale_cut = cut_short_scale())) +
+    scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+    labs(title = "Likes + comments", x = NULL, y = "count") +
+    my_theme()
+
+  (p1 / p2 / p3) +
+    plot_annotation(
+      title    = sprintf("Mexican newspaper YouTube channels \u2014 %s aggregate", freq_label),
+      subtitle = "All channels combined, 2018\u20132024",
+      theme    = theme(plot.title = element_text(face = "bold", size = 13))
+    )
+}
+
+weekly_yt <- panel_yt |>
+  mutate(period = floor_date(date, "week")) |>
+  group_by(period) |>
+  summarise(n_videos     = sum(n_videos,     na.rm = TRUE),
+            viewCount    = sum(viewCount,    na.rm = TRUE),
+            likeCount    = sum(likeCount,    na.rm = TRUE),
+            commentCount = sum(commentCount, na.rm = TRUE),
+            .groups = "drop")
+
+fig_yt1_weekly <- make_timeseries_plot(weekly_yt, "weekly")
+save_fig(fig_yt1_weekly, "fig1_timeseries_weekly.png", w = 13, h = 9)
+fig_yt1_weekly
+```
+
+```{r yt-fig1-monthly, fig.height=9, fig.width=13}
+monthly_yt <- panel_yt |>
+  mutate(period = floor_date(date, "month")) |>
+  group_by(period) |>
+  summarise(n_videos     = sum(n_videos,     na.rm = TRUE),
+            viewCount    = sum(viewCount,    na.rm = TRUE),
+            likeCount    = sum(likeCount,    na.rm = TRUE),
+            commentCount = sum(commentCount, na.rm = TRUE),
+            .groups = "drop")
+
+fig_yt1_monthly <- make_timeseries_plot(monthly_yt, "monthly")
+save_fig(fig_yt1_monthly, "fig1_timeseries_monthly.png", w = 13, h = 9)
+fig_yt1_monthly
+```
+
+\newpage
+
+## Channel-Level Distributions
+
+The four panels below characterise the cross-sectional distribution of channels
+at the time of data collection (from the YouTube Data API metadata).
+
+- **Subscriber count** and **total channel views** (both log-scaled) reveal
+  the size distribution of channels. A heavy right tail is typical of media
+  markets and would justify log-transforming these variables in any
+  cross-sectional regression.
+- **Total videos on channel** captures production capacity; channels with more
+  historical videos may have larger subscriber bases independently of the
+  treatment.
+- **Channel creation year** shows when outlets entered YouTube. Earlier-created
+  channels had more time to accumulate subscribers and views, making vintage a
+  natural control variable.
+
+```{r yt-fig2, fig.height=8, fig.width=13}
+dim_plot <- dim_ch |> filter(!is.na(yt_subscriberCount) | !is.na(yt_videoCount))
+
+p_subs <- ggplot(
+    dim_plot |> filter(!is.na(yt_subscriberCount), yt_subscriberCount > 0),
+    aes(x = yt_subscriberCount)) +
+  geom_histogram(bins = 30, fill = "#2C7BB6", colour = "white", linewidth = 0.2) +
+  scale_x_log10(labels = label_number(scale_cut = cut_short_scale())) +
+  labs(title = "Subscriber count", x = "subscribers (log scale)", y = "channels") +
+  my_theme()
+
+p_vids <- ggplot(
+    dim_plot |> filter(!is.na(yt_videoCount), yt_videoCount > 0),
+    aes(x = yt_videoCount)) +
+  geom_histogram(bins = 30, fill = "#1A9641", colour = "white", linewidth = 0.2) +
+  scale_x_log10(labels = comma) +
+  labs(title = "Total videos on channel", x = "videos (log scale)", y = "channels") +
+  my_theme()
+
+p_views <- ggplot(
+    dim_plot |> filter(!is.na(yt_viewCount), yt_viewCount > 0),
+    aes(x = yt_viewCount)) +
+  geom_histogram(bins = 30, fill = "#D7191C", colour = "white", linewidth = 0.2) +
+  scale_x_log10(labels = label_number(scale_cut = cut_short_scale())) +
+  labs(title = "Total channel views", x = "views (log scale)", y = "channels") +
+  my_theme()
+
+year_counts <- dim_ch |> filter(!is.na(created_year)) |> count(created_year)
+
+p_year <- ggplot(year_counts, aes(x = factor(created_year), y = n)) +
+  geom_col(fill = "#756BB1", colour = "white", linewidth = 0.2) +
+  labs(title = "Channel creation year", x = NULL, y = "channels") +
+  my_theme()
+
+fig_yt2 <- (p_subs | p_vids) / (p_views | p_year) +
+  plot_annotation(
+    title    = "Channel-level descriptive statistics",
+    subtitle = "From YouTube Data API channel metadata",
+    theme    = theme(plot.title = element_text(face = "bold", size = 13))
+  )
+
+save_fig(fig_yt2, "fig2_channel_distributions.png", w = 13, h = 8)
+fig_yt2
+```
+
+## Top Channels by Output and Reach
+
+**Top 20 by total videos** (Fig. 3) identifies the most prolific publishers.
+High video counts are not necessarily correlated with high viewership — some
+channels may post frequently but attract few viewers — so comparing Fig. 3 and
+Fig. 4 reveals which outlets achieve reach through volume vs. through content
+quality or audience loyalty.
+
+**Top 20 by total views** (Fig. 4) identifies the channels with the greatest
+cumulative audience exposure over the sample period. These are the outlets
+whose viewership trajectory the main analysis is most powered to detect.
+
+```{r yt-fig3, fig.height=7, fig.width=11}
+ch_totals_yt <- panel_yt |>
+  group_by(channel_id, `name.page`) |>
+  summarise(
+    total_videos   = sum(n_videos,     na.rm = TRUE),
+    total_views    = sum(viewCount,    na.rm = TRUE),
+    total_likes    = sum(likeCount,    na.rm = TRUE),
+    total_comments = sum(commentCount, na.rm = TRUE),
+    active_days    = sum(published,    na.rm = TRUE),
+    .groups = "drop"
+  )
+
+top_videos <- ch_totals_yt |>
+  group_by(`name.page`) |>
+  summarise(total_videos = sum(total_videos, na.rm = TRUE), .groups = "drop") |>
+  slice_max(total_videos, n = 20, with_ties = FALSE) |>
+  mutate(`name.page` = fct_reorder(`name.page`, total_videos))
+
+fig_yt3 <- ggplot(top_videos, aes(x = total_videos, y = `name.page`)) +
+  geom_col(fill = "#2C7BB6") +
+  geom_text(aes(label = comma(total_videos)), hjust = -0.1, size = 3) +
+  scale_x_continuous(labels = comma, expand = expansion(mult = c(0, 0.15))) +
+  labs(title = "Top 20 channels by total videos published (2018\u20132024)",
+       x = "total videos", y = NULL) +
+  my_theme()
+
+save_fig(fig_yt3, "fig3_top20_videos.png", w = 11, h = 7)
+fig_yt3
+```
+
+```{r yt-fig4, fig.height=7, fig.width=11}
+top_views <- ch_totals_yt |>
+  group_by(`name.page`) |>
+  summarise(total_views = sum(total_views, na.rm = TRUE), .groups = "drop") |>
+  slice_max(total_views, n = 20, with_ties = FALSE) |>
+  mutate(`name.page` = fct_reorder(`name.page`, total_views))
+
+fig_yt4 <- ggplot(top_views, aes(x = total_views, y = `name.page`)) +
+  geom_col(fill = "#1A9641") +
+  geom_text(aes(label = label_number(scale_cut = cut_short_scale())(total_views)),
+            hjust = -0.1, size = 3) +
+  scale_x_continuous(labels = label_number(scale_cut = cut_short_scale()),
+                     expand = expansion(mult = c(0, 0.15))) +
+  labs(title = "Top 20 channels by total views (2018\u20132024)",
+       x = "total views", y = NULL) +
+  my_theme()
+
+save_fig(fig_yt4, "fig4_top20_views.png", w = 11, h = 7)
+fig_yt4
+```
+
+\newpage
+
+## Per-Video Engagement Distribution
+
+The violin-plus-boxplot display shows, for each channel, the *median* daily
+views, likes, and comments per video published (restricted to days with at
+least one video). The log scale is used because per-video metrics are
+extremely right-skewed: a small number of viral videos can dominate the mean.
+By plotting channel-level medians on a log scale, the figure characterises
+*typical* engagement across the distribution of channels, without the display
+being dominated by outliers.
+
+The distinction between views and engagement (likes + comments) matters: a
+channel may have high viewership but low engagement, which would imply passive
+consumption and lower editorial influence — relevant for interpreting how
+advertising contracts might affect outlet behaviour.
+
+```{r yt-fig5, fig.height=7, fig.width=9}
+panel_yt_active <- panel_yt |> filter(n_videos > 0)
+
+ch_pv <- panel_yt_active |>
+  group_by(channel_id, `name.page`) |>
+  summarise(
+    med_views    = median(viewCount_per_video,    na.rm = TRUE),
+    med_likes    = median(likeCount_per_video,    na.rm = TRUE),
+    med_comments = median(commentCount_per_video, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  pivot_longer(cols = starts_with("med_"),
+               names_to = "metric", values_to = "value") |>
+  mutate(metric = recode(metric,
+    "med_views"    = "Views / video",
+    "med_likes"    = "Likes / video",
+    "med_comments" = "Comments / video"
+  ))
+
+fig_yt5 <- ggplot(ch_pv |> filter(value > 0),
+    aes(x = metric, y = value, fill = metric)) +
+  geom_violin(alpha = 0.4, colour = NA) +
+  geom_boxplot(width = 0.15, outlier.size = 0.8, alpha = 0.8) +
+  scale_y_log10(labels = label_number(scale_cut = cut_short_scale())) +
+  scale_fill_manual(values = c("Views / video"    = "#2C7BB6",
+                               "Likes / video"    = "#1A9641",
+                               "Comments / video" = "#D7191C")) +
+  guides(fill = "none") +
+  labs(title = "Per-video engagement: channel-level medians",
+       subtitle = "Each point = one channel's median over days it published (log scale)",
+       x = NULL, y = "median value per video (log scale)") +
+  my_theme()
+
+save_fig(fig_yt5, "fig5_engagement_distributions.png", w = 9, h = 7)
+fig_yt5
+```
+
+## Publishing Frequency Heatmap
+
+The heatmap displays total videos published by all channels combined for every
+day-of-week × week-of-year cell, faceted by year. It serves two descriptive
+purposes:
+
+1. **Within-week patterns**: if publishing is concentrated on weekdays (as
+   expected for news outlets), this validates that the panel is capturing
+   genuine editorial activity rather than automated content.
+2. **Within-year seasonality**: dark cells at the start or end of the year,
+   or during known political events, would suggest that posting frequency
+   responds to the news cycle — a potential confounder if advertising contracts
+   also vary seasonally.
+
+```{r yt-fig6, fig.height=10, fig.width=13}
+heat_df <- panel_yt |>
+  mutate(
+    year = year(date),
+    week = isoweek(date),
+    dow  = wday(date, label = TRUE, abbr = TRUE, week_start = 1)
+  ) |>
+  group_by(year, week, dow) |>
+  summarise(n_videos = sum(n_videos, na.rm = TRUE), .groups = "drop")
+
+fig_yt6 <- ggplot(heat_df, aes(x = week, y = fct_rev(dow), fill = n_videos)) +
+  geom_tile(colour = "white", linewidth = 0.3) +
+  facet_wrap(~year, ncol = 1) +
+  scale_fill_distiller(palette = "YlOrRd", direction = 1,
+                       labels = comma, name = "videos") +
+  scale_x_continuous(breaks = c(1, 13, 26, 39, 52),
+                     labels = c("Jan", "Apr", "Jul", "Oct", "Dec")) +
+  labs(title = "Publishing frequency heatmap \u2014 all channels combined",
+       subtitle = "Total videos published by day-of-week and week-of-year",
+       x = NULL, y = NULL) +
+  theme(strip.text       = element_text(face = "bold"),
+        panel.spacing.y  = unit(4, "pt"),
+        legend.position  = "bottom")
+
+save_fig(fig_yt6, "fig6_publishing_heatmap.png", w = 13, h = 10)
+fig_yt6
+```
+
+\newpage
+
+## Summary Statistics — YouTube Panel
+
+Two tables are reported. **Table A** covers channel-level totals (summed across
+the full 2018--2024 panel per channel). These are the units of observation in
+any cross-sectional analysis and determine the range of heterogeneity that
+fixed effects or controls need to absorb. **Table B** covers per-video metrics
+computed on active days only (days with at least one video published), which is
+the relevant sample for engagement-per-video outcome specifications.
+
+```{r yt-summary-table}
+stats_vars <- c("total_videos", "total_views", "total_likes",
+                "total_comments", "active_days")
+
+yt_ch_summary <- ch_totals_yt |>
+  select(all_of(stats_vars)) |>
+  pivot_longer(everything(), names_to = "variable") |>
+  group_by(variable) |>
+  summarise(
+    n      = sum(!is.na(value)),
+    n_miss = sum(is.na(value)),
+    mean   = mean(value,           na.rm = TRUE),
+    sd     = sd(value,             na.rm = TRUE),
+    min    = min(value,            na.rm = TRUE),
+    p25    = quantile(value, 0.25, na.rm = TRUE),
+    median = median(value,         na.rm = TRUE),
+    p75    = quantile(value, 0.75, na.rm = TRUE),
+    max    = max(value,            na.rm = TRUE),
+    .groups = "drop"
+  )
+
+pv_vars <- c("viewCount_per_video", "likeCount_per_video", "commentCount_per_video")
+
+yt_pv_summary <- panel_yt_active |>
+  select(all_of(pv_vars)) |>
+  pivot_longer(everything(), names_to = "variable") |>
+  group_by(variable) |>
+  summarise(
+    n      = sum(!is.na(value)),
+    n_miss = sum(is.na(value)),
+    mean   = mean(value,           na.rm = TRUE),
+    sd     = sd(value,             na.rm = TRUE),
+    min    = min(value,            na.rm = TRUE),
+    p25    = quantile(value, 0.25, na.rm = TRUE),
+    median = median(value,         na.rm = TRUE),
+    p75    = quantile(value, 0.75, na.rm = TRUE),
+    max    = max(value,            na.rm = TRUE),
+    .groups = "drop"
+  )
+
+fmt_tbl <- function(df, caption, label) {
+  df |>
+    rename(Variable = variable, N = n, Missing = n_miss,
+           Mean = mean, SD = sd, Min = min, P25 = p25,
+           Median = median, P75 = p75, Max = max) |>
+    mutate(across(where(is.double), \(x) round(x, 1))) |>
+    kbl(
+      format    = "latex",
+      booktabs  = TRUE,
+      longtable = FALSE,
+      caption   = caption,
+      label     = label,
+      align     = c("l", rep("r", 9))
+    ) |>
+    kable_styling(
+      latex_options = c("hold_position", "scale_down"),
+      font_size     = 9
+    ) |>
+    column_spec(1, bold = TRUE) |>
+    add_header_above(c(" " = 3, "Distribution" = 7))
+}
+
+fmt_tbl(yt_ch_summary,
+        "Table A: Channel-Level Totals (2018--2024)",
+        "tab:yt-ch-stats")
+```
+
+```{r yt-summary-table-pv}
+fmt_tbl(yt_pv_summary,
+        "Table B: Per-Video Metrics (Active Days Only)",
+        "tab:yt-pv-stats")
+```

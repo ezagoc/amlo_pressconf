@@ -1,0 +1,25 @@
+\section{Empirical strategy}
+\label{sec:emp_strategy}
+
+To analyze the effect of critical media coverage on government advertising spending one would ideally like to run the next OLS regression: 
+
+\begin{equation}
+\label{eq:OLS}
+    \Delta Y_{i,t} = \beta_0 + \beta_1 NumArt_{i, t} + \mathbf{X'}_{i,t}\theta + \sigma_i + \gamma_t + \epsilon_{i, t}
+\end{equation}
+
+\noindent where $\Delta Y_{i,t}$ is the change in government spending from period $t-1$ to period $t$ for media outlet $i$, $NumArt_{i, t}$ is the number of critical or favorable of the government articles posted by media outlet $i$ during time $t$ (could also be the proportion), $X_{i, t}$ is a set of media outlet covariates such as political affinity, number of readers, etc. $\sigma_i$ and $\gamma_t$ are media outlet and time fixed effects to control for any time-invariant outlet characteristics such as slant. $\epsilon_{i, t}$ is the error term. 
+
+The coefficient of interest is $\beta_1$. However, a simple estimation of OLS would result in a biased estimate $\hat{\beta_1}$ due to endogeneity in time and the presence of unobserved confounding variables that are correlated with being critical (favorable) of the government and a decrease (increase) in advertising spending to each particular news outlets. To overcome this problem, I can instrument the number of critical (favorable) articles using the lottery of assignment to the first row of the press conference. By April 2022, the government started randomly assigning journalists to the first three rows, with one journalist per row from each type of media—radio, television, print, etc \citep{Tombola-Financiero}. Using this will allow me to obtain the causal effects of media coverage on advertising spending by leveraging exogenous change in coverage derived from a random variation on seating assignment in the press conference. The first stage of this IV model would be: 
+
+$$NumArt_{i, t} = \theta_0 + \theta_1 FirstRow_{i, t} + \zeta Attend_{i, t} + \mathbf{X'}_{i,t}\gamma + \sigma_i + \gamma_t + \epsilon_{i, t}$$
+
+\noindent where $FirstRow_{i, t}$ is a dummy that is 1 if media outlet $i$ was assigned to the first row of the conference in time period $t$. Importantly, depending on the time period, I could also define this variable as an event count, meaning how many times each media outlet was assigned to the first row. $Attend_{i, t}$ is the number of times media outlet $i$ attended the conference during time period $t$. This last control is crucial for identification as differences in attendance to the conference could introduce endogeneity into the instrument if attendance is correlated with political affinity and, consequently, with the number of favorable or critical articles written by each journalist, which might also correlate with the advertising revenue received by their outlets. All other variables are the same as in Equation \ref{eq:OLS}.
+
+There are several reasons to expect the first stage of this analysis to be both significant and robust. Participation in the press conference, particularly through questioning the President on salient topics, could incentivize media outlets to "own" those topics, increasing their engagement with the issue and potentially leading to follow-up articles, especially if the President's response is controversial. Furthermore, asking a question during the conference might empower journalists to be more critical of the government, as direct interaction could reduce fears of censorship or retaliation. Conversely, the opportunity to engage directly with those in power could encourage more favorable coverage, depending on the outlet's alignment or strategy. Ultimately, whether the seating arrangement leads to more critical or favorable coverage is an empirical question. The reduced form would be:
+
+$$\Delta Y_{i, t} = \sigma_0 + \sigma_1 FirstRow_{i, t} + \zeta Attend_{i, t} + \mathbf{X'}_{i,t}\gamma + \sigma_i + \gamma_t + \epsilon_{i, t}$$
+
+Finally, if the relevance condition (strong first stage, $\theta_1$ significant with an F statistic greater than 10 \citep{Yogo-Weak-IIEM}) and the exclusion restriction holds (the seating assignment has only an effect on advertising spending through the proportion of critical articles written by media outlets), then the IV estimate would give us the causal effect of writing critical articles of the government on how much advertising spending is assigned to each outlet. The IV estimate would then be: 
+
+$$\hat{\beta}_{IV} = \frac{\hat{\sigma}_1}{\hat{\theta}_1} $$

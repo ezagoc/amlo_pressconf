@@ -1,0 +1,203 @@
+\documentclass[12pt]{article}
+\usepackage[margin = 1in]{geometry}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{afterpage}
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    citecolor=blue,
+}
+
+% Path to graphics
+\graphicspath{{"Figures/"}{"figures/descriptive_stats/"}}
+
+% Formatting definitions
+\usepackage[dvipsnames]{xcolor}
+\usepackage{adjustbox}
+
+% Basic title info
+\title{Memo 3 (Theory and Empirical Counterparts)}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+
+\section{Introduction}
+
+The relationship between media and government is a critical component of electoral accountability \citep{Audits-Ferraz-QJE, PolInfo-Enriquez-JEEA, Marshall}. A well-functioning media holds significant power to hold government actions accountable and inform the public \citep{Stromberg-MediaCoverage}. Crucially, incumbent governments are fully aware of this impact, prompting them to devote substantial resources to control the information environment \citep{Autocracy-Guriev-JPE}. In democracies where direct coercion is costly, governments often resort to subtler forms of influence, such as allocating public resources to reward friendly outlets and discipline critics \citep{ArgCorr-DiTella-AEJAE, MediaCaptures-Zeidl-Econometrica}.
+
+However, persuasion is not monotonic in control. As established by the literature on Bayesian persuasion \citep{MediaBias-Gentzkow-JPE, PersuasionEmpirical-Dellavigna-AR}, rational audiences discount information from sources perceived as biased. This creates a dilemma for the incumbent: total censorship ensures a favorable message but destroys the informational value of the signal, leading to citizen disengagement. To persuade effectively, the government may need to commit to a signal structure that allows for occasional negative realizations to make favorable coverage credible.
+
+This paper studies this \textit{credibility--control trade-off} in the context of Mexico's daily presidential press conference, \textit{La Mañanera}. Following his 2018 victory, President Andrés Manuel López Obrador (AMLO) established this direct-to-public communication channel to set the daily agenda. Initially, access was effectively discretionary, and the equilibrium featured a concentration of friendly questions. We document a decline in digital engagement in the run-up to 2022, consistent with audiences treating the conference as less informative. In a stark shift, the administration introduced a seat lottery in April 2022, randomizing front-row access within media strata and thereby introducing an exogenous source of variation in who is most likely to be called to speak.
+
+We propose that this institutional change functions as a commitment device in a persuasion game. By delegating part of access to a randomization mechanism, the government accepts the risk of on-air dissent---especially in bad states of the world where market incentives for criticism are high---in exchange for restoring the credibility of the conference.
+
+In this memo, I try to formalize the logic behind these interactions and map them into empirical strategies. The central idea is that the government shapes the information environment through two main instruments: access to the conference and the allocation of advertising. Access determines which voices become publicly visible, while advertising affects the incentives media outlets face when deciding whether to ask critical questions. Media outlets, which differ in editorial stance, audience, and market incentives, weigh the benefits of visible dissent against the potential costs of losing future government support. This framework helps explain how the government can preserve influence over the public narrative without fully eliminating criticism, and it also provides a clear bridge to the empirical strategy by identifying the key relationships between access, dissent, market rewards, and advertising discipline.
+
+We can empirically implement this framework using transcripts from 1,423 conferences, administrative records of government advertising spending (COMSOC), Google Trends data to proxy audience demand, and daily presidential approval ratings from Mitofsky's AMLO Tracking Poll. Our identification strategy exploits the random variation induced by the seat lottery: seat location is randomized within media strata and strongly predicts the probability of being called, providing an exogenous shifter of on-air exposure. We use this variation to identify the market reward for criticism, the implied punishment schedule, and reduced-form persuasion and attention effects of visible dissent.
+
+\section{Institutional Background}
+
+\subsection{Media Control in Mexico}
+Mexico provides an ideal setting to study democratic censorship. Historically, the relationship between the media and the state has been characterized by collusion and economic dependence. As \cite{FourthState-Lawson-Book} highlights, during the PRI's rule, the government managed narratives through ``chayote'' (bribes) and the discretionary allocation of official advertising. This dynamic persisted into the democratic era; for instance, President López Portillo famously stated, ``I do not pay you to beat me up'' when withdrawing funding from critical outlets \citep{PrensaVendida-Rod}.
+
+Under the Peña Nieto administration, advertising spending was used aggressively to control coverage \citep{Times}, with high-profile cases of censorship such as the firing of Carmen Aristegui \citep{WashPost-Aristegui}. When AMLO took office in 2018, he promised a transformation. His administration drastically reduced total advertising spending by nearly 80\% \citep{Article19}. However, rather than ending the practice of discretionary allocation, evidence suggests the remaining funds were redirected to reward aligned outlets and starve critical ones \citep{Animal-Discrecionalidad}.
+
+\subsection{The Mañanera and the Seat Lottery}
+The centerpiece of AMLO's communication strategy was \textit{La Mañanera}. These daily conferences allowed the President to bypass traditional gatekeepers. However, prior to 2022, seating was arranged on a first-come, first-served basis. This led to a ``race to the bottom'' where aligned journalists would arrive as early as 1 a.m.\ to secure front-row seats---the only ones with a high probability of being called \citep{Tombola-Razon}.
+
+This selection mechanism resulted in a highly scripted environment. The lack of visible dissent plausibly reduced the conference's value as an informational signal. Figure \ref{fig:engagement} shows the evolution of citizen engagement (YouTube metrics) over time. We observe a decline in viewership leading up to 2022, consistent with the hypothesis of rational disengagement.
+
+In response to criticisms of bias and falling engagement, the government introduced a seat lottery in April 2022. Journalists who enter Palacio Nacional are assigned to media-type strata, and among eligible attendees the lottery randomizes assignments to the first three rows within strata; eligibility is conditional on having attended and (by design) not having asked a question the previous day \citep{Tombola-Financiero}. This reform provides the quasi-experimental variation we leverage in our empirical strategy.
+
+\begin{figure}[!htpb]
+   \centering
+   \caption{The Engagement Dip Preceding the Lottery}
+   \label{fig:engagement}
+   \includegraphics[width=1\textwidth]{figures/descriptive_stats/engagement_three_panels_side_by_side_k7.png}
+   \caption*{ \footnotesize{\textit{Note:} Daily engagement metrics (Views, Likes, Comments) for the official YouTube livestream of the morning press conference. The dashed vertical line marks the introduction of the seat lottery on April 18, 2022. Note the declining trend in views prior to the intervention.}}
+\end{figure}
+
+\section{Literature Review}
+
+This paper bridges two distinct literatures: the political economy of media capture and the theory of Bayesian persuasion.
+
+First, we contribute to the literature on government control of media. Existing work has documented various tools of control, from direct censorship in autocracies like China \citep{CensorshipCollective-King-APSR, CensorshipChina-King-Science} to bribery \citep{Peru-Macmillan-JEP} and advertising leverage in democracies \citep{ArgCorr-DiTella-AEJAE, MediaCaptures-Zeidl-Econometrica}. In the Mexican context, \cite{MexicanPressStanigAJPS} and \cite{Marshall} have shown how violence and local regulations suppress reporting. We add to this by quantifying the \textit{economic} component of control through advertising discipline and by interpreting randomized access as a response to credibility deficits.
+
+Second, we apply the framework of Bayesian persuasion \citep{MediaBias-Gentzkow-JPE} to a dynamic political setting. While theoretical models suggest that senders may optimally allow some unfavorable signals to maximize persuasion \citep{PersuasionEmpirical-Dellavigna-AR}, empirical evidence of governments explicitly designing such mechanisms is rare. We interpret the shift to the seat lottery as a real-world implementation of a commitment to a stochastic signal structure designed to maximize the effective reach of the government's narrative.
+
+% ==========================================================
+% MODEL (INSERTED HERE)
+% ==========================================================
+\section{Model: The Mañanera as a Mechanism}
+
+This project studies the Mexican presidential press conference, \textit{La Mañanera}, as a mechanism through which the government manages information, media access, and public credibility. The central idea is that governments in democratic settings often seek to shape the public narrative, but they face an important constraint: if communication becomes too tightly controlled, audiences may stop viewing it as informative or credible. In that sense, narrative control is not simply about suppressing criticism. It also involves preserving enough uncertainty, contestation, or visible independence for the communication channel to remain persuasive.
+
+The framework begins from a simple observation: on any given day, the political environment may be more favorable or less favorable to the government. Journalists and media outlets do not all respond to that environment in the same way. They differ in editorial stance, audience composition, and business incentives, and they may also privately perceive when criticism is especially valuable. As a result, some outlets may have stronger incentives than others to ask critical questions when they are given the opportunity.
+
+The government, however, is not a passive observer in this process. It influences the information environment through two main instruments. First, it shapes access to the conference: who gets better seats, who is more likely to be called on, and therefore which voices become publicly visible. Second, it controls the allocation of government advertising, which can reward aligned coverage and penalize critical behavior. These two tools may operate together. Access affects which questions the public observes, while advertising affects the incentives outlets face when deciding how confrontational to be.
+
+From the media side, the decision to ask a critical question reflects a trade-off. A critical intervention may generate market benefits, such as greater audience attention, stronger demand, or reputational gains with viewers who value adversarial journalism.  At the same time, it may carry economic costs if it increases the risk of losing future government advertising. Media behavior therefore reflects the balance between the market value of dissent and the expected punishment attached to it. Some outlets will criticize when the audience reward is high enough; others will remain friendly if the expected costs of criticism are too large.
+
+This interaction produces the paper's main theoretical tension. If the government retains full discretion over access and uses that discretion to minimize dissent, it can generate a more favorable short-run message. But excessive control comes at a cost: the conference becomes predictable, less informative, and ultimately less credible to the public. When audiences perceive that only friendly voices are allowed to speak, they may discount the information coming from the conference or disengage from it altogether. Thus, complete control can undermine the very persuasive value the government is trying to preserve.
+
+One important consideration is that government advertising may serve a functional democratic purpose beyond political influence. At least in principle, these resources are used to inform citizens about social programs, public services, health campaigns, and other matters of public relevance. This means that the government’s objective in allocating advertising is not necessarily, or not exclusively, to control the media. It may also seek to maximize the reach and effectiveness of public communication.
+
+Under this view, advertising allocation is likely shaped in part by audience size and geographic reach. The government has incentives to direct resources toward outlets with large viewership and broad coverage across different regions of Mexico, since these outlets are better able to disseminate information widely. This suggests that access to government advertising may follow something like a threshold logic: only outlets that are sufficiently large, visible, or commercially relevant are realistic candidates to receive contracts. Among outlets above that threshold, or close to it, political considerations and media control may meaningfully shape allocation decisions. For these outlets, the government can use advertising both as a communication tool and as a mechanism to reward favorable behavior or discourage criticism.
+
+The incentives of smaller outlets may be quite different. Many of them may be too small to be serious contenders for government advertising contracts, at least in the short run. Because they are below the effective threshold for receiving funds, the disciplinary effect of advertising is weaker. Yet these outlets still participate in the conference and still care about visibility. For them, the main value of participation may come from audience-building rather than from advertising revenue. Asking aligned questions may help them gain recognition from the President, increase their chances of being noticed by government officials, and attract viewers who support the administration. In this sense, smaller outlets may have incentives to behave strategically even without directly receiving advertising funds.
+
+At the same time, this creates a different political economy of participation across outlet size. Larger outlets may internalize the trade-off between criticism and the possible loss of advertising contracts, while smaller outlets may instead see alignment as a way to grow their audience and improve their future position. Put differently, the government’s influence may operate through distinct channels depending on the type of outlet: through direct financial discipline for larger, established media, and through access, visibility, and reputational benefits for smaller, up-and-coming ones.
+
+This distinction is important for both theory and empirics. Theoretically, it suggests that media outlets should not be treated as responding uniformly to government incentives. Empirically, it implies that the effect of criticism on future advertising may be concentrated among larger outlets, while smaller outlets may respond more strongly to the visibility gains associated with asking favorable questions. Incorporating this heterogeneity would make the framework richer and would better match the institutional reality of the conference.
+
+The 2022 seat lottery can be understood within this framework as a partial commitment device. By randomizing access to the most visible seats within media strata, the government limits its own ability to fully screen who is likely to speak. This increases the probability that critical voices will occasionally appear on air. Although this introduces some risk for the government, it also restores credibility to the conference by making visible dissent possible. In other words, the lottery does not eliminate control, but it makes the signal produced by the conference more believable.
+
+This logic also clarifies the role of advertising. Once access becomes partly randomized, the government can no longer rely only on selection into visibility. It must instead influence the intensity of dissent through downstream incentives. Government advertising becomes a disciplinary tool that helps contain criticism without fully eliminating it. In equilibrium, then, randomized access preserves the credibility of the conference, while advertising pressure helps determine how costly it is for outlets to use that access in a critical way.
+
+Finally, not only may the government adjust its strategy in response to the presence of dissent, but the President himself may also adapt his behavior during the conference. For instance, he may reduce the number of questions he takes, allocate more time to prepared remarks, adopt a more or less confrontational tone, or strategically redirect attention away from critical questions. These behavioral responses can shape how dissent is expressed and perceived, and therefore constitute an additional channel through which narrative control operates.
+
+The empirical strategy follows directly from this theoretical framework. The lottery provides plausibly exogenous variation in who is more likely to obtain visible speaking opportunities, allowing the paper to isolate the effect of public exposure on the tone of questions and on later outcomes. This makes it possible to recover three core relationships implied by the framework: first, whether dissent generates market rewards for media outlets; second, whether critical behavior is followed by reductions in government advertising; and third, whether visible dissent changes audience attention and political evaluation. The theoretical argument therefore links the institutional design of access, the economic incentives of media outlets, and the credibility of government communication in a way that maps closely onto the identification strategy used in the paper.
+
+\subsection{Empirical mapping}
+
+The empirical strategy targets three main hypothesis implied by the theory.
+
+\begin{enumerate}[leftmargin=1.2em]
+\item \textbf{Market reward for dissent.} Using Google Trends, Youtube and Twitter data as a proxy for audience demand, we can estimate the response of demand to exposures to critical vs.\ friendly questions and recover a market incentive for dissent. 
+
+\begin{itemize}
+    \item \textbf{IV Strategy}: Need to measure level of dissent of interactions: Could be a measure of how mad you can get AMLO with your question.
+
+\textbf{First stage (relevance):}
+\[
+\underbrace{D_{i,t}}_{\text{Level of Dissent}} = \pi \underbrace{ Z_{i,t}}_{\text{1\{First Row\}}} + \lambda \text{Attend}_{it} + X'_{it}\gamma + \alpha_i + \tau_t + \nu_{it}
+\]
+
+\textbf{Second stage:}
+\[
+\underbrace{ Y_{i,t}}_{\text{Media viewership}} = \beta \widehat{D}_{it} + X'_{it}\theta + \alpha_i + \tau_t + \varepsilon_{it}
+\]
+\end{itemize}
+
+\vspace{0.5em}
+
+\begin{itemize}
+    \item \textbf{DID (Intermittent)}: First run the effect of asking a question to the executive on viewership. Then divide the sample by aligned vs. oppositional media (left vs. right wing outlets)
+\[
+\underbrace{ Y_{i,t}}_{\text{Media viewership}}
+\;=\;
+\beta\,\underbrace{ P_{i,t}}_{\text{Asked a Question}}
+\;+\;
+\lambda\,\textit{Attend}_{it}
+\;+\;
+X'_{it}\theta
+\;+\;
+\alpha_i
+\;+\;
+\tau_t
+\;+\;
+\varepsilon_{it}
+\]
+\end{itemize}
+
+\vspace{0.5em}
+
+\item \textbf{Advertising punishment.} Government advertising contracts are assigned at a lower frequency than conference participation, which makes it difficult to directly use high-frequency variation in outcomes. To address this, I combine the quasi-experimental variation from the seat lottery with a dynamic covariate balancing approach \citep{VivianoDynamic}.
+
+The treatment is whether an outlet asks a question during the conference. Conditional on attendance and media strata, the lottery generates plausibly exogenous variation in this exposure. However, attendance and past participation are persistent and endogenous, which creates concerns about dynamic selection.
+
+To account for this, I control for the full participation history of each outlet using a rich set of lagged variables, including past attendance, past questions asked, and lagged advertising allocations. I then construct sequential balancing weights so that, at each point in time, outlets that ask a question and those that do not are comparable in terms of these histories.
+
+Using COMSOC data, I estimate the effect of participation on future advertising allocations. This allows me to recover an empirical measure of the government's implicit reward or punishment: whether outlets that gain visibility through participation receive more or less advertising in subsequent periods. Aggregating these effects over time provides a present-value measure of the economic incentives associated with participation in the conference.
+
+\vspace{0.5em}
+
+
+\vspace{0.5em}
+
+\item \textbf{Persuasion and attention (reduced-form).} We use (i) conference views as a proxy for attention and (ii) Mitofsky daily approval as a proxy for political payoff and (iii) transcript level outcomes such as number of words spoken by AMLO. I can regress these day-level outcomes with lottery-induced variation in the composition of likely speakers.
+\end{enumerate}
+
+\begin{itemize}
+    \item \textbf{Conference as Treatment}:
+\[
+\underbrace{ Y_{t}}_{\text{AMLO Approval}}
+\;=\;
+\beta\,\underbrace{ \textit{Ratio First Row}_{t}}_{\text{Opp./Total First Row}}
+\;+\;
+\lambda\,\underbrace{ \textit{Ratio Attendance}_{t}}_{\text{Opp./Total Attending}}
+\;+\;
+X'_{t}\theta
+\;+\;
+\varepsilon_{t}
+\]
+\end{itemize}
+
+% ==========================================================
+% END MODEL
+% ==========================================================
+
+\section{Conclusion}
+This paper provides causal evidence on the mechanisms underlying government narrative control in Mexico. By modeling the Mañanera as a persuasion mechanism and exploiting the randomization induced by the seat lottery, we show that the government does not merely ``buy silence'' through bribery. Instead, it operates an information design mechanism: it restores credibility by allowing stochastic dissent via randomized access, while simultaneously using advertising budgets to discipline the intensity of that dissent. Our empirical objects quantify the market value of dissent, the implied price of financial censorship, and the reduced-form persuasion and attention effects of visible dissent in a developing democracy.
+
+\clearpage
+\bibliographystyle{apsr}
+\bibliography{biblio}
+
+\end{document}

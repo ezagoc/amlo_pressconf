@@ -1,0 +1,28 @@
+\section{Empirical Strategy}
+\label{sec:emp_strat}
+\subsection{Media outlets as units}
+
+
+To investigate whether the reduction in government advertising spending of media outlets had an effect on violence reporting, I will run the following difference-in-difference regression: 
+
+$$Y_{i, t} = \beta_0 + \beta_1 P_{i}\times Post_{t} + \gamma_i + \sigma_t + \epsilon_{i, t} $$,
+
+\noindent where $Y_{i, t}$ is the proportion of articles related with violence by media outlet $i$ at month $t$, $P_{i}$ is the percentage change in government spending after the policy was enacted for media outlet $i$. $Post_{t}$ is a dummy that is 1 after 2019, and 0 before. $\gamma_i$ and $\sigma_t$ are media outlet and time fixed effects. $\epsilon_{i, t}$ is the error term. Clustered at the media outlet level standard errors will be estimated. 
+
+Importantly, there might be media outlets for which the amount of money they received increased, decreased or even stayed the same. And we will also have information on a pure control group, which are the independent media outlets. 
+
+\subsection{Media-state level units}
+
+Another possible way of thinking about this, could be focusing on local media outlets, and assigning them to their respective geographical unit. From initial exploration of the data the smallest geographical level from which there is available newspaper and spending information is state-level. Therefore, one possible and analogous empirical strategy could be the following.
+
+$$Y_{i, s, t} = \beta_0 + \beta_1 P_{i}\times Post_{t} + \gamma_i + \sigma_t + \theta_{s, t} + \epsilon_{i, s, t} $$, 
+
+\noindent where all variables remain the same except that we add state-time fixed effects $\theta_{s, t}$ that will allow me to control for time variant state level characteristics such as the level of violence across states across the time periods in question. This would imply however that I would be estimating within state time variation in violence coverage, meaning that I would need at least two local media outlets per state (which from my initial exploration of the data, I could potentially get information on both datasets on). Another option could be using the same data but just controlling for violence in state $s$ at time period $t$, proxied by the level of homicides per 100 thousand inhabitants and other potentially relevant indicators of violence on each state. The specification would then look like this: 
+
+$$Y_{i, s, t} = \beta_0 + \beta_1 P_{i}\times Post_{t} + \beta_2 Viol_{s, t} + \gamma_i + \sigma_t + \epsilon_{i, s, t} $$.
+
+\subsection{Potential concerns}
+
+Several concerns arise from this empirical design. The first, and most apparent, is that the treatment is not binary but continuous. Recent literature on generalized difference-in-differences (DiD) designs has highlighted some challenges in correctly identifying unbiased effects when using a continuous treatment \citep{EventCont-Sant-AEA, Cont-Chaise-AEA, Cont-Sant-arxiv}. First and foremost, for correct interpretation of the effects, a stronger parallel trends assumption has to hold, which is that the trajectory of outcomes for lower-dose units must represent how the outcomes of higher-dose units would have evolved had they been exposed to the lower dose instead \citep{Cont-Sant-arxiv}. To overcome this difficulty I will employ \cite{Cont-Chaise-AEA, EventCont-Sant-AEA} methods, along with TWFE to obtain robust causal estimates of the effect. 
+
+The second issue that might bias my results is the fact that the continuous treatment variable will be generated from an already continuous but varying in time variable, which is the amount of money received by outlet $i$ at time period $t$. the percentage change in government spending after the policy was enacted for media outlet $i$ would actually be the percentage difference in means between the two periods. For this I would need to show that the spending for each media outlet before and after were relatively constant across both periods, and that the only sharp increase or decrease was in the relevant post reform period. Also, I could use other parametrization such as using the mean, the percent change in the last month spending, the percent change in the month that they spent more on each outlet before and after the reform. 

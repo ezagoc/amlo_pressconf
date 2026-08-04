@@ -1,0 +1,264 @@
+\usepackage{tikz}
+\usepackage{tikzsymbols}
+\usepackage{pgfpages}
+
+\usepackage{amsthm}
+     
+\newtheorem{thm}{Theorem}
+\newtheorem{asm}{Assumption}
+\newtheorem{con}{Conjecture}
+\newtheorem{prop}{Proposition}
+\newtheorem{lem}{Lemma}
+\newtheorem{cor}{Corollary}
+\newtheorem{rem}{Remark}
+\newtheorem{defn}{Definition}
+
+\newtheorem{notation}{Notation}
+\newtheorem{assumption}{Assumption}
+\newtheorem{condition}{Condition}
+\newtheorem{Proposition}{Proposition}
+\newtheorem{Remark}{Remark}
+\newtheorem{remark}{Remark}
+\newtheorem{proposition}{Proposition}
+
+\usetikzlibrary{positioning}
+\usetikzlibrary{fit}
+
+% --- my commands ---
+\newcommand{\withja}[2]{%
+#1\vspace{-0.5em}\\\scriptsize{#2}%
+}
+\newcommand{\makepart}[1]{ % For convenience
+\part{#1} \frame{\partpage}
+}
+
+\setbeamercolor{emph}{fg=emorygold}
+\renewcommand<>{\emph}[1]{%
+  {\usebeamercolor[fg]{emph}\only#2{\itshape}#1}%
+}
+
+\newcommand<>{\highlight}[2][red]{%
+    \alt#3{%
+        \tikz[baseline=(x.base)]{
+            \node[rectangle,rounded corners,fill=#1!10](x){$#2$};
+        }%
+    }{%
+        #2
+    }%
+}
+
+\newcommand<>{\highlightcap}[3][red]{%
+    \alt#4{%
+        \tikz[baseline=(x.base)]{
+            \node[rectangle,rounded corners,fill=#1!10](x){$#2$};
+            \node[anchor=north, color=#1, align=center] at (x.south) {#3};
+        }%
+    }{%
+        #2
+    }%
+}
+
+\newcommand<>{\highlightcapoverlay}[3][red]{%
+    \alt#4{%
+        \tikz[baseline=(x.base)]{
+            \node[rectangle,rounded corners,fill=#1!10](x){$#2$};
+            \node[anchor=north, color=#1, align=center, overlay] (y) at (x.south) {#3};
+            \node[anchor=north, color=#1, align=center, inner ysep=7.5pt, fit={(y.south) (y.north)}] at (x.south) {};
+        }%
+    }{%
+        #2
+    }%
+}
+
+\newcommand<>{\highlightcapheadoverlay}[3][red]{%
+    \alt#4{%
+        \tikz[baseline=(x.base)]{
+            \node[rectangle,rounded corners,fill=#1!10](x){$#2$};
+            \node[anchor=south, color=#1, align=center, overlay] (y) at (x.north) {#3};
+            \node[anchor=south, color=#1, align=center, inner ysep=7.5pt, fit={(y.south) (y.north)}] at (x.north) {};
+        }%
+    }{%
+        #2
+    }%
+}
+
+\newcommand<>{\highlightcaphead}[3][red]{%
+    \alt#4{%
+        \tikz[baseline=(x.base)]{
+            \node[rectangle,rounded corners,fill=#1!10](x){$#2$};
+            \node[anchor=south, color=#1, align=center] at (x.north) {#3};
+        }%
+    }{%
+        #2
+    }%
+}
+
+\newcommand<>{\highlightcapright}[3][red]{%
+    \alt#4{%
+        \tikz[baseline=(x.base)]{
+            \node[rectangle,rounded corners,fill=#1!10](x){$#2$};
+            \node[anchor=west, color=#1, align=center] at (x.east) {#3};
+        }%
+    }{%
+        #2
+    }%
+}
+
+\newcommand{\remarkbox}[2][gray]{%
+    \tikz[baseline=(x.base)]{
+        \node[rectangle,rounded corners,fill=#1!30] (x) {%
+            \begin{minipage}[c]{\hsize}%
+            #2%
+            \end{minipage}%
+        };
+    }%
+}
+
+\newenvironment{supframe}[1]{%
+    \setbeamercolor{frametitle}{fg=white!90!purple, bg=mLightGreen!75!black}%
+    \begin{frame}{#1}%
+}{%
+    \end{frame}%
+}
+
+\newcommand{\nbracket}[1]{\left( #1 \right)}
+\newcommand{\cbracket}[1]{\left\{ #1 \right\}}
+\newcommand{\rbracket}[1]{\left[ #1 \right]}
+\newcommand{\abracket}[1]{\left\langle #1 \right\rangle}
+
+\newcommand{\boldsf}[1]{\boldsymbol{\mathsf{#1}}}
+
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator*{\argmax}{argmax}
+
+\newcommand{\A}{\mathbb{A}}
+\newcommand{\B}{\mathbb{B}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\D}{\mathbb{D}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\K}{\mathbb{K}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\T}{\mathbb{T}}
+\newcommand{\X}{\mathbb{X}}
+\newcommand{\Y}{\mathbb{Y}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\As}{\mathcal{A}}
+\newcommand{\Bs}{\mathcal{B}}
+\newcommand{\Cs}{\mathcal{C}}
+\newcommand{\Ds}{\mathcal{D}}
+\newcommand{\Es}{\mathcal{E}}
+\newcommand{\Fs}{\mathcal{F}}
+\newcommand{\Gs}{\mathcal{G}}
+\newcommand{\Hs}{\mathcal{H}}
+\newcommand{\Is}{\mathcal{I}}
+\newcommand{\Js}{\mathcal{J}}
+\newcommand{\Ks}{\mathcal{K}}
+\newcommand{\Ls}{\mathcal{L}}
+\newcommand{\Ms}{\mathcal{M}}
+\newcommand{\Ns}{\mathcal{N}}
+\newcommand{\Os}{\mathcal{O}}
+\newcommand{\Ps}{\mathcal{P}}
+\newcommand{\Qs}{\mathcal{Q}}
+\newcommand{\Rs}{\mathcal{R}}
+\newcommand{\Ss}{\mathcal{S}}
+\newcommand{\Ts}{\mathcal{T}}
+\newcommand{\Us}{\mathcal{U}}
+\newcommand{\Vs}{\mathcal{V}}
+\newcommand{\Ws}{\mathcal{W}}
+\newcommand{\Xs}{\mathcal{X}}
+\newcommand{\Ys}{\mathcal{Y}}
+\newcommand{\Zs}{\mathcal{Z}}
+\newcommand{\ab}{\textbf{a}}
+\newcommand{\bb}{\textbf{b}}
+\newcommand{\cb}{\textbf{c}}
+\newcommand{\db}{\textbf{d}}
+\newcommand{\ub}{\textbf{u}}
+%\renewcommand{\vb}{\textbf{v}} % This clashes with the physics package (the physics package already defines the \vb command)
+\newcommand{\wb}{\textbf{w}}
+\newcommand{\xb}{\textbf{x}}
+\newcommand{\yb}{\textbf{y}}
+\newcommand{\zb}{\textbf{z}}
+\newcommand{\Ab}{\textbf{A}}
+\newcommand{\Bb}{\textbf{B}}
+\newcommand{\Cb}{\textbf{C}}
+\newcommand{\Db}{\textbf{D}}
+\newcommand{\Ib}{\textbf{I}}
+\newcommand{\Sigmab}{\boldsymbol\Sigma}
+\newcommand{\eb}{\textbf{e}}
+\newcommand{\ex}{\textbf{e}_x}
+\newcommand{\ey}{\textbf{e}_y}
+\newcommand{\ez}{\textbf{e}_z}
+\newcommand{\abar}{\overline{a}}
+\newcommand{\bbar}{\overline{b}}
+\newcommand{\cbar}{\overline{c}}
+\newcommand{\dbar}{\overline{d}}
+\newcommand{\ubar}{\overline{u}}
+\newcommand{\vbar}{\overline{v}}
+\newcommand{\wbar}{\overline{w}}
+\newcommand{\xbar}{\overline{x}}
+\newcommand{\ybar}{\overline{y}}
+\newcommand{\zbar}{\overline{z}}
+\newcommand{\Abar}{\overline{A}}
+\newcommand{\Bbar}{\overline{B}}
+\newcommand{\Cbar}{\overline{C}}
+\newcommand{\Dbar}{\overline{D}}
+\newcommand{\Ubar}{\overline{U}}
+\newcommand{\Vbar}{\overline{V}}
+\newcommand{\Wbar}{\overline{W}}
+\newcommand{\Xbar}{\overline{X}}
+\newcommand{\Ybar}{\overline{Y}}
+\newcommand{\Zbar}{\overline{Z}}
+\newcommand{\Aint}{A^\circ}
+\newcommand{\Bint}{B^\circ}
+\newcommand{\limk}{\lim_{k\to\infty}}
+\newcommand{\limm}{\lim_{m\to\infty}}
+\newcommand{\limn}{\lim_{n\to\infty}}
+\newcommand{\limx}[1][a]{\lim_{x\to#1}}
+\newcommand{\liminfm}{\liminf_{m\to\infty}}
+\newcommand{\limsupm}{\limsup_{m\to\infty}}
+\newcommand{\liminfn}{\liminf_{n\to\infty}}
+\newcommand{\limsupn}{\limsup_{n\to\infty}}
+\newcommand{\sumkn}{\sum_{k=1}^n}
+\newcommand{\sumk}[1][1]{\sum_{k=#1}^\infty}
+\newcommand{\summ}[1][1]{\sum_{m=#1}^\infty}
+\newcommand{\sumn}[1][1]{\sum_{n=#1}^\infty}
+\newcommand{\emp}{\varnothing}
+\newcommand{\exc}{\backslash}
+\newcommand{\sub}{\subseteq}
+\newcommand{\sups}{\supseteq}
+\newcommand{\capp}{\bigcap}
+\newcommand{\cupp}{\bigcup}
+\newcommand{\kupp}{\bigsqcup}
+\newcommand{\cappkn}{\bigcap_{k=1}^n}
+\newcommand{\cuppkn}{\bigcup_{k=1}^n}
+\newcommand{\kuppkn}{\bigsqcup_{k=1}^n}
+\newcommand{\cappk}[1][1]{\bigcap_{k=#1}^\infty}
+\newcommand{\cuppk}[1][1]{\bigcup_{k=#1}^\infty}
+\newcommand{\cappm}[1][1]{\bigcap_{m=#1}^\infty}
+\newcommand{\cuppm}[1][1]{\bigcup_{m=#1}^\infty}
+\newcommand{\cappn}[1][1]{\bigcap_{n=#1}^\infty}
+\newcommand{\cuppn}[1][1]{\bigcup_{n=#1}^\infty}
+\newcommand{\kuppk}[1][1]{\bigsqcup_{k=#1}^\infty}
+\newcommand{\kuppm}[1][1]{\bigsqcup_{m=#1}^\infty}
+\newcommand{\kuppn}[1][1]{\bigsqcup_{n=#1}^\infty}
+\newcommand{\cappa}{\bigcap_{\alpha\in I}}
+\newcommand{\cuppa}{\bigcup_{\alpha\in I}}
+\newcommand{\kuppa}{\bigsqcup_{\alpha\in I}}
+\newcommand{\Rx}{\overline{\mathbb{R}}}
+\newcommand{\dx}{\,dx}
+\newcommand{\dy}{\,dy}
+\newcommand{\dt}{\,dt}
+\newcommand{\dax}{\,d\alpha(x)}
+\newcommand{\dbx}{\,d\beta(x)}
+\DeclareMathOperator{\glb}{\text{glb}}
+\DeclareMathOperator{\lub}{\text{lub}}
+\newcommand{\xh}{\widehat{x}}
+\newcommand{\yh}{\widehat{y}}
+\newcommand{\zh}{\widehat{z}}
+\newcommand{\<}{\langle}
+\renewcommand{\>}{\rangle}
+\renewcommand{\iff}{\Leftrightarrow}

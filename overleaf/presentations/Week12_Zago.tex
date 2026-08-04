@@ -1,0 +1,268 @@
+\documentclass[12pt]{beamer}
+%\documentclass[12pt,handout]{beamer}
+
+
+
+\usepackage{hyperref}
+\usepackage{minted}
+\usepackage[round]{natbib}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=blue,      
+    urlcolor=blue,
+    citecolor=blue,
+}
+
+% If you want to print handouts
+%\documentclass[handout]{beamer}
+
+% Changing the fonts: this will make the slides more readable and the math look like regular tex math
+%\usefonttheme{arial}
+
+% Titles will appear in Small Cap Serif
+\usefonttheme{structuresmallcapsserif}
+
+% -----------------------------------------
+% Center the Frame Title
+% -----------------------------------------
+
+\setbeamertemplate{frametitle} {
+\begin{centering}
+\vspace{0.1in} \insertframetitle
+\par
+\end{centering}}
+
+
+% -----------------------------------------
+% Number the slides
+% -----------------------------------------
+
+\setbeamertemplate{footline}[frame number]
+
+% -----------------------------------------
+% Get rid of the irritating navigation bar
+% -----------------------------------------
+
+\setbeamertemplate{navigation symbols}{}
+% -----------------------------------------
+% Begin Document
+% -----------------------------------------
+\title{\Large\textsc{Media and government censorship: Evidence from Mexico}}
+\author[Zago] % Esto es lo que sale en el footer
+{\textbf{Eduardo Zago}\inst{1}  \vspace{10pt}}
+
+\institute []% Esto es lo que sale en el footer
+{  \inst{1}   PhD Student NYU Politics}
+
+\date{\textsc{}}
+
+
+\begin{document}
+\maketitle
+%  I separate each slide with a line:
+
+% -----------------------------------------
+
+%  I start with the screen black, like using the b key in Powerpoint
+
+
+
+% -----------------------------------------
+%  Restore normal white background
+
+\beamersetaveragebackground{white}
+
+
+% -----------------------------------------
+
+%  Example of a slide with animated math:
+\section{Motivation}
+
+
+\begin{frame}
+\frametitle{Roadmap}
+\label{slide:intro}
+\small
+
+\begin{itemize}
+    \item \textbf{RQ1: How does the government react to media outlets being critic of it?}
+    \item \textbf{Hypothesis: Uses advertising spending to reward compliant outlets and punish critical ones.}  (\hyperlink{slide:lottery}{Emp. Strategy})
+    \item Due to comments received, this presentation I will try to convince you of a few things: 
+    \begin{enumerate}
+        \item Why this is important in general (lit. review).
+        \item Why this is particularly relevant in the Mexican context (context)
+        \item Why the lottery assignment to the first row might be a good instrument.
+    \end{enumerate}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Literature Review}
+
+\small
+\begin{itemize}
+\item Even in the absence of outright censorship, the government still has techniques to silence critics \citep{Censor-Pratt-AER, Autocracy-Guriev-JPE}
+
+\item Some ways in which government can censor in democracies: 
+
+\begin{enumerate}
+    \item Bribery: Montesinos in Peru \citep{Peru-Macmillan-JEP}
+    \item De-legitimization: South Korea \textit{giraegi} and US (Trump) \citep{KoreaJour-Shin-Journalism, PressCriticism-Carlson-Journalism}.
+    \item Restriction of source access: Kisha clubs in Japan \citep{Kisha-Freedom}.
+    \item Government advertising in Argentina correlated with favorable coverage \citep{ArgCorr-DiTella-AEJAE}
+\end{enumerate}
+
+\item To the best of my knowledge, no causal evidence on any of these.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Mexican Context}
+
+\small
+
+\begin{itemize}
+    \item Historical evidence of the use of advertising spending for favorable coverage:
+\end{itemize}
+\begin{quote} 
+\centering 
+``Pay for them to beat up on me? Gentlemen, I think not!''
+
+\hfill --- \tiny{President Lopez Portillo (1982) while announcing the withdrawal of advertising spending to independent media \citep{PrensaVendida}.}
+\end{quote}
+
+
+\begin{itemize}
+    \item More recently, anecdotal evidence from the NYT that PRI used these resources again (2012-2018):
+\end{itemize}
+
+\begin{quote} 
+\centering 
+``With its enormous advertising budget, the Mexican government controls the media.''
+
+\hfill --- \tiny{On PRI 2012-2018 government \citep{Times}.}
+\end{quote}
+
+
+\end{frame}
+
+\begin{frame}{}
+
+
+\begin{figure}[!htpb]
+   \centering
+   \small
+   \label{fig:yearly_spending}
+   \includegraphics[width=.9\textwidth]{figures/descriptive_stats/ppto_article19.pdf}
+\end{figure}
+    
+\end{frame}
+
+\begin{frame}
+\frametitle{Descriptive Statistics}
+
+\small
+\begin{itemize}
+\item From initial text analysis of the morning press conferences I retrieved some useful statistics.
+\item I retrieved the name of the journalists and media outlets they represented using GPT.
+\item From April 2021 to April 2023, 556 different journalists asked questions, 496 different outlets (after deduplication).\footnote{The lottery was implemented on April 2022}
+\item Looked at 10 press conferences at random over this period of time, and documented how many times they asked questions from the first (71\%), second (20\%), third (4.5\%) and fourth (4.5\%) row.
+\item Finally, checked the distributions of questions asked by journalist and media outlets before and after the lottery was implemented
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Lottery}
+
+\begin{figure}[!htpb]
+   \centering
+   \small
+   \label{fig:yearly_spending}
+   \includegraphics[width=.9\textwidth]{figures/descriptive_stats/periodistas_density.pdf}
+\end{figure}
+    
+\end{frame}
+
+\begin{frame}{Lottery}
+\begin{figure}[!htpb]
+   \centering
+   \small
+   \label{fig:yearly_spending}
+   \includegraphics[width=.9\textwidth]{figures/descriptive_stats/outlet_density.pdf}
+\end{figure}
+    
+\end{frame}
+
+\begin{frame}{Lottery}
+\begin{figure}[!htpb]
+   \centering
+   \small
+   \label{fig:yearly_spending}
+   \includegraphics[width=.9\textwidth]{figures/descriptive_stats/outlet_density2.pdf}
+\end{figure}
+    
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Lottery}
+
+\small
+\begin{table}[!htpb]
+    \centering
+    \scriptsize
+    \caption{Top 10 Outlets that Asked the Most Questions}
+    \label{tab:outlets}
+    \begin{tabular}{cccc}
+\hline \\
+Outlet (Before) & Questions (Before) & Outlet (After) & Questions (After) \\
+\hline\\
+Grupo Healy & 72 &  Grupo Healy & 32 \\
+ A Tiempo TV  & 42 &  La Crónica & 31 \\
+ Tabasco Hoy & 40 & Frontera & 30 \\
+ Campeche Hoy & 39 &  Contralínea & 29 \\
+ Quintana Roo Hoy\footnote{\tiny Widely considered 'southern friendly outlets' of the government (\href{https://animalpolitico.com/verificacion-de-hechos/te-explico/amlo-medios-promesas-publicidad-oficial}{Animal Político})} & 37 &  SDP Noticias & 28 \\
+Frontera & 35 &  Proceso\footnote{\tiny AMLO of Proceso: '\textit{Conservative journalism, serving corrupt minorities, either directly or indirectly, consciously or unconsciously.}'}  & 28 \\
+ diario Basta\footnote{\tiny Diario Basta CEO: 'Thanks to my friend and fellow countryman, President López Obrador, for his support throughout his administration to @diariobasta and @grupocanton. Love is repaid with love.'} & 33 &  Canal 11 & 25 \\
+ La Crónica & 32 &  El Financiero\footnote{\tiny AMLO to a Financiero journalist: '\textit{I don't want to get involved in that. Why should I give a story to your newspaper if you're against us?}'} & 22 \\
+ Contralínea & 29 &  Noticiero en Redes. & 18 \\
+ Imagen del Golfo  & 28 &  Tabasco Hoy & 16 \\
+\hline
+\end{tabular}
+\end{table}
+\end{frame}
+
+
+\begin{frame}{References}
+\tiny
+    \bibliographystyle{apsr}
+    \typeout{}
+
+    \singlespacing
+    
+    \bibliographystyle{apsr}
+    \bibliography{literature}
+\end{frame}
+
+\section{Appendix}
+
+\begin{frame}
+\frametitle{Research Design RQ1}
+\label{slide:lottery}
+\small
+\begin{itemize}
+    \item Estimate the impact of critical coverage on government advertising spending by media outlet. (\hyperlink{slide:intro}{Intro})
+    \item OLS probably biased due to time-based endogeneity and unobserved confounding factors related to criticism level and advertising allocation.
+    \item \textbf{Instrumental Variable (IV) Approach:} Use lottery assignment to the first, second or third row at morning press conferences as an instrument for $NumCr_{i, t}$.
+\item First Stage Equation:
+
+$$NumCr_{i, t} = \theta_0 + \theta_1 FirstRow_{i, t} + \mathbf{X'}_{i,t}\gamma + \epsilon_{i, t}$$
+\end{itemize}
+
+\end{frame}
+
+\end{document}

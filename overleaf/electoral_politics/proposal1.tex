@@ -1,0 +1,103 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{setspace}
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+
+\title{Research Proposal: \\ The 4T Will Not Be Televised, It Will Be Livestreamed: Media, Censorship, and Narrative Control in Mexico"}
+\author{Joaqu\'in Barrutia \'Alvarez}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\textbf{Motivation \& Contribution.}
+I study how governments respond to critical media by reallocating official advertising. Mexico offers a setting with granular, frequent interaction between the executive and outlets through daily morning press conferences (\emph{mañaneras}). I propose to exploit quasi-exogenous variation in \emph{access to ask questions} induced by random seating assignment to causally identify how \emph{critical questioning} affects subsequent government advertising to the questioner's outlet. Relative to existing work documenting censorship, delegitimation, and advertising as control mechanisms, my contribution is to (i) isolate a \emph{micro-level} shock to a specific outlet's salience/voice at a precise time and (ii) trace its impact on \emph{outlet-level} ad spending, under transparent assumptions and with robustness via partial identification. The project is, to my knowledge, among the first causal tests of whether direct criticism elicits budget-based lawful censorship in a mature democratic setting.
+
+\vspace{4pt}
+\textbf{Research Question.}
+Does a higher intensity of \emph{critical questions} asked by an outlet at the mañanera reduce that outlet's subsequent government advertising?
+This study wishes to causally answer how the government reacts to the media being critical of it.
+
+
+%------------------------------------------------------------
+\section*{Design 1 (ideal data): Instrumental Variables with observed attendance and seating}
+\textbf{Data in the ideal scenario.} For each day $t$ and outlet $i$: (a) attendance indicator; (b) seating assignment, including a dummy $Z_{it}=\mathbf{1}\{\text{front row}\}$; (c) who asked; (d) transcript text to classify whether a question is \emph{critical}; (e) government ad spending to outlet $i$ at horizon $t \!+\! h$ from COMSOC.
+
+\textbf{Variables.} Let $D_{it}$ be the number (or share) of \emph{critical questions} asked by outlet $i$ on day $t$ (constructed by supervised text methods on the question portion of the transcript); let $\Delta Y_{i,t+h}$ be the change in advertising allocated to $i$ between $t$ and $t{+}h$.
+
+\textbf{Equations.} With outlet and day fixed effects,
+\[
+\underbrace{D_{it}}_{\text{critical Q's}}\;=\;\pi\,Z_{it}\;+\;\lambda\,\text{Attend}_{it}\;+\;X'_{it}\gamma\;+\;\alpha_i\;+\;\tau_t\;+\;\nu_{it},
+\]
+\[
+\underbrace{\Delta Y_{i,t+h}}_{\text{ad spending response}}\;=\;\beta\,\widehat{D}_{it}\;+\;X'_{it}\theta\;+\;\alpha_i\;+\;\tau_t\;+\;\varepsilon_{it}.
+\]
+\textbf{Interpretation.} $\beta$ is the LATE of an extra \emph{critical question} on ad spending for \emph{compliers to seating}.
+
+\textbf{Identification.} (1) \emph{Relevance}: front-row increases recognition $\Rightarrow$ more questions and higher probability a question is critical. (2) \emph{Independence}: conditional on attending and day fixed effects (to absorb ``hot'' news shocks), seating is as-if random among attendees. (3) \emph{Exclusion}: seating affects ad spending only through $D_{it}$. (4) \emph{Monotonicity}: no outlet becomes \emph{less} likely to ask when seated up front.
+
+%------------------------------------------------------------
+\section*{Current feasibility and data status}
+At present I only have the official transcripts for all mañaneras. From these I can (i) \emph{observe who asked} each day and (ii) often infer \emph{where the asker sat} from the video/transcript structure, but I do not observe the full risk set (all attendees) nor the seating of those who did not ask. I have filed an information request via the \emph{Plataforma Nacional de Transparencia} for daily attendance lists and seating assignments. If granted, I will implement Design~1 as above with 2SLS/Wald and full diagnostics.
+
+%------------------------------------------------------------
+\section*{Design 2 (if attendance/seating are not released): bounds + Bayesian latent model\footnote{This is preliminary and I need to think more about these 2 subsections} }
+When $Z$ and the attendance set are unobserved, IV is not implementable. I propose two complementary strategies:
+
+\textbf{(2a) Partial identification (Lee/Manski-style bounds).}
+Let $F$ be the constant number of front-row seats per day. For each day $t$, bound the attendance $S_t$ by
+$S_t^{L} \ge \max\{F, D_t\}$ (distinct outlets who asked that day) and $S_t^{U} \le \min\{\text{room capacity}, \text{number of registered outlets}\}$.
+This implies a front-row share $\pi_t = F/S_t \in [\pi_t^L,\pi_t^U]$.
+Under monotonicity (front row weakly increases recognition) and a plausible range for the recognition gap $q_1{-}q_0$ between front and other rows (calibrated by auditing a small/mid size video sample), the \emph{average first stage among attendees} lies in
+\[
+\Delta \in \big[\ \pi^L\!\cdot(q_L{-}q_U)\ ,\ \pi^U\ \big].
+\] 
+For each $\Delta$ in this range, apply Lee-style trimming to obtain an identified interval for $\beta$, and report the union over scenarios (conservative/medium/optimistic).\footnote{\textbf{Definitions.} 
+$W$ = indicator that an outlet is \emph{recognized and asks} that day; 
+$Z$ = front–row seating (1 = front row, 0 = other); 
+$A$ = attendance (1 = attended). 
+$q_1 \equiv \Pr(W{=}1\mid Z{=}1, A{=}1)$ and 
+$q_0 \equiv \Pr(W{=}1\mid Z{=}0, A{=}1)$ are recognition probabilities among attendees when seated in the front row or elsewhere, respectively; the \emph{recognition gap} is $q_1 - q_0$. 
+We calibrate a conservative range by taking $q_L$ as a lower bound for $q_1$ and $q_U$ as an upper bound for $q_0$, so the minimal gap is $q_L - q_U$. 
+The \emph{average first stage among attendees} is $\Delta_t \equiv \pi_t (q_1 - q_0)$; under the bounds above and monotonicity ($q_1 \ge q_0$), 
+$\Delta_t \in [\,\pi_t^{L}(q_L - q_U),\ \pi_t^{U}\,]$.}
+
+
+\textbf{(2b) Bayesian latent–attendance/seating model (robustness).}
+I treat \emph{attendance} and \emph{seating} as latent and connect them to who actually asked. Concretely:
+(i) For each outlet–day $(i,t)$, let $A_{it}\in\{0,1\}$ be attendance (latent).
+(ii) Conditional on attending, a latent \emph{front–row seat} $Z_{it}\in\{0,1\}$ is drawn with prior share $\pi_t\in[\pi_t^L,\pi_t^U]$ coming from the bounds above (i.e., $Z_{it}\mid A_{it}{=}1\sim \mathrm{Bernoulli}(\pi_t)$).
+(iii) \emph{Recognition/asking} is $W_{it}\in\{0,1\}$, observed from transcripts for askers; non–askers have $W_{it}=0$ but could be either absent ($A_{it}=0$) or present and not recognized ($A_{it}=1, Z_{it}\in\{0,1\}$). I model
+\[
+\Pr(W_{it}{=}1\mid A_{it}{=}1,Z_{it})=\begin{cases}
+q_1 & \text{if } Z_{it}=1\ \text{(front row)},\\
+q_0 & \text{if } Z_{it}=0\ \text{(other rows)},
+\end{cases}
+\quad\text{with } q_1\ge q_0,
+\]
+and place weakly–informative priors on $(q_1,q_0)$ (e.g., Beta priors restricted to a plausible range from a small video audit).
+Given the observed set of askers (and a classifier that labels questions as \emph{critical} vs.\ other), the model updates the posterior of $\pi_t$, $q_1$, and $q_0$, and thus the \emph{implied first stage among attendees} $\Delta_t=\pi_t(q_1-q_0)$. I then link outcomes via
+\[
+\Delta Y_{i,t+h}=\beta\,W_{it}+\alpha_i+\tau_t+\varepsilon_{it},
+\]
+with outlet and day fixed effects. The posterior for $\beta$ is therefore \emph{assumption–driven}: it is identified through the latent seating–recognition channel $(\pi_t,q_1,q_0)$ and should be presented as complementary to the Lee–style bounds (not a substitute for IV with observed attendance/seating).
+
+\medskip
+\noindent\textit{Possible model.}
+\[
+\begin{aligned}
+A_{it} &\sim \operatorname{Bernoulli}\!\big(\operatorname{logit}^{-1}(a_i+a_t)\big),\\
+Z_{it}\mid A_{it}{=}1 &\sim \operatorname{Bernoulli}(\pi_t), \qquad \pi_t \sim \text{prior on }[\pi_t^L,\pi_t^U],\\
+W_{it}\mid A_{it}{=}1,Z_{it} &\sim \operatorname{Bernoulli}\!\big(q_0 + (q_1{-}q_0)Z_{it}\big), \qquad q_1 \ge q_0,\\
+\Delta Y_{i,t+h}\mid W_{it} &= \beta\,W_{it} + \alpha_i + \tau_t + \varepsilon_{it}, \qquad \varepsilon_{it}\sim\mathcal N(0,\sigma_Y^2).
+\end{aligned}
+\]
+\noindent\textit{Priors:} weakly informative Normals for $(a_i,a_t,\alpha_i,\tau_t,\beta)$; Half–Normal for $\sigma_Y$; Beta priors for $(q_1,q_0)$ restricted to plausible ranges (from the video audit); $\pi_t$ supported on $[\pi_t^L,\pi_t^U]$.\\
+\textit{Estimation:} MCMC posterior sampling; report posterior means/medians, $95\%$ credible intervals, and posterior predictive checks.
+
+In short, I adopt a Bayesian instrumental–variable perspective that treats attendance and seating as latent “encouragement” shifting recognition probabilities. The model jointly (i) infers the seating–recognition channel $(\pi_t,q_1,q_0)$—and thus the implied first stage $\Delta_t=\pi_t(q_1-q_0)$—from observed askers and a small video–calibrated prior, and (ii) links recognized questions to subsequent advertising via $\Delta Y_{i,t+h}=\beta W_{it}+\alpha_i+\tau_t+\varepsilon_{it}$. 
+
+\end{document}
+

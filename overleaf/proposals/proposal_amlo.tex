@@ -1,0 +1,136 @@
+\documentclass[14]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{setspace}
+\usepackage{setspace}
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{multirow,array}
+% Better typography
+\usepackage{graphicx} % Required for including pictures
+\usepackage{mdframed}
+\usepackage{wrapfig} % Allows in-line images
+\usepackage{csquotes}
+\usepackage{booktabs}
+\usepackage{morefloats}
+\usepackage[toc,page]{appendix}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{lipsum}
+\usepackage[linguistics]{forest}
+\usepackage{pgfplots}
+\usepackage{etex}
+\usepackage[round]{natbib}      % AllowHH s you to use BibTeX
+\usepackage{url}
+
+\usepackage{verbatim}
+\usepackage{hyperref}
+\usepackage{comment}
+
+\renewcommand{\baselinestretch}{1.2} 
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\newcommand{\Hrule}{\rule{\linewidth}{0.3mm}}
+
+\makeatletter% since there's an at-sign (@) in the command name
+\renewcommand{\@maketitle}{%
+  \parindent=0pt% don't indent paragraphs in the title block
+  \centering
+  {\Large \bfseries\textsc{\@title}}
+  \HRule\par%
+  \textit{\@author \hfill \@date}
+  \par
+}
+\makeatother% resets the meaning of the at-sign (@)
+
+%\title{Research Proposal}
+%\author{Eduardo Zago}
+%\date{10/31/2024}
+
+\begin{document}
+%{\setstretch{1.0}
+%\maketitle% prints the title block
+ % \thispagestyle{empty}
+  %\vspace{16pt}
+%}
+
+\section{Introduction}
+
+The relationship between media and government has been extensively studied in the fields of economics and political science, and has been identified as a critical component of electoral accountability in Latin America \citep{Audits-Ferraz-QJE, PolInfo-Enriquez-JEEA, Marshall}. A well-functioning media holds the power to check government actions and inform the public, thereby fostering transparency and responsiveness. In this research article, I wish to analyze a unique situation in which a country's President—in this case, Mexico’s—engaged in sustained daily interactions with the press, making himself available every weekday in press conferences. In these sessions, he addressed prominent issues and responded to questions from the public, creating an unprecedented level of accessibility.
+
+While this format could theoretically serve as an accountability mechanism, many scholars and journalists have argued that these press conferences function primarily as a platform for government propaganda. Critics suggest that the President uses these sessions to spread misleading narratives, bolster support for his administration, and publicly attack opposition figures and dissenters \citep{OtrosDatos}.
+
+\section{Research Questions}
+
+In this study, I aim to address several research questions. 
+
+\begin{itemize}
+    \item \textbf{RQ1}: What is the nature of the relationship between the media and the President, and how is this relationship influenced by the daily, direct interactions in these press conferences?
+    \begin{itemize}
+        \item \textbf{RQ1.1}: How does the media respond to the President’s public criticisms?
+        \item \textbf{RQ1.2}: Conversely, how does the government react to critical media coverage? 
+    \end{itemize}
+    \item \textbf{RQ2}: Following the agenda-setting framework of \cite{Leads-Nagler-APSR}, I seek to explore which party—the President or the media—is leading the agenda. 
+\end{itemize} 
+
+%Anecdotal evidence suggests that President López Obrador occasionally brings up contentious or sensational topics to divert attention from other issues.
+
+%For instance, in a recent speech, he claimed that Mexico’s healthcare system had surpassed that of Denmark—a statement he later admitted was intended to distract the media from an ongoing judicial reform proposal, which would allow for the election of federal and local judges in Mexico. This deliberate shift underscores the potential influence of the President in shaping the media's focus. However, it may also be the case that journalists use these conferences to raise pressing issues, such as violence, thereby holding the President accountable on matters of high public concern. This study seeks to disentangle these dynamics to better understand the power play between the government and the media in shaping public discourse.
+
+\section{Data}
+
+I have collected data on the official transcript of each morning press conference held by President López Obrador (a total of 1,423 conferences during his term). Additionally, I submitted an information request to the Office of the Presidency to obtain the names and media affiliations of all journalists attending each conference. This allows me to compile a comprehensive list of media outlets that have entered and participated in these press conferences.\footnote{I can extract this information directly from the transcripts.} I will focus especially on journalists representing print media.
+
+Moreover, I requested the results of the daily lottery implemented since April 2022, conducted before each morning press conference to assign journalists to the first, second, and third rows. See Appendix \ref{app:lottery} for a detailed explanation. 
+
+Finally, I will need to scrape the universe of written media publications from at least the media outlets that attended the conference at least once. I also have data on possible outcomes, such as communication spending from the government by media outlet, at the daily level.
+
+\section{Research Design}
+
+Given space constrains, I will just set up the research design for the first two questions: 
+
+\subsection{RQ1.1}
+
+To answer how does the media respond to government criticism one interesting outcome that could be analyzed is the accuracy in which media summarize the press conference. It might be the case that opposition media want to change the narrative by cherry picking certain words or phrases taken out of context. To do this, I could implement the methods detailed in \cite{QNarr-Waight-WP} to analyze the narratives taken by the President in each morning press conference to then compare them to the narratives adopted by the media. Doing this I could show some observational evidence of the media reaction to the conference, and could analyze heterogeneity by how pro or anti government each media outlet is.
+
+\subsection{RQ1.2}
+
+To answer if the government reacts to the media being critical, an interesting outcome at the media outlet level could be government spending in social communication. Anecdotal evidence suggests that in past administrations the Mexican government has used this spending to silence critics and censor newspaper outlets \citep{Times}. Moreover, AMLO reduced this spending by approximately 70\% from the past administration \citep{Article19}, so now resources are more scarce. 
+
+To analyze the effect of critical media coverage on government spending one would ideally like to run the next OLS regression: 
+
+$$\Delta Y_{i,t} = \beta_0 + \beta_1 NumCr_{i, t} + \mathbf{X'}_{i,t}\gamma + \epsilon_{i, t},$$
+
+\noindent where $\Delta Y_{i,t}$ is the change in government spending from period $t-1$ to period $t$ for media outlet $i$, $NumCr_{i, t}$ is the number of critical (of the government) articles posted by media outlet $i$ during time $t$, $X_{i, t}$ is a set of media outlet covariates such as political affinity, number of readers, etc, $\epsilon_{i, t}$ is the error term. 
+
+The coefficient of interest is $\beta_1$. However, a simple estimation of OLS would result in a biased estimate $\hat{\beta_1}$ due to endogeneity in time and the presence of unobserved confounding variables that are correlated with being critical of the government and the assignation of social communication resources to news outlets. To overcome this problem, I could use the lottery of assignment to the first row of the press conference as an instrument for the number of critical articles at time $t$. Thus the first stage would be something like this: 
+
+$$NumCr_{i, t} = \theta_0 + \theta_1 FirstRow_{i, t} + \mathbf{X'}_{i,t}\gamma + \epsilon_{i, t}$$
+
+One could expect that this first stage is significant, but the sign of the effect is an empirical question. Participation in the press conference could empower them to be more critical of the government as censorship concerns are lower, or there is higher engagement on a certain topic for that particular media outlet as they are the first ones to propose it in the conversation. Finally, the reduced form would be:  
+
+$$\Delta Y_{i, t} = \sigma_0 + \sigma_1 FirstRow_{i, t} + \mathbf{X'}_{i,t}\gamma + \epsilon_{i, t}$$
+
+
+\clearpage
+\bibliographystyle{apsr}
+\typeout{}
+
+\bibliographystyle{apsr}
+\bibliography{literature}
+
+\clearpage
+
+\section{Appendix}
+
+\subsection{Lottery}
+\label{app:lottery}
+
+Prior to 2022, seating was arranged on a first-come, first-served basis at the Palacio Nacional, which led to criticism as many journalists felt that the process was biased, favoring those aligned with the government over independent or opposition voices\citep{Tombola-Razon}. These journalists would often arrive as early as 1 a.m. to secure front-row seats. In response, the President proposed a lottery system to determine seating. By April 2022, the government formalized this change, announcing that journalists would be randomly assigned to the first three rows, with one journalist per row from each type of media—radio, television, print, etc \citep{Tombola-Financiero}. 
+
+OTHER THING TO THINK ABOUT IS EPISODES WHERE THERE WAS A LOT OF VIOLENCE WHERE JOURNALISTS WERE FORCED TO MAKE A HARSH QUESTION COULD FURTHER INCREASE THE INSTRUMENTS POWER.
+
+MAYBE ASSIGN EACH MEDIA OUTLET TO THEIR RESPECTIVE STATE.
+\end{document}

@@ -1,0 +1,133 @@
+\documentclass[12pt]{article}
+\usepackage[margin = 1in]{geometry}
+
+\usepackage{amssymb}
+\usepackage{afterpage}
+\usepackage{graphicx}
+\usepackage{subfigure} % For side-by-side figures
+
+\input{"paper_header"}
+
+\renewenvironment{abstract}
+ {\small
+  \begin{center}
+  \bfseries \abstractname\vspace{-.5em}\vspace{0pt}
+  \end{center}
+  \list{}{
+    \setlength{\leftmargin}{35mm}
+    \setlength{\rightmargin}{\leftmargin}%
+  }
+  \item\relax}
+ {\endlist}
+
+ \usepackage[dvipsnames]{xcolor}
+ \usepackage{adjustbox}
+
+%--------------------------------------------------------------
+% Misc formatting
+%--------------------------------------------------------------
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\orange}[1]{\textcolor{orange}{#1}}
+\newcommand{\violet}[1]{\textcolor{violet}{#1}}
+\newcommand{\var}[1]{\textcolor{internationalkleinblue}{\texttt{#1}}}
+\newcommand{\zvar}[1]{\textcolor{dgreen}{\texttt{#1}}}
+
+% COMMENT OUT TO MAKE BLACK
+%\definecolor{red}{cmyk}{0,0,0,1}
+%\definecolor{blue}{cmyk}{0,0,0,1}
+%\definecolor{orange}{cmyk}{0,0,0,1}
+%\definecolor{violet}{cmyk}{0,0,0,1}
+
+\usepackage{times}
+%\usepackage{helvet}
+%\renewcommand{\familydefault}{\sfdefault}
+\doublespacing
+\emergencystretch 3em
+
+\newcommand{\StarnoteBalance}{\footnotesize \textit{Notes}: }
+
+
+%--------------------------------------------------------------
+% Information
+%--------------------------------------------------------------
+
+\newcommand{\titletext}{The effect of government spending in advertising on media coverage of salient issues}
+
+\newcommand{\authors}{
+	Eduardo Zago\thanks{PhD Student in Politics, New York University. ez2490@nyu.edu}
+}
+
+\newcommand{\acknowledgements}{.}
+
+
+\newcommand{\abstracttext}{%
+	\begin{abstract}
+		\noindent 
+
+		\\ \vspace{2em}
+		
+	\end{abstract}
+}
+
+
+\begin{document}
+
+%--------------------------------------------------------------
+% Toggles for submission
+%--------------------------------------------------------------
+
+%% Title page
+%\anonymoustitlepage
+\fulltitlepage
+
+%% Comment out to double space footnotes
+%\makeatletter
+%\patchcmd{\@footnotetext}{\rule}{\normalsize \doublespacing\rule}{}{}
+%\makeatother
+
+%--------------------------------------------------------------
+% Paper start
+%--------------------------------------------------------------
+
+\input{v1_media/introduction}
+
+\input{v1_media/literature_review}
+
+\input{v1_media/data}
+
+\input{v1_media/empirical_strategy}
+
+\input{v1_media/results}
+
+%\input{thesis_draft/discussion}
+
+\input{v1_media/conclusion}
+
+
+\clearpage
+\small
+\bibliographystyle{chicago-apsr-ph}
+\typeout{}
+
+\singlespacing
+
+\bibliographystyle{chicago-apsr-ph}
+\bibliography{literature}
+
+\clearpage
+
+\appendix
+
+\setcounter{table}{0}
+\setcounter{figure}{0}
+\renewcommand{\thetable}{A\arabic{table}}
+\renewcommand{\thefigure}{A\arabic{figure}}
+
+%\input{thesis_draft/figures_and_tables}
+
+\input{v1_media/appendix}
+
+
+\end{document}

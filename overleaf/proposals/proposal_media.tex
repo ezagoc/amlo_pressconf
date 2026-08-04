@@ -1,0 +1,112 @@
+\documentclass[14]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{setspace}
+\usepackage{setspace}
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{multirow,array}
+% Better typography
+\usepackage{graphicx} % Required for including pictures
+\usepackage{mdframed}
+\usepackage{wrapfig} % Allows in-line images
+\usepackage{csquotes}
+\usepackage{booktabs}
+\usepackage{morefloats}
+\usepackage[toc,page]{appendix}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{lipsum}
+\usepackage[linguistics]{forest}
+\usepackage{pgfplots}
+\usepackage{etex}
+\usepackage[round]{natbib}      % AllowHH s you to use BibTeX
+\usepackage{url}
+
+\usepackage{verbatim}
+\usepackage{hyperref}
+\usepackage{comment}
+
+\renewcommand{\baselinestretch}{2} 
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\newcommand{\Hrule}{\rule{\linewidth}{0.3mm}}
+
+\makeatletter% since there's an at-sign (@) in the command name
+\renewcommand{\@maketitle}{%
+  \parindent=0pt% don't indent paragraphs in the title block
+  \centering
+  {\Large \bfseries\textsc{\@title}}
+  \HRule\par%
+  \textit{\@author \hfill \@date}
+  \par
+}
+\makeatother% resets the meaning of the at-sign (@)
+
+%\title{Research Proposal}
+%\author{Eduardo Zago}
+%\date{10/31/2024}
+
+\begin{document}
+%{\setstretch{1.0}
+%\maketitle% prints the title block
+ % \thispagestyle{empty}
+  %\vspace{16pt}
+%}
+
+\section{Introduction}
+
+The relationship between media and government has been extensively studied in the fields of economics and political science, and has been identified as a critical component of electoral accountability in Latin America \citep{Audits-Ferraz-QJE, PolInfo-Enriquez-JEEA, Marshall}. A well-functioning media wields significant power to hold government actions accountable and inform the public, thereby fostering transparency and responsiveness \citep{Stromberg-MediaCoverage}. Crucially, incumbent governments are fully aware of the impact that media and the broader information environment have on their chances of remaining in power, prompting them to devote substantial resources to control the information reaching the public \citep{Autocracy-Guriev-JPE}.
+
+In authoritarian contexts, there is considerable evidence of governments allocating significant resources to control the information environment \citep{CensorshipChina-King-Science, CensorshipCollective-King-APSR}. In developing countries with established, well-functioning democracies, evidence of such practices is more limited. However, this absence of evidence does not imply that these practices are not occurring.\footnote{\cite{Peru-Macmillan-JEP} document that the intelligence officer under Fujimori payed one hundred times more bribes to media owners than to influence the judiciary or other politicians.} The case of Mexico is particularly illustrative. Anecdotal and journalistic sources suggest that from 2012 to 2018, under PRIs rule, this spending was used to silence critics and incentivize media owners to avoid covering salient, electorally damaging topics, such as violence \citep{Times}.\footnote{This behavior from PRI was also documented before. On 1970, author Mario Vargas Llosa famously described the government as a “perfect dictatorship.”, arguing that the government had an agreement with the elites and was financing opposition groups to silence the critics \citep{DictaduraPerf-Llosa}.} Interestingly, on this period of time the total amount of exerted advertisement spending was consistently higher than the approved one, as shown in Figure \ref{fig:yearly_spending}.
+
+This paper seeks to analyze the effect of a reduction in advertisement spending by the government on media reporting practices. Under the \textit{republican austerity} policy of AMLO's tenure, the government cut its spending on advertisement by 78.7\%, which might have influenced the media’s stance and coverage of certain issues \citep{Article19}. Building on the work of \cite{Censor-Pratt-AER}, I hypothesize that the significant and abrupt reduction in spending could have led to a loss of control over the information environment, enabling media outlets to report on the actual levels of violence in Mexico during first two years of AMLO's tenure, in comparison with Peña Nieto's last two. Additionally, other factors may have contributed to the increase in violence reporting, such as media outlets responding negatively to funding cuts and attempting to influence the incumbent’s electoral prospects. This reaction could stem from media outlets feeling undervalued by the government or from media owners feeling the financial impact of reduced funding, prompting a desire to return to previous arrangements.
+
+\section{Data}
+
+I have collected data on government communication spending (COMSOC), which includes the date (at the daily level) each contract was enforced, the name of the media outlet receiving funds, the name of the government agency contracting the media services or purchasing airtime, and the amount of money allocated. Importantly, I will be able to locate the media outlets that produce newspaper articles using the COMSOC data base as each media outlet that received money is classified into radio, online, newspapers, magazines, billboards, etc.
+
+To compile a comprehensive dataset of newspaper articles that can be matched to this spending data, I will scrape a near-complete set of articles published online by newspapers from 2012 to 2024. I will use web crawlers for data collection, then employ large language models (LLMs) to label each article as political, violence-related, positive, or negative. Also, alongside the news outlets that I find from the COMSOC database, I will try to obtain a set of independent newspapers that I can use as a pure control.\footnote{For now I have identified a group of independent media outlets called \href{https://periodistasdeapie.org.mx/quienes-somos/}{Red de Periodistas de a Pie}, which is an NGO that consists of 14 media outlets located in different states in Mexico.} I will also need to conduct some manual work to identify each media outlet’s official company name, its founding date, and, if applicable, the specific state on which the newspaper primarily reports.
+
+\section{Empirical Design}
+
+Appendix \ref{app:emp_strat} presents the empirical design I have in mind, for which I would like some feedback if possible.
+
+\clearpage
+\bibliographystyle{apsr}
+\typeout{}
+
+\bibliographystyle{apsr}
+\bibliography{literature}
+
+\clearpage
+
+\appendix
+
+\section{Yearly Spending on Social Communication}
+
+\begin{figure}[!htpb]
+   \centering
+   \caption{Evolution of the approved and exerted spending in social communication}
+   \label{fig:yearly_spending}
+   \includegraphics[width=.9\textwidth]{figures/descriptive_stats/ppto_article19.pdf}
+   \caption*{ \footnotesize{\textit{Note:} This figure presents the yearly line trend (2012-2023) for the social communication spending (on millions of pesos) from the Mexican government, divided by the approved and exerted. The grey line represents the start of AMLO's tenure. Data was obtained from COMSOC and \citep{Article19}.}}
+\end{figure}
+
+\section{Empirical Strategy}
+\label{app:emp_strat}
+
+To investigate whether the reduction in social communication spending of media outlets had an effect on violence reporting, I will run the following difference-in-difference regression: 
+
+$$Y_{i, t} = \beta_0 + \beta_1 P_{i}\times Post_{t} + \gamma_i + \sigma_t + \epsilon_{i, t}, $$
+
+\noindent where $Y_{i, t}$ is the proportion of articles related with violence by media outlet $i$ at month $t$, $P_{i}$ is the percentage change in government spending after the policy was enacted for media outlet $i$. Importantly, there might be media outlets for which the amount of money they received increased, decreased or even stayed the same. And we will also have information on a pure control group, which are the independent media outlets. 
+
+Several concerns arise from this empirical design. The first, and most apparent, is that the treatment is not binary but continuous. Recent literature on generalized difference-in-differences (DiD) designs has highlighted some challenges in correctly identifying unbiased effects when using a continuous treatment \citep{EventCont-Sant-AEA, Cont-Chaise-AEA, Cont-Sant-arxiv}. First and foremost, for correct interpretation of the effects, a stronger parallel trends assumption has to hold, which is that the trajectory of outcomes for lower-dose units must represent how the outcomes of higher-dose units would have evolved had they been exposed to the lower dose instead \citep{Cont-Sant-arxiv}. To overcome this difficulty I will employ \cite{Cont-Chaise-AEA, EventCont-Sant-AEA} methods, along with TWFE to obtain robust causal estimates of the effect. 
+
+The second issue that might bias my results is the fact that the continuous treatment variable will be generated from an already continuous but varying in time variable, which is the amount of money received by outlet $i$ at time period $t$. the percentage change in government spending after the policy was enacted for media outlet $i$ would actually be the percentage difference in means between the two periods. For this I would need to show that the spending for each media outlet before and after were relatively constant across both periods, and that the only sharp increase or decrease was in the relevant post reform period. Also, I could use other parametrization such as using the mean, the percent change in the last month spending, the percent change in the month that they spent more on each outlet before and after the reform. 
+
+
+\end{document}

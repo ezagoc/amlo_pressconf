@@ -1,0 +1,162 @@
+\documentclass[12pt]{beamer}
+%\documentclass[12pt,handout]{beamer}
+
+
+
+\usepackage{hyperref}
+\usepackage{minted}
+\usepackage[round]{natbib}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=blue,      
+    urlcolor=blue,
+    citecolor=blue,
+}
+
+% If you want to print handouts
+%\documentclass[handout]{beamer}
+
+% Changing the fonts: this will make the slides more readable and the math look like regular tex math
+%\usefonttheme{arial}
+
+% Titles will appear in Small Cap Serif
+\usefonttheme{structuresmallcapsserif}
+
+% -----------------------------------------
+% Center the Frame Title
+% -----------------------------------------
+
+\setbeamertemplate{frametitle} {
+\begin{centering}
+\vspace{0.1in} \insertframetitle
+\par
+\end{centering}}
+
+
+% -----------------------------------------
+% Number the slides
+% -----------------------------------------
+
+\setbeamertemplate{footline}[frame number]
+
+% -----------------------------------------
+% Get rid of the irritating navigation bar
+% -----------------------------------------
+
+\setbeamertemplate{navigation symbols}{}
+% -----------------------------------------
+% Begin Document
+% -----------------------------------------
+\title{\Large\textsc{Media and government censorship: Evidence from Mexico}}
+\author[Zago] % Esto es lo que sale en el footer
+{\textbf{Eduardo Zago}\inst{1}  \vspace{10pt}}
+
+\institute []% Esto es lo que sale en el footer
+{  \inst{1}   PhD Student NYU Politics}
+
+\date{\textsc{}}
+
+
+\begin{document}
+\maketitle
+%  I separate each slide with a line:
+
+% -----------------------------------------
+
+%  I start with the screen black, like using the b key in Powerpoint
+
+
+
+% -----------------------------------------
+%  Restore normal white background
+
+\beamersetaveragebackground{white}
+
+
+% -----------------------------------------
+
+%  Example of a slide with animated math:
+\section{Motivation}
+
+\begin{frame}
+\frametitle{Context and Research Question}
+
+\small
+\begin{itemize}
+\item Media outlets have been identified as a critical component of electoral accountability in Latin America \citep{Audits-Ferraz-QJE, PolInfo-Enriquez-JEEA, Marshall}.
+\item Even in the absence of outright censorship, the government still has techniques to silence critics \citep{Censor-Pratt-AER, Autocracy-Guriev-JPE}
+\item In Mexico, there is anecdotal evidence that past administrations use the social communication spending for this purposes \citep{Times}.
+
+\textbf{RQ1: How does the government react to media outlets being critic of it?}
+
+\textbf{RQ2: How does the media react to censorship or critics coming from the President?}
+
+
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Research Design RQ1}
+
+\small
+\begin{itemize}
+    \item Estimate the impact of critical coverage on government communication spending by media outlet.
+    \item OLS probably biased due to time-based endogeneity and unobserved confounding factors related to criticism level and resource allocation.
+    \item \textbf{Instrumental Variable (IV) Approach:} Use lottery assignment to the first, second or third row at morning press conferences as an instrument for $NumCr_{i, t}$.
+\item First Stage Equation:
+
+$$NumCr_{i, t} = \theta_0 + \theta_1 FirstRow_{i, t} + \mathbf{X'}_{i,t}\gamma + \epsilon_{i, t}$$
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Feedback}
+
+\small
+\begin{itemize}
+    \item Any possible threats to the exclusion restriction that I should think about?
+    \item 
+    \item I am struggling thinking about the period of analysis. 
+    \item If month then the instrument should be the number of times the media outlet was assigned to the first row that month. 
+    \item This probably affects the critical articles of that month, but the government spending? Or in T+1.
+
+    \item Any ideas on the scrapping of newspapers would be greatly appreciated.
+
+\end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}{References}
+\scriptsize
+    \bibliographystyle{apsr}
+    \typeout{}
+
+    \singlespacing
+
+    \bibliographystyle{apsr}
+    \bibliography{literature}
+\end{frame}
+
+\section{Appendix}
+
+\begin{frame}
+\frametitle{Research Design RQ2}
+
+\small
+\begin{itemize}
+\item Narrative comparison between what the President said everyday in the press conference and what the media covered.
+\item H1: media reacts to attacks from the President by cherry-picking on the conference and switching the narrative.
+
+\item Use \cite{QNarr-Waight-WP} to extract all narratives from both sources, observationally compare them
+
+\item Heterogeneous analysis by media outlet ideology, topic discussed (violence related, controversial topics), etc.
+
+\end{itemize}
+\end{frame}
+
+\end{document}

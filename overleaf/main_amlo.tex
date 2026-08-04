@@ -1,0 +1,164 @@
+
+\documentclass[12pt]{article}
+\usepackage[margin = 1in]{geometry}
+
+\usepackage{amssymb}
+\usepackage{afterpage}
+\usepackage{pdflscape}  % pdflscape rotates the PDF view too; lscape only rotates content
+
+
+\input{"paper_header"}
+\graphicspath{{"Figures/"}{"Figures/study_samples/"}{"Figures/T7.2_new/"}}
+
+\renewenvironment{abstract}
+ {\small
+  \begin{center}
+  \bfseries \abstractname\vspace{-.5em}\vspace{0pt}
+  \end{center}
+  \list{}{
+    \setlength{\leftmargin}{35mm}
+    \setlength{\rightmargin}{\leftmargin}%
+  }
+  \item\relax}
+ {\endlist}
+
+ \usepackage[dvipsnames]{xcolor}
+ \usepackage{adjustbox}
+
+%--------------------------------------------------------------
+% Misc formatting
+%--------------------------------------------------------------
+
+% --------------------------------------------------
+% Theorem Environments
+% --------------------------------------------------
+\newtheorem{assumption}{Assumption}
+\newtheorem{proposition}{Proposition}
+\newtheorem{result}{Result}
+\newtheorem{corollary}{Corollary}
+
+% --------------------------------------------------
+% Notation
+% --------------------------------------------------
+\newcommand{\Prob}{\Pr}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\ind}{\mathbf{1}}
+\newcommand{\good}{G}
+\newcommand{\bad}{B}
+\newcommand{\normalcdf}{\Phi}
+\newcommand{\normalpdf}{n}
+
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\orange}[1]{\textcolor{orange}{#1}}
+\newcommand{\violet}[1]{\textcolor{violet}{#1}}
+\newcommand{\var}[1]{\textcolor{internationalkleinblue}{\texttt{#1}}}
+\newcommand{\zvar}[1]{\textcolor{dgreen}{\texttt{#1}}}
+
+% COMMENT OUT TO MAKE BLACK
+%\definecolor{red}{cmyk}{0,0,0,1}
+%\definecolor{blue}{cmyk}{0,0,0,1}
+%\definecolor{orange}{cmyk}{0,0,0,1}
+%\definecolor{violet}{cmyk}{0,0,0,1}
+
+\usepackage{times}
+%\usepackage{helvet}
+%\renewcommand{\familydefault}{\sfdefault}
+\doublespacing
+\emergencystretch 3em
+
+\newcommand{\Figtext}[1]{
+ \begin{tablenotes}[para,flushleft]
+ \hspace{0pt}
+ \hangindent=0.25em
+ #1
+ \end{tablenotes}
+}
+
+\newcommand{\StarnoteBalance}{\footnotesize \textit{Notes}: }
+
+
+%--------------------------------------------------------------
+% Information
+%--------------------------------------------------------------
+
+\newcommand{\titletext}{The 4T Will Not Be Televised, It Will Be Livestreamed: Media, Censorship, and Narrative Control in Mexico}
+
+\newcommand{\authors}{
+	Eduardo Zago\thanks{PhD Student in Politics, New York University. ez2490@nyu.edu}
+}
+
+\newcommand{\acknowledgements}{.}
+
+
+\newcommand{\abstracttext}{%
+	\begin{abstract}
+		\noindent 
+
+		\\ \vspace{2em}
+		
+	\end{abstract}
+}
+
+
+\begin{document}
+
+%--------------------------------------------------------------
+% Toggles for submission
+%--------------------------------------------------------------
+
+%% Title page
+%\anonymoustitlepage
+\fulltitlepage
+
+%% Comment out to double space footnotes
+%\makeatletter
+%\patchcmd{\@footnotetext}{\rule}{\normalsize \doublespacing\rule}{}{}
+%\makeatother
+
+%--------------------------------------------------------------
+% Paper start
+%--------------------------------------------------------------
+
+\input{v2_amlo/introduction}
+
+\input{v2_amlo/literature_review}
+
+\input{v2_amlo/model}
+
+\input{v2_amlo/data}
+
+\input{v2_amlo/empirical_strategy}
+
+\input{v2_amlo/results}
+
+%\input{v1_amlo/discussion}
+
+\input{v2_amlo/conclusion}
+
+
+\clearpage
+\bibliographystyle{apsr}
+\typeout{}
+
+\singlespacing
+
+\bibliographystyle{apsr}
+\bibliography{biblio}
+
+\clearpage
+
+\appendix
+
+\setcounter{table}{0}
+\setcounter{figure}{0}
+\renewcommand{\thetable}{A\arabic{table}}
+\renewcommand{\thefigure}{A\arabic{figure}}
+
+%\input{thesis_draft/figures_and_tables}
+
+\input{v2_amlo/appendix}
+
+
+\end{document}

@@ -1,0 +1,162 @@
+\section{Empirical strategy}
+\label{sec:emp_strategy}
+
+\subsection{Empirical Strategy}
+
+Although the seat lottery provides random variation in access to the conference, it is not immediate what empirical strategy, or combination of empirical strategies, best captures the variation needed to answer the main questions of the project. The lottery changes the probability that an outlet is seated in a more visible position and, therefore, the probability that it can ask a question. However, the outcomes of interest operate at different levels and frequencies. Media demand can respond at the daily level, advertising contracts are assigned more irregularly, and presidential approval is observed at an aggregate level. For this reason, I combine several complementary empirical strategies that use the lottery, outlet-level participation, and the timing of contract allocation to recover different parts of the theoretical mechanism.
+
+\paragraph{Market reward for dissent.}
+
+The first empirical question is whether dissent generates private benefits for media outlets. If critical questions increase audience demand, then outlets may have a market incentive to challenge the president during the conference. I use YouTube, Google Trends, and Twitter data as proxies for audience demand and estimate whether exposure to more critical or more friendly questions affects outlet-level viewership and engagement.
+
+The main empirical challenge is that dissent is endogenous. Outlets that ask more critical questions may differ systematically from outlets that ask friendly questions. I address this using the randomized seat assignment as an instrument. Being assigned to the first row increases the probability of asking a question and, therefore, the probability of producing a dissenting or aligned interaction.
+
+The first stage estimates whether randomized access to better seats increases the level of dissent:
+
+\[
+\underbrace{D_{i,t}}_{\text{Level of dissent}}
+=
+\pi
+\underbrace{Z_{i,t}}_{\text{1\{First row\}}}
++
+\lambda \textit{Attend}_{it}
++
+X'_{it}\gamma
++
+\alpha_i
++
+\tau_t
++
+\nu_{it}.
+\]
+
+The second stage estimates the effect of predicted dissent on audience demand:
+
+\[
+\underbrace{Y_{i,t}}_{\text{Media viewership or engagement}}
+=
+\beta \widehat{D}_{it}
++
+X'_{it}\theta
++
+\alpha_i
++
+\tau_t
++
+\varepsilon_{it}.
+\]
+
+Here, \(D_{i,t}\) measures the level of dissent in outlet \(i\)'s interaction at conference \(t\), while \(Y_{i,t}\) captures audience demand through YouTube views, Google Trends searches, Twitter engagement, or related outcomes. The coefficient \(\beta\) captures the private audience return to dissent.
+
+As a complementary specification, I also estimate the reduced-form effect of asking a question on viewership:
+
+\[
+\underbrace{Y_{i,t}}_{\text{Media viewership or engagement}}
+=
+\beta
+\underbrace{P_{i,t}}_{\text{Asked a question}}
++
+\lambda \textit{Attend}_{it}
++
+X'_{it}\theta
++
+\alpha_i
++
+\tau_t
++
+\varepsilon_{it}.
+\]
+
+This specification captures the visibility effect of participation. I can estimate it separately for aligned and oppositional outlets, or interact participation with outlet ideology, to examine whether the market return to participating in the conference differs by political position. This distinction is important because participation may generate attention regardless of tone, while dissent may generate a separate reward among audiences interested in critical coverage.
+
+\paragraph{Advertising reward or punishment.}
+
+The second empirical question is whether the government responds to media behavior through the allocation of public advertising contracts. Unlike audience demand, advertising contracts are assigned at a lower frequency and are often concentrated around specific dates. This makes it difficult to directly map daily conference behavior into advertising outcomes using a simple difference-in-differences design.
+
+This is especially important because the treatment environment is dynamic. Media outlets attend the conference repeatedly, may ask questions multiple times, and may receive advertising contracts at different points in time. As argued by \citet{marxjpe}, standard difference-in-differences estimators may fail to recover unbiased effects in dynamic settings when treatment status and future outcomes depend on past exposure. In this context, a simple comparison between outlets that ask questions and outlets that do not may be biased if past attendance, past questioning, or past advertising allocations affect both current participation and future contracts.
+
+For this reason, I use the IV strategy as the main source of short-run quasi-experimental variation, and complement it with a dynamic covariate balancing approach following \citet{VivianoDynamic}. This approach is useful for studying medium- and long-term effects in settings where units can be treated repeatedly over time. Similar methods are used in medical randomized control trials in which individuals may receive treatments multiple times across different periods, making it necessary to account for treatment histories rather than only current treatment status.
+
+In this setting, the treatment is whether an outlet asks a question, or asks a dissenting question, during the conference. Conditional on attendance and media strata, the seat lottery generates plausibly exogenous variation in this exposure. However, attendance and past participation are persistent and potentially endogenous. To account for this, I control for the full participation history of each outlet using a rich set of lagged variables, including past attendance, past questions asked, previous levels of dissent, and lagged advertising allocations. I then construct sequential balancing weights so that, at each point in time, outlets that ask a question and outlets that do not are comparable in terms of their observed histories.
+
+Using COMSOC data, I estimate the effect of participation and dissent on future advertising allocations:
+
+\[
+\underbrace{A_{i,t+h}}_{\text{Future advertising allocation}}
+=
+\beta_h
+\underbrace{D_{i,t}}_{\text{Dissent or participation}}
++
+X'_{it}\theta
++
+\alpha_i
++
+\tau_t
++
+\varepsilon_{i,t+h}.
+\]
+
+The object of interest is the sequence of effects \(\beta_h\) over future horizons \(h\). If critical participation reduces future advertising, this would be consistent with advertising punishment. If friendly participation increases future advertising, this would be consistent with advertising rewards. Aggregating these effects over time provides a present-value measure of the economic incentives associated with participating in the conference. In this sense, the dynamic balancing design does not replace the lottery-based IV analysis. Instead, it complements it by extending the analysis to medium- and long-term advertising outcomes that are harder to capture with high-frequency lottery variation alone.
+
+\paragraph{Persuasion and attention.}
+
+The third empirical question is whether the composition and tone of the conference affects broader public attention and presidential approval. These outcomes are measured at the conference-day or weekly level, rather than at the outlet level. I therefore use aggregate variation in the randomized composition of likely speakers.
+
+The main outcomes are conference views as a proxy for attention, the Mitofsky tracking poll as a proxy for presidential approval, and transcript-level outcomes such as the number of words spoken by AMLO, the topics discussed, or the share of the conference devoted to defensive responses.
+
+\[
+\underbrace{Y_t}_{\text{Approval}}
+=
+\beta
+\underbrace{\textit{Ratio First Row}_{t}}_{\text{Opposition first row / total first row}}
++
+\lambda
+\underbrace{\textit{Ratio Attendance}_{t}}_{\text{Opposition / total attending}}
++
+X'_t\theta
++
+\varepsilon_t.
+\]
+
+This reduced-form specification asks whether lottery-induced variation in the likely composition of speakers changes the behavior and political consequences of the conference. For example, if days with more opposition outlets in the first row produce lower presidential approval, more conference viewership, or longer defensive responses by the president.
+
+\paragraph{Campaign-specific contract allocation windows.}
+
+Finally, I exploit campaign-specific variation in the timing of public advertising contracts. As shown in Figure~\ref{fig:by_institution}, contracts are not assigned smoothly over time. Some institutions concentrate assignments on specific dates, suggesting that certain contracts are tied to identifiable campaigns, projects, or administrative calls. For some campaigns, it may be possible to identify both the announcement or call date and the final contract assignment date.
+
+This creates a strategic window between the moment when the campaign is announced and the moment when contracts are assigned. During this period, media outlets interested in receiving the contract may have incentives to adjust their behavior toward the government. For example, in a campaign related to the Tren Maya, outlets likely to compete for infrastructure-related advertising can be compared to outlets unlikely to want that contract, outlets that do not usually receive contracts from that institution, or outlets that do not generally compete for public advertising.
+
+For campaign \(c\), I define the strategic window as:
+
+\[
+\textit{StrategicWindow}_{c,t}
+=
+\mathbf{1}\{Announcement_c \leq t < Assignment_c\}.
+\]
+
+I then estimate a difference-in-differences specification:
+
+\[
+Y_{i,t}
+=
+\beta
+\left(
+\textit{Interested}_{i,c}
+\times
+\textit{StrategicWindow}_{c,t}
+\right)
++
+\alpha_i
++
+\tau_t
++
+\delta_c
++
+X'_{it}\theta
++
+\varepsilon_{i,t}.
+\]
+
+Here, \(Y_{i,t}\) captures media behavior, such as dissent, alignment, attendance, question tone, or coverage volume. The variable \(\textit{Interested}_{i,c}\) identifies outlets likely to compete for campaign \(c\), while \(\textit{StrategicWindow}_{c,t}\) captures the period in which contracts have been announced but not yet assigned. The model includes outlet fixed effects \(\alpha_i\), date fixed effects \(\tau_t\), campaign fixed effects \(\delta_c\), and additional controls \(X_{it}\).
+
+The coefficient of interest is \(\beta\). A negative estimate, when the outcome is dissent, would indicate that outlets likely to compete for the contract become less critical during the allocation window. A positive estimate, when the outcome is alignment or favorable coverage, would suggest that interested outlets become more supportive while the government is still deciding how to allocate contracts. This strategy complements the lottery-based designs by examining whether public advertising opportunities shape media behavior precisely when outlets have stronger incentives to avoid conflict with the government.

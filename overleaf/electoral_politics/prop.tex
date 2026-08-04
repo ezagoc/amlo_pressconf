@@ -1,0 +1,407 @@
+\documentclass[12pt]{article}
+\usepackage[margin = 1in]{geometry}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{afterpage}
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    citecolor=blue,
+}
+
+% Path to graphics
+\graphicspath{{"Figures/"}{"figures/descriptive_stats/"}}
+
+% Formatting definitions
+\usepackage[dvipsnames]{xcolor}
+\usepackage{adjustbox}
+
+\renewenvironment{abstract}
+ {\small
+  \begin{center}
+  \bfseries \abstractname\vspace{-.5em}\vspace{0pt}
+  \end{center}
+  \list{}{
+    \setlength{\leftmargin}{35mm}
+    \setlength{\rightmargin}{\leftmargin}%
+  }
+  \item\relax}
+ {\endlist}
+
+% Basic title info
+\title{The Moral Revolution Will Not Be Televised, It Will Be Livestreamed:\\ Censorship and Narrative Control in Mexico}
+\author{Joaquín Barrutia Álvarez\thanks{ Email: joaquin.barrutia.alvarez@emory.edu}}
+\date{December 17, 2025}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\noindent
+How do governments maintain narrative control in democracies without sacrificing credibility? We study the daily press conference of the Mexican President (\textit{La Mañanera}) as a dynamic Bayesian persuasion mechanism. We argue that the government faces a fundamental trade-off: minimizing dissent protects the immediate narrative but can render the communication uninformative, inducing rational disengagement by audiences. To restore credibility, the administration introduced a randomized seat lottery in 2022, effectively committing to a signal structure that allows for stochastic dissent. We develop a model where media outlets trade off market incentives for criticism against government advertising punishments. We use random assignment of front-row seats within media strata as an instrument for on-air exposure and identify key primitives: (i) the market reward for dissent (proxied by Google Trends), (ii) the implied punishment schedule in government advertising (COMSOC), and (iii) reduced-form persuasion and attention responses to visible dissent using daily approval (Mitofsky Tracking Poll) and conference viewership. Our framework quantifies how the state fine-tunes the equilibrium level of dissent to maximize persuasion under credibility constraints.
+\end{abstract}
+
+\newpage
+
+\section{Introduction}
+
+The relationship between media and government is a critical component of electoral accountability \citep{Audits-Ferraz-QJE, PolInfo-Enriquez-JEEA, Marshall}. A well-functioning media holds significant power to hold government actions accountable and inform the public \citep{Stromberg-MediaCoverage}. Crucially, incumbent governments are fully aware of this impact, prompting them to devote substantial resources to control the information environment \citep{Autocracy-Guriev-JPE}. In democracies where direct coercion is costly, governments often resort to subtler forms of influence, such as allocating public resources to reward friendly outlets and discipline critics \citep{ArgCorr-DiTella-AEJAE, MediaCaptures-Zeidl-Econometrica}.
+
+However, persuasion is not monotonic in control. As established by the literature on Bayesian persuasion \citep{MediaBias-Gentzkow-JPE, PersuasionEmpirical-Dellavigna-AR}, rational audiences discount information from sources perceived as biased. This creates a dilemma for the incumbent: total censorship ensures a favorable message but destroys the informational value of the signal, leading to citizen disengagement. To persuade effectively, the government may need to commit to a signal structure that allows for occasional negative realizations to make favorable coverage credible.
+
+This paper studies this \textit{credibility--control trade-off} in the context of Mexico's daily presidential press conference, \textit{La Mañanera}. Following his 2018 victory, President Andrés Manuel López Obrador (AMLO) established this direct-to-public communication channel to set the daily agenda. Initially, access was effectively discretionary, and the equilibrium featured a concentration of friendly questions. We document a decline in digital engagement in the run-up to 2022, consistent with audiences treating the conference as less informative. In a stark shift, the administration introduced a seat lottery in April 2022, randomizing front-row access within media strata and thereby introducing an exogenous source of variation in who is most likely to be called to speak.
+
+We propose that this institutional change functions as a commitment device in a persuasion game. By delegating part of access to a randomization mechanism, the government accepts the risk of on-air dissent---especially in bad states of the world where market incentives for criticism are high---in exchange for restoring the credibility of the conference.
+
+We formalize this logic using a model of dynamic persuasion. In our framework, the government designs an access rule (the lottery and calling convention) and an implementable discipline schedule (advertising spending) to maximize political support. Media outlets, which are heterogeneous in editorial stance and incentives, decide whether to ask critical questions by trading off the market value of dissent against the loss of future government advertising contracts.
+
+We empirically implement this framework using transcripts from 1,423 conferences, administrative records of government advertising spending (COMSOC), Google Trends data to proxy audience demand, and daily presidential approval ratings from Mitofsky's AMLO Tracking Poll. Our identification strategy exploits the random variation induced by the seat lottery: seat location is randomized within media strata and strongly predicts the probability of being called, providing an exogenous shifter of on-air exposure. We use this variation to identify the market reward for criticism, the implied punishment schedule, and reduced-form persuasion and attention effects of visible dissent.
+
+\section{Institutional Background}
+
+\subsection{Media Control in Mexico}
+Mexico provides an ideal setting to study democratic censorship. Historically, the relationship between the media and the state has been characterized by collusion and economic dependence. As \cite{FourthState-Lawson-Book} highlights, during the PRI's rule, the government managed narratives through ``chayote'' (bribes) and the discretionary allocation of official advertising. This dynamic persisted into the democratic era; for instance, President López Portillo famously stated, ``I do not pay you to beat me up'' when withdrawing funding from critical outlets \citep{PrensaVendida-Rod}.
+
+Under the Peña Nieto administration, advertising spending was used aggressively to control coverage \citep{Times}, with high-profile cases of censorship such as the firing of Carmen Aristegui \citep{WashPost-Aristegui}. When AMLO took office in 2018, he promised a transformation. His administration drastically reduced total advertising spending by nearly 80\% \citep{Article19}. However, rather than ending the practice of discretionary allocation, evidence suggests the remaining funds were redirected to reward aligned outlets and starve critical ones \citep{Animal-Discrecionalidad}.
+
+\subsection{The Mañanera and the Seat Lottery}
+The centerpiece of AMLO's communication strategy was \textit{La Mañanera}. These daily conferences allowed the President to bypass traditional gatekeepers. However, prior to 2022, seating was arranged on a first-come, first-served basis. This led to a ``race to the bottom'' where aligned journalists would arrive as early as 1 a.m.\ to secure front-row seats---the only ones with a high probability of being called \citep{Tombola-Razon}.
+
+This selection mechanism resulted in a highly scripted environment. The lack of visible dissent plausibly reduced the conference's value as an informational signal. Figure \ref{fig:engagement} shows the evolution of citizen engagement (YouTube metrics) over time. We observe a decline in viewership leading up to 2022, consistent with the hypothesis of rational disengagement.
+
+In response to criticisms of bias and falling engagement, the government introduced a seat lottery in April 2022. Journalists who enter Palacio Nacional are assigned to media-type strata, and among eligible attendees the lottery randomizes assignments to the first three rows within strata; eligibility is conditional on having attended and (by design) not having asked a question the previous day \citep{Tombola-Financiero}. This reform provides the quasi-experimental variation we leverage in our empirical strategy.
+
+\begin{figure}[!htpb]
+   \centering
+   \caption{The Engagement Dip Preceding the Lottery}
+   \label{fig:engagement}
+   \includegraphics[width=1\textwidth]{figures/descriptive_stats/engagement_three_panels_side_by_side_k7.png}
+   \caption*{ \footnotesize{\textit{Note:} Daily engagement metrics (Views, Likes, Comments) for the official YouTube livestream of the morning press conference. The dashed vertical line marks the introduction of the seat lottery on April 18, 2022. Note the declining trend in views prior to the intervention.}}
+\end{figure}
+
+\section{Literature Review}
+
+This paper bridges two distinct literatures: the political economy of media capture and the theory of Bayesian persuasion.
+
+First, we contribute to the literature on government control of media. Existing work has documented various tools of control, from direct censorship in autocracies like China \citep{CensorshipCollective-King-APSR, CensorshipChina-King-Science} to bribery \citep{Peru-Macmillan-JEP} and advertising leverage in democracies \citep{ArgCorr-DiTella-AEJAE, MediaCaptures-Zeidl-Econometrica}. In the Mexican context, \cite{MexicanPressStanigAJPS} and \cite{Marshall} have shown how violence and local regulations suppress reporting. We add to this by quantifying the \textit{economic} component of control through advertising discipline and by interpreting randomized access as a response to credibility deficits.
+
+Second, we apply the framework of Bayesian persuasion \citep{MediaBias-Gentzkow-JPE} to a dynamic political setting. While theoretical models suggest that senders may optimally allow some unfavorable signals to maximize persuasion \citep{PersuasionEmpirical-Dellavigna-AR}, empirical evidence of governments explicitly designing such mechanisms is rare. We interpret the shift to the seat lottery as a real-world implementation of a commitment to a stochastic signal structure designed to maximize the effective reach of the government's narrative.
+
+% ==========================================================
+% MODEL
+% ==========================================================
+\section{Model: The Mañanera as a Bayesian Persuasion Mechanism}
+
+Time is discrete, indexed by conference day $t=1,2,\dots$. There is a sender (the government, $\mathcal{G}$), a finite set of media outlets indexed by $i\in\{1,\dots,N\}$, and a representative citizen (the audience). All players discount future payoffs with a common factor $\delta\in(0,1)$.
+
+\subsection{State, information, and histories}
+
+\paragraph{Latent political state.}
+Each day $t$ there is a latent state $\theta_t\in\{H,L\}$ capturing ``high'' vs.\ ``low'' political performance (e.g., scandal vs.\ calm, or bad vs.\ good fundamentals). The state follows a first-order Markov process:
+\[
+\Pr(\theta_t=H\mid \theta_{t-1}=H)=\pi_H,
+\qquad
+\Pr(\theta_t=H\mid \theta_{t-1}=L)=\pi_L.
+\]
+The government observes $\theta_t$ at the beginning of day $t$; citizens and outlets do not.
+
+\paragraph{Public history and priors.}
+Let $\mathcal{H}_{t}$ denote the full \emph{public} history of conference realizations up to and including day $t$ (transcripts/video and any publicly observed summary statistics). We write the \emph{public prior} at the start of day $t$ as
+\[
+\mu_t^{-}\equiv \Pr(\theta_t=H\mid \mathcal{H}_{t-1}).
+\]
+
+\paragraph{Outlet types and private information.}
+Each outlet has a time-invariant type $\tau_i\in\mathcal{T}$ that summarizes persistent characteristics (editorial stance, audience, business model, etc.). At day $t$ each outlet also observes a private signal $\tilde{s}_{it}$ about the state, drawn from a type-dependent likelihood $\ell(\tilde{s}\mid \theta,\tau)$. This generates an \emph{outlet-specific} posterior
+\[
+\mu_{it}\equiv \Pr(\theta_t=H \mid \tilde{s}_{it},\mathcal{H}_{t-1},\tau_i).
+\]
+Intuitively, outlets may privately infer ``how bad'' the day is (and thus how valuable dissent is) even before the public conference unfolds.
+
+\subsection{Policy instruments: access (signal design) and discipline (advertising)}
+
+\paragraph{Access policy as information design.}
+Although the institutional details emphasize access (who is called to speak), the object of choice is the \emph{public information} generated by the conference. Let $\omega_t$ denote the publicly observed conference realization on day $t$ (transcript/video). In the empirical implementation we often work with a coarse summary
+\begin{equation}\label{eq:D}
+D_t \in \{0,1\},
+\qquad
+D_t = \mathbf{1}\{\text{at least one critical question is publicly observed on day } t\},
+\end{equation}
+where using $D_t$ is a conservative reduction: citizens can process richer features of $\omega_t$, but any persuasion operating through those richer features only strengthens the informational content of $\omega_t$ relative to the binary proxy.
+
+We model the government's committed access rule as a mapping
+\[
+\sigma:\ (\theta_t,\mathcal{H}_{t-1}) \mapsto \text{a distribution over conference realizations } \omega_t,
+\]
+which we equivalently write as a (possibly history-dependent) signal structure
+\[
+\omega_t \sim \pi_\sigma(\cdot \mid \theta_t,\mathcal{H}_{t-1}).
+\]
+Thus, \emph{even when the government cannot dictate content directly}, choosing access and the calling convention shapes what is publicly observed and therefore how beliefs evolve. This is the sense in which the mechanism is persuasion rather than mere gatekeeping: the policy choice affects the informativeness of the public signal about $\theta_t$.
+
+\paragraph{Belief updating and Bayes plausibility.}
+After observing $\omega_t$ (or the reduced signal $D_t$), citizens update by Bayes' rule. Let the \emph{public posterior} be
+\[
+\mu_t^{+}\equiv \Pr(\theta_t=H\mid \omega_t,\mathcal{H}_{t-1})
+\quad\text{(or }\mu_t^+=\Pr(\theta_t=H\mid D_t,\mathcal{H}_{t-1})\text{ under the reduced signal).}
+\]
+Feasible signal structures are constrained by Bayes plausibility:
+\[
+\mu_t^{-}=\mathbb{E}\!\left[\mu_t^{+}\mid \mathcal{H}_{t-1}\right],
+\]
+i.e., the government cannot choose posteriors directly, only the information structure that induces them.
+
+\paragraph{Advertising discipline and implementable punishment schedules.}
+In addition to access, the government allocates government advertising to outlets. Let $x_{i,t+h}\ge 0$ denote pesos of advertising allocated to outlet $i$ at horizon $h\ge 1$ following day $t$. We represent the advertising rule as a collection of admissible functions $g=\{g_h\}_{h\ge 1}$, where each $g_h$ maps observable histories into allocations (subject to institutional constraints such as non-negativity and budget feasibility) $x_{i,t+h}=g_h(\tau_i,\mathcal{H}_{t})$. The rule $g$ induces an \emph{implementable discipline schedule} $\Psi$, which we summarize through the present-value punishment:
+\begin{equation}\label{eq:psiPV}
+\psi(\tau_i,\mathcal{H}_{t-1})
+\equiv
+\sum_{h=1}^{H_A}\delta^{h}\,
+\Big(
+\mathbb{E}[x_{i,t+h}\mid c_{it}=0,\tau_i,\mathcal{H}_{t-1}]
+-
+\mathbb{E}[x_{i,t+h}\mid c_{it}=1,\tau_i,\mathcal{H}_{t-1}]
+\Big)\ \ge 0.
+\end{equation}
+To keep notation compact, we refer to the induced punishment schedule as the function-valued object
+\[
+\Psi \equiv \{\psi(\tau,\mathcal{H})\}_{\tau\in\mathcal{T},\ \mathcal{H}\in\mathbb{H}},
+\]
+where $\mathbb{H}$ denotes the set of possible public histories.
+
+\subsection{Media outlets: tone choice and the discipline--market trade-off}
+
+When an outlet is called to speak on day $t$, it chooses the tone of its question. Let $Ask_{it}\in\{0,1\}$ indicate whether outlet $i$ is called at day $t$, and let $c_{it}\in\{0,1\}$ denote the tone conditional on being called, with $c_{it}=1$ meaning a \emph{critical} question and $c_{it}=0$ a \emph{friendly} question. Define exposure indicators
+\[
+E_{it}\equiv Ask_{it}c_{it}, \qquad F_{it}\equiv Ask_{it}(1-c_{it}).
+\]
+
+\paragraph{Market incentive for dissent.}
+Let $\Delta^{M}_{it}$ denote the (expected) present-value \emph{market} gain from being critical rather than friendly when called at day $t$, given information $(\tilde{s}_{it},\tau_i,\mathcal{H}_{t-1})$:
+\[
+\Delta^{M}_{it}
+\equiv
+\Delta^{M}(\tilde{s}_{it},\tau_i,\mathcal{H}_{t-1}).
+\]
+In the data, we proxy the market component with downstream audience demand (Google Trends) and interpret $\Delta^M$ as the demand-based incentive for dissent.
+
+\paragraph{Choice rule.}
+An outlet chooses $c_{it}=1$ if the market incentive exceeds the expected advertising punishment, up to an idiosyncratic taste shock:
+\[
+c_{it}=1
+\quad\Longleftrightarrow\quad
+\Delta^{M}_{it}-\psi(\tau_i,\mathcal{H}_{t-1})+\varepsilon_{it}\ge 0,
+\qquad\text{given } Ask_{it}=1.
+\]
+We assume $\varepsilon_{it}\sim \mathcal{N}(0,1)$, which is the standard probit normalization that fixes the scale of the latent index. Under this assumption,
+\begin{equation}\label{eq:prob_crit}
+\Pr(c_{it}=1\mid Ask_{it}=1,\tilde{s}_{it},\tau_i,\mathcal{H}_{t-1})
+=
+\Phi\!\left(\Delta^{M}_{it}-\psi(\tau_i,\mathcal{H}_{t-1})\right).
+\end{equation}
+
+\subsection{Attention and persuasion payoffs}
+
+\paragraph{Attention.}
+Let $m_t$ denote an attention multiplier (e.g., viewership/engagement) that depends on the informativeness of the conference. We summarize this reduced-form channel with an increasing function of how much the public signal can move beliefs:
+\[
+m_t=\mathcal{S}\!\left(\left|\mu_t^+(D_t=1)-\mu_t^+(D_t=0)\right|\right),
+\qquad \mathcal{S}'(\cdot)\ge 0.
+\]
+If the conference becomes nearly deterministic (e.g., dissent is fully suppressed so $D_t$ is almost always $0$), the signal becomes uninformative and attention collapses.
+
+\paragraph{Political payoff.}
+The government values the public posterior through a per-period payoff $W(\mu_t^+)$, where $W(\cdot)$ is weakly increasing. We do \emph{not} require identifying $W(\cdot)$ or $\mu_t^+$ directly in the empirical implementation; instead, we will use high-frequency political evaluation data (daily approval) as an observable proxy that is monotone in $\mu_t^+$ in the minimal sense described below.
+
+\subsection{Government objective and implementability}
+
+The government commits to an access policy $\sigma$ and an admissible advertising rule $g$ (equivalently, an implementable discipline schedule $\Psi$ induced by some $g=\{g_h\}$). Its objective is
+\begin{equation}\label{eq:gov_obj}
+\max_{\sigma,\,g}\ 
+\mathbb{E}\left[\sum_{t=1}^\infty \delta^{t-1}
+\left\{
+W(\mu_t^+) + \kappa\, m_t - C(g)
+\right\}\right],
+\end{equation}
+where $\kappa\ge 0$ scales the value of attention and $C(g)$ is the (per-period) resource/political cost of deploying the advertising rule (e.g., administrative costs, legal constraints, or inefficiencies from distorting advertising away from non-political objectives). The maximization over $(\sigma,g)$ is understood to be over \emph{institutionally admissible} policies (e.g., non-negativity of allocations and budget feasibility), so that the implied discipline schedule $\Psi$ is implementable.
+
+\subsection{Interpretation: why the lottery can increase persuasion}
+
+A purely discretionary access rule can minimize dissent, but by doing so it can destroy the informativeness of the conference as a signal of $\theta_t$. In \eqref{eq:gov_obj}, this reduces $m_t$ (engagement) and weakens the persuasive value of the communication. Introducing randomized access commits the government to a stochastic component in $\pi_\sigma(\omega\mid \theta,\mathcal{H}_{t-1})$. This makes dissent \emph{possible} even in states where the government would prefer to suppress it, thereby restoring credibility and sustaining attention. In equilibrium, advertising discipline then pins down the \emph{intensity} of dissent by shifting $\psi(\tau,\mathcal{H}_{t-1})$, while the lottery pins down the \emph{informativeness} of the public signal by limiting the government's ability to fully screen who speaks.
+
+% ==========================================================
+% EMPIRICS
+% ==========================================================
+\section{Empirical Implementation and Identification}
+
+This section maps the primitives in \eqref{eq:psiPV}--\eqref{eq:prob_crit} to observables and states the identifying assumptions.
+
+\subsection{Observables, Risk Sets, and Access Variation}
+
+\paragraph{What we observe.}
+For each outlet $i$ and day $t$, we observe whether the outlet attends the conference, $Attend_{it}\in\{0,1\}$; whether it is called to ask a question, $Ask_{it}\in\{0,1\}$; and the tone of the question when called, $c_{it}\in\{0,1\}$, where $c_{it}=1$ denotes a critical question and $c_{it}=0$ a friendly question.\footnote{In the empirical implementation, we construct a text-based criticality score from the question text and set $c_{it}=1$ if the score exceeds a high cutoff (baseline: the 90th percentile among asked questions). We use a high threshold so that $c_{it}=1$ captures saliently confrontational questions rather than purely factual ones.} We work with exposure indicators
+\[
+E_{it}\equiv Ask_{it}c_{it},
+\qquad
+F_{it}\equiv Ask_{it}(1-c_{it}),
+\]
+with the convention that $Ask_{it}=E_{it}=F_{it}=0$ whenever $Attend_{it}=0$.
+
+\paragraph{Eligibility and time-varying risk sets.}
+The seat lottery is not run over all outlets, nor over all attendees. Let $Eligible_{it}\in\{0,1\}$ indicate whether outlet $i$ participates in the lottery on day $t$ under the mechanical assignment rules. In particular, attendance is required, and outlets that asked a question on day $t\!-\!1$ attend but do \emph{not} enter the lottery. Because eligibility depends on day-$t$ attendance and recent participation, the set of eligible outlets varies by day, and our panel is therefore unbalanced in the standard ``risk-set'' sense.
+
+\paragraph{What is randomized.}
+Only high-exposure seats are randomized: the lottery assigns seats in the first three rows (with additional front-row seats possible via the second lottery described below). After the front rows are filled, all remaining attendees---including (i) eligible outlets that do not receive a front-row assignment and (ii) ineligible outlets (e.g., those that asked the previous day)---sit behind the third row. Hence the lottery generates plausibly exogenous variation in proximity/exposure (front rows vs.\ the back of the room), which in turn shifts the probability of being called and therefore the probability of exposure $(E_{it},F_{it})$.
+
+\paragraph{Stratification by media category.}
+The lottery is run separately by media-category strata (e.g., TV, radio, print, digital). Let $s(i)\in\mathcal{S}$ denote outlet $i$'s stratum.
+
+\paragraph{Instrument (row assignment within the eligible risk set).}
+Among eligible attendees in each stratum $s$ on day $t$, names are drawn and translated into row assignments: within each stratum, the first three names drawn are assigned to rows $1$, $2$, and $3$, respectively. Because rows 1 and 2 contain additional seats, a second lottery is conducted within the stratum with the largest number of attendees on day $t$, assigning extra seats in rows 1--2 to that stratum.
+
+Let $Row_{it}\in\{1,2,3,B\}$ denote the row assignment implied by the lottery for outlet $i$ on day $t$, where $B$ denotes seating behind the third row.\footnote{For ineligible attendees ($Eligible_{it}=0$), $Row_{it}=B$ is not lottery-assigned and reflects residual seating.} Define row-assignment indicators within the eligible risk set:
+\[
+Z^{k}_{it}\equiv \mathbf{1}\{Eligible_{it}=1,\ Row_{it}=k\},\qquad k\in\{1,2,3\}.
+\]
+Eligible outlets seated behind the third row constitute the omitted (baseline) category:
+\[
+Z^{B}_{it}\equiv \mathbf{1}\{Eligible_{it}=1,\ Row_{it}=B\},
+\]
+ We collect the instruments as the vector
+\[
+Z_{it}\equiv (Z^{1}_{it},Z^{2}_{it},Z^{3}_{it}).
+\]
+
+\paragraph{Identification assumptions (stratified random assignment and exclusion).}
+For each $z$ in the support of $Z_{it}$, define potential exposures $(E_{it}(z),F_{it}(z))$, and for each $(e,f)$ define potential outcomes $Y_{i,t+h}(e,f)$.
+
+\emph{Random assignment within the risk set:} within each day $t$ and stratum $s$, among eligible outlets,
+\[
+Z_{it}\ \perp\ \Big\{(E_{it}(z),F_{it}(z))_{z},\ (Y_{i,t+h}(e,f))_{e,f}\Big\}
+\ \Big|\ \{Eligible_{it}=1,\ s(i)=s,\ t\},
+\]
+for all horizons $h$ and outcomes $Y$ considered below.
+
+\emph{Exclusion:} conditional on the risk-set design, the row lottery affects $Y_{i,t+h}$ only through exposure, i.e.,
+\[
+Y_{i,t+h}(z,e,f)=Y_{i,t+h}(e,f)\qquad \text{for all }z,
+\]
+so that any effect of $Z_{it}$ on downstream outcomes operates through its impact on the probability of being called at $t$ (and hence on $(E_{it},F_{it})$), not through independent shocks to audience demand or advertising.
+
+\paragraph{Predetermined heterogeneity and separating critical from friendly exposure.}
+Let $X_i\in\mathbb{R}^p$ denote predetermined, time-invariant outlet characteristics used to allow heterogeneous responses (e.g., baseline ideology proxies or historical criticalness). In all outlet-level panel regressions we include outlet fixed effects $\alpha_i$; therefore $X_i$ never enters in levels and only appears through interactions with $E_{it}$ and $F_{it}$.
+
+Because $E_{it}=Ask_{it}c_{it}$ and $F_{it}=Ask_{it}(1-c_{it})$, variation in $Ask_{it}$ alone is generally insufficient to separately identify the causal effects of $E_{it}$ and $F_{it}$: if the composition of tone among those called were constant, instruments that only shift $Ask_{it}$ would identify only a single linear combination of the two coefficients. We therefore exploit that tone choice is heterogeneous across outlets (a key implication of the choice rule), so that randomized changes in who gets called within the eligible risk set induce variation in the composition of $c_{it}$. Operationally, we implement this by instrumenting not only $(E_{it},F_{it})$ with $Z_{it}$, but also the heterogeneous components $(E_{it}\times X_i,\ F_{it}\times X_i)$ using the full set of cross-products $Z_{it}\otimes X_i \equiv \{Z^k_{it}X_{ij}\}_{k=1,2,3;\ j=1,\dots,p}$.
+
+\subsection{Market Incentives from Audience Demand}
+
+We proxy audience demand with Google Trends search intensity $GT_{it}$. For horizons $h=0,\dots,H$, we estimate distributed-lag responses:
+\[
+GT_{i,t+h} = \alpha_i + \lambda_{t+h} + \lambda_{s(i),t}
++ \beta^E_h(X_i)\,E_{it} + \beta^F_h(X_i)\,F_{it} + u_{i,t+h},
+\]
+where $\alpha_i$ are outlet fixed effects; $\lambda_{t+h}$ are date fixed effects for the outcome date $t+h$ (absorbing day-specific common shocks at that horizon); and $\lambda_{s(i),t}$ are stratum-by-assignment-day fixed effects, implementing the stratified lottery design within day $t$.\footnote{Equivalently, one can run all first-stage and reduced-form specifications separately by stratum.}
+
+Heterogeneity is implemented via interactions:
+\[
+\beta^E_h(X_i)=\beta^E_h + X_i'\beta^{E,X}_h,
+\qquad 
+\beta^F_h(X_i)=\beta^F_h + X_i'\beta^{F,X}_h.
+\]
+We instrument the endogenous regressors $(E_{it},F_{it})$ using $Z_{it}$, and we instrument the interaction terms $(E_{it}\times X_i,\ F_{it}\times X_i)$ using the full set of cross-products $Z_{it}\otimes X_i \equiv \{Z^k_{it}X_{ij}\}_{k=1,2,3;\ j=1,\dots,p}$.
+
+The estimated present-value market incentive is
+\begin{equation}\label{eq:DeltaM_PV}
+\widehat{\Delta^{M}}(\tau_i)\equiv \gamma_M \sum_{h=0}^{H}\delta^{h}\left(\widehat{\beta}^{E}_{h}(X_i)-\widehat{\beta}^{F}_{h}(X_i)\right),
+\end{equation}
+where $\gamma_M$ is the shadow price (pesos per unit of search intensity). This object corresponds to the market component $\Delta^{M}(\tau_i,\mu_{it})$ in the structural choice index.
+
+\subsection{Recovering Advertising Discipline from Government Advertising Allocations}
+
+Let $x_{i,t+h}$ denote pesos of government advertising allocated to outlet $i$ at horizon $h\in\{1,\dots,H_A\}$ obtained from COMSOC. For each $h=1,\dots,H_A$ we estimate:
+\[
+x_{i,t+h} = \alpha_i + \lambda_{t+h} + \lambda_{s(i),t}
++ \varphi^E_h(X_i)\,E_{it} + \varphi^F_h(X_i)\,F_{it} + \nu_{i,t+h},
+\]
+with heterogeneity implemented via
+\[
+\varphi^E_h(X_i)=\varphi^E_h + X_i'\varphi^{E,X}_h,
+\qquad 
+\varphi^F_h(X_i)=\varphi^F_h + X_i'\varphi^{F,X}_h,
+\]
+and we instrument $(E_{it},F_{it})$ using $Z_{it}$ and the interaction terms $(E_{it}\times X_i,\ F_{it}\times X_i)$ using $Z_{it}\otimes X_i$.
+
+The implied present-value punishment recovered from the data is
+\begin{equation}\label{eq:PsiPV_hat}
+\widehat{\psi}(\tau_i)\equiv \sum_{h=1}^{H_A}\delta^{h}\left(\widehat{\varphi}^{F}_{h}(X_i)-\widehat{\varphi}^{E}_{h}(X_i)\right),
+\end{equation}
+which is the empirical analog of the structural punishment schedule $\psi(\tau,\mathcal{H}_{t-1})$ in \eqref{eq:psiPV} (interpreted as the present-value advertising loss from being critical rather than friendly at $t$).
+
+\subsection{Attention: Conference-Level Views}
+
+We measure attention using conference-level outcomes (e.g., log YouTube views), denoted $\text{LogViews}_t$, and estimate:
+\[
+\text{LogViews}_t = \alpha^V + \theta_D D_t + \mathbf{X}_t'\Gamma + \xi_t,
+\qquad
+D_t \equiv \mathbf{1}\left\{\sum_{i=1}^N E_{it} > 0\right\},
+\]
+where $\mathbf{X}_t$ captures pre-specified time-varying controls (e.g., day-of-week effects and seasonality; and, when available, major-news controls). To address endogeneity in $D_t$, we instrument $D_t$ with predetermined variation in the composition of called outlets induced by the seat lottery (aggregated to the day level), denoted $Z^D_t$.
+Under the exclusion restriction that $Z^D_t$ affects views only through the probability that dissent becomes publicly visible, $\theta_D$ identifies the causal effect of the public signal $D_t$ on attention (views). In the structural model, $D_t$ matters for attention because it shifts citizens' beliefs and hence the informational content of the conference; thus $\theta_D$ provides a reduced-form test of the attention channel $m_t$, without separately identifying belief updating or the function $\mathcal{S}(\cdot)$.
+
+\subsection{Persuasion: Daily Presidential Approval (Mitofsky AMLO Tracking Poll)}
+
+To discipline the interpretation ``persuasion and not merely gatekeeping,'' we complement attention outcomes with a high-frequency measure of citizens' political evaluation. Let $Approval_t$ denote the daily presidential approval series (Mitofsky's AMLO Tracking Poll), aligned to conference dates.\footnote{Any remaining measurement mismatch in timing (e.g., polling windows) is handled by allowing dynamic effects via horizons $h\ge 0$ and by including flexible calendar controls in $\mathbf{X}_t$. In practice we report robustness to alternative alignments (same-day vs.\ next-day).}
+
+We estimate local projections of approval on the public signal $D_t$:
+\begin{equation}\label{eq:approval_lp}
+Approval_{t+h} = \alpha^{A}_h + \theta^{A}_h D_t + \mathbf{X}_t'\Gamma^{A}_h + \varepsilon^{A}_{t+h},
+\qquad h=0,\dots,H_{Appr},
+\end{equation}
+instrumenting $D_t$ with $Z^D_t$ as in the attention specification.
+
+\paragraph{Connection to $W(\mu_t^{+})$.}
+The objective in \eqref{eq:gov_obj} values beliefs through $W(\mu_t^{+})$. We do not claim to identify $W(\cdot)$ or the posterior $\mu_t^{+}$ itself. Instead, we interpret $Approval_t$ as an observable, high-frequency proxy for the political payoff component, in the minimal sense that there exists a weakly increasing mapping $\mathcal{A}(\cdot)$ and a disturbance $\eta_t$ such that
+\[
+Approval_t = \mathcal{A}\!\left(\mu_t^{+}\right) + \eta_t, \qquad \mathcal{A}'(\cdot)\ge 0.
+\]
+Under this monotonicity, $\theta^{A}_h$ in \eqref{eq:approval_lp} provides a reduced-form estimate of how the conference's public signal $D_t$ shifts political evaluation---the empirical counterpart of the persuasion component of \eqref{eq:gov_obj}. Because $D_t$ is a summary of the public information $\omega_t$, any persuasion operating through richer features of the transcript/video would only strengthen the informational content of $\omega_t$ relative to $D_t$; hence the $D_t$-based approval response is a conservative reduction of the persuasion channel.
+
+\subsection{Choice Equation and Estimation}
+
+Substituting \eqref{eq:DeltaM_PV} and \eqref{eq:PsiPV_hat} into \eqref{eq:prob_crit} yields the estimable tone-choice index:
+\begin{equation}\label{eq:choice_index_money}
+\Pr(c_{it}=1\mid Ask_{it}=1,\tau_i,X_i)
+=
+\Phi\!\left(
+\widehat{\Delta^{M}}(\tau_i)-\widehat{\psi}(\tau_i)
+\right).
+\end{equation}
+We estimate $\gamma_M$ (and any imposed low-dimensional heterogeneity) by maximum likelihood based on \eqref{eq:choice_index_money}. We can interpret $\hat\gamma_M$ as capturing how much government advertising revenue is an outlet willing to sacrifice to secure a marginal increase of one unit in Google Trends search interest. 
+
+We compute standard errors using a day-level (cluster) bootstrap: we resample conference days with replacement and re-estimate the entire procedure (first stages, reduced forms, present-value objects, and the final choice model), so that inference accounts for sampling uncertainty in the estimated first-stage and reduced-form coefficients as well as within-day dependence across outlets. 
+
+% ==========================================================
+% CONCLUSION
+% ==========================================================
+\section{Conclusion}
+
+This paper will try to provide causal evidence of the mechanisms underlying government narrative control in Mexico. By combining a model of Bayesian persuasion with exogenous variation from the seat lottery, we isolate the market forces driving dissent from the financial coercion used to suppress it. Our estimates recover two fundamental economic primitives: the \textbf{monetary value of free speech} ($\widehat\gamma_M$), representing the market premium that audiences place on criticism, and the \textbf{price of state capture} ($\widehat{\psi}$), measuring the precise financial cost imposed by the state to silence criticism.
+
+These findings challenge the view that media capture is merely a function of bribery. Instead, we show that the government operates a sophisticated information design mechanism: it strategically restores credibility by committing to stochastic access via the lottery, while simultaneously leveraging advertising budgets to discipline the intensity of the resulting dissent. 
+\clearpage
+\bibliographystyle{apsr}
+\bibliography{biblio}
+
+\end{document}

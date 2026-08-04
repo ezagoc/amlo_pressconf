@@ -1,0 +1,222 @@
+%-------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%-------------------------------------------------------------------------
+
+\usepackage{setspace}
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{multirow,array}
+\usepackage[usestackEOL]{stackengine}
+\usepackage[protrusion=true,expansion=true]{microtype} % Better typography
+\usepackage{graphicx} % Required for including pictures
+\usepackage{mdframed}
+\usepackage{wrapfig} % Allows in-line images
+\usepackage{csquotes}
+\usepackage{booktabs}
+\usepackage{morefloats}
+\usepackage[toc,page]{appendix}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{lipsum}
+\usepackage{enumitem}
+\usepackage{threeparttable}
+\usepackage{pgf, tikz}
+\usetikzlibrary{arrows, automata}
+\usepackage[linguistics]{forest}
+\usepackage{pgfplots}
+\usepackage{etex}
+\usepackage{natbib}
+\setcitestyle{aysep={}}
+\usepackage{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Required for accented characters
+\linespread{1.1} % Change line spacing here, Palatino benefits from a slight increase by default
+%\usepackage{times}
+\usepackage{url}
+\usepackage{color}
+\usepackage{pdfpages}
+\usepackage{fancyhdr}
+\usepackage{multicol}
+
+\usepackage{rotating}
+\usepackage{pdflscape}
+\usepackage{xcolor}
+\usepackage{import}
+%\newcommand*{\Data}{../Data}% 
+\usepackage{verbatim}
+\usepackage{hyperref}
+\usepackage{comment}
+
+\makeatletter
+\renewcommand\@biblabel[1]{\textbf{#1.}} % Change the square brackets for each bibliography item from '[1]' to '1.'
+\renewcommand{\@listI}{\itemsep=0pt} % Reduce the space between items in the itemize and enumerate environments and the bibliography
+
+\renewcommand{\maketitle}{ % Customize the title - do not edit title and author name here, see the TITLE block below
+	\begin{center} % Right align
+		{\Large\@title} % Increase the font size of the title
+		
+		\vspace{20pt} % Some vertical space between the title and author name
+		
+		{\normalsize\@author} % Author name
+		\\\@date % Date
+		
+		\vspace{20pt} % Some vertical space between the author block and abstract
+	\end{center}
+}
+
+
+\definecolor{internationalkleinblue}{rgb}{0.0, 0.18, 0.65}
+\definecolor{dgreen}{rgb}{0.14, 0.49, 0.12}
+
+
+\newcommand\circledmark[1][red]{%
+  \ooalign{%
+    \hidewidth
+    \kern0.65ex\raisebox{-0.9ex}{\scalebox{3}{\textcolor{#1}{\textbullet}}}
+    \hidewidth\cr
+    $\checkmark$\cr
+  }%
+}
+
+% *****************************************************************
+% Estout and table related things
+% *****************************************************************
+
+\newcommand{\sym}[1]{\rlap{#1}}% Thanks to David Carlisle
+
+\let\estinput=\input% define a new input command so that we can still flatten the document
+
+\newcommand{\estauto}[3]{
+	\vspace{.75ex}{
+		\begin{tabular}{l*{#2}{#3}}
+			\toprule
+			\estinput{#1}
+			\bottomrule
+			\addlinespace[.75ex]
+		\end{tabular}
+	}
+}
+
+% Allow line breaks with \\ in specialcells
+\newcommand{\specialcell}[2][c]{%
+	\begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+
+		
+% Note/Source/Text after Tables
+\newcommand{\Figtext}[1]{%
+	\begin{tablenotes}[para,flushleft]
+		\hspace{0pt}
+		\hangindent=0.25em
+		#1
+	\end{tablenotes}
+}
+
+% Note/Source/Text after Tables
+\newcommand{\figtext}[1]{
+	\vspace{-1.9ex}
+	\captionsetup{justification=justified,font=footnotesize}
+	\caption*{\hspace{6pt}\hangindent=1.5em #1}
+}
+
+\renewenvironment{abstract}
+ {\small
+  \begin{center}
+  \bfseries \abstractname\vspace{-.5em}\vspace{0pt}
+  \end{center}
+  \list{}{%
+    \setlength{\leftmargin}{30mm}% <---------- CHANGE HERE
+    \setlength{\rightmargin}{\leftmargin}%
+  }%
+  \item\relax}
+ {\endlist}
+
+
+\newtheorem{hypothesis}{Hypothesis}
+
+\makeatletter
+\newcounter{subhyp}
+\let\savedc@hypothesis\c@hypothesis
+\newenvironment{subhyp}
+{%
+	\setcounter{subhyp}{0}%
+	\stepcounter{hypothesis}%
+	\edef\saved@hypothesis{\thehypothesis}% Save the current value of hyp
+	\let\c@hypothesis\c@subhyp     % Now hyp is subhyp
+	\renewcommand{\thehypothesis}{\saved@hypothesis\alph{hypothesis}}%
+}
+{}
+\newcommand{\normhyp}{%
+	\let\c@hypothesis\savedc@hypothesis % revert to the old one
+	\renewcommand\thehypothesis{\arabic{hypothesis}}%
+}
+\makeatother
+
+\usepackage{xr}
+\makeatletter
+\newcommand*{\addFileDependency}[1]{% argument=file name and extension
+  \typeout{(#1)}
+  \@addtofilelist{#1}
+  \IfFileExists{#1}{}{\typeout{No file #1.}}
+}
+\makeatother
+
+\newcommand*{\myexternaldocument}[1]{%
+    \externaldocument{#1}%
+    \addFileDependency{#1.tex}%
+    \addFileDependency{#1.aux}%
+}
+
+%-----------------------------
+% Title page settings
+%-----------------------------
+
+\usepackage{titling}
+
+\newcommand{\anonymoustitlepage}{
+	\begin{titlingpage}
+		\singlespacing
+		\title{\protect\titletext}
+		\date{}
+		\author{}
+		\maketitle
+		\abstracttext
+	\end{titlingpage}
+}
+
+\newcommand{\fulltitlepage}{
+    \begin{titlingpage}
+    	\singlespacing
+    	\title{\protect\titletext\thanks{\acknowledgements}}
+    	\date{\normalsize Current draft: \today}
+    	\author{\protect\authors}
+    	\maketitle
+    	\abstracttext
+	\end{titlingpage}
+}
+
+%-----------------------------
+% Appendix TOC
+%-----------------------------
+
+\newcommand{\appendixTOC}{
+	\thispagestyle{empty}
+	\onehalfspacing
+
+	\pagenumbering{arabic}
+	\setcounter{table}{0}
+	\setcounter{figure}{0}
+	\setcounter{equation}{0}
+	\renewcommand*{\thepage}{A\arabic{page}}
+	\renewcommand{\thetable}{A\arabic{table}}
+	\renewcommand{\thefigure}{A\arabic{figure}}
+	\renewcommand{\theequation}{A\arabic{equation}}
+
+	\addtocontents{toc}{\protect\setcounter{tocdepth}{3}}
+
+	{\hypersetup{linkcolor=black}
+		\def\contentsname{\empty}
+		\tableofcontents
+	}
+
+	\clearpage
+	\setcounter{page}{1}
+}
