@@ -17,6 +17,7 @@ htmlcov/
 .venv/
 venv/
 env/
+node_modules/
 
 # Notebooks and editor state
 .ipynb_checkpoints/
