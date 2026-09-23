@@ -174,7 +174,7 @@ def discover_wayback_query(
                 continue
             if original_url in seen_source_originals:
                 continue
-            if not likely_article_url(original_url):
+            if not likely_wayback_article_url(original_url, source.get("source_id")):
                 continue
             seen_source_originals.add(str(original_url))
             rows.append(url_row(source, record, str(original_url), url_pattern, status))
@@ -192,6 +192,16 @@ def discover_wayback_query(
         if pause_seconds:
             time.sleep(pause_seconds)
     return rows
+
+
+def likely_wayback_article_url(url: object, source_id: object) -> bool:
+    """Apply source-specific URL filtering before accepting a CDX record."""
+    if pd.isna(url):
+        return False
+    if str(source_id) == "aristeguinoticias":
+        segments = [segment for segment in urlparse(str(url)).path.strip("/").split("/") if segment]
+        return len(segments) >= 3 and len(segments[0]) == 4 and segments[0].isdigit()
+    return likely_article_url(url)
 
 
 def wayback_query_url(

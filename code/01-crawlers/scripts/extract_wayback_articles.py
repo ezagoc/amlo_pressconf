@@ -22,6 +22,7 @@ from crawler_core.sitemap_articles import (  # noqa: E402
     load_sitemap_articles_from_sqlite,
     load_sitemap_discovery,
     prepare_sitemap_article_queue,
+    repair_aristegui_wayback_missing_dates,
     write_sitemap_article_outputs,
 )
 from project_paths import media_output_path, media_path  # noqa: E402
@@ -57,9 +58,27 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--timeout", type=float, default=90.0)
     parser.add_argument("--pause-seconds", type=float, default=0.1)
     parser.add_argument("--checkpoint-every", type=int, default=500)
+    parser.add_argument(
+        "--checkpoint-seconds",
+        type=float,
+        default=60.0,
+        help="Save pending SQLite rows after this many seconds even before the row threshold.",
+    )
     parser.add_argument("--progress-every", type=int, default=100)
     parser.add_argument("--progress-seconds", type=float, default=60.0)
     parser.add_argument("--workers", type=int, default=2)
+    parser.add_argument(
+        "--request-retries",
+        type=int,
+        default=0,
+        help="Retry transient network, rate-limit, and server failures this many times.",
+    )
+    parser.add_argument(
+        "--retry-backoff-seconds",
+        type=float,
+        default=5.0,
+        help="Base delay for transient request retries; each retry waits progressively longer.",
+    )
     parser.add_argument(
         "--fetch-profile",
         choices=["default", "browser"],
@@ -84,6 +103,9 @@ def main() -> None:
     discovered = load_sitemap_discovery(args.discovered)
     existing = None
     if args.resume:
+        repaired_dates = repair_aristegui_wayback_missing_dates(state_db_path)
+        if repaired_dates:
+            print(f"Resume repair: recovered dates for {repaired_dates:,} archived articles")
         existing = load_sitemap_article_statuses(state_db_path)
         if existing is None:
             print("Resume enabled: no existing Wayback SQLite progress DB found")
@@ -110,11 +132,14 @@ def main() -> None:
         queue,
         state_db_path=state_db_path,
         checkpoint_every=args.checkpoint_every,
+        checkpoint_seconds=args.checkpoint_seconds,
         timeout=args.timeout,
         pause_seconds=args.pause_seconds,
         progress_every=args.progress_every,
         progress_seconds=args.progress_seconds,
         workers=args.workers,
+        request_retries=args.request_retries,
+        retry_backoff_seconds=args.retry_backoff_seconds,
         row_log=args.row_log,
         keep_rows=not args.no_final_output,
         fetch_profile=args.fetch_profile,

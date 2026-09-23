@@ -7,16 +7,43 @@ import re
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
+from urllib.parse import parse_qs, parse_qsl, urlencode, urlparse, urlunparse
 
 import pandas as pd
+import requests
+import urllib3
 
-from crawler_core.capabilities import fetch, markdown_table
+from crawler_core.capabilities import BROWSER_USER_AGENT, markdown_table
 from crawler_core.category_pagination import infer_topic_from_url
+from crawler_core.commoncrawl_archive import fetch_sdp_archive_query
 from crawler_core.sitemaps import likely_article_url
 
 
 COLLINFO_URL = "https://index.commoncrawl.org/collinfo.json"
+ELUNIVERSAL_ARTICLE_PATHS = (
+    "notas",
+    "articulo",
+    "historico",
+    "nacion",
+    "mundo",
+    "metropoli",
+    "estados",
+    "opinion",
+    "cartera",
+    "deportes",
+    "universal-deportes",
+    "espectaculos",
+    "cultura",
+    "tendencias",
+    "ciencia-y-salud",
+    "techbit",
+    "menu",
+    "de-ultima",
+    "destinos",
+    "autopistas",
+    "video",
+)
+_SDP_INDEX_API_UNAVAILABLE = False
 DEFAULT_BODY_TEXT_LIMIT = 80_000_000
 DEFAULT_RECENT_INDEXES = (
     "CC-MAIN-2026-34",
@@ -48,6 +75,13 @@ DEFAULT_ARTICLE_PATHS = (
     "el-paso",
     "estados-unidos",
 )
+BROWSER_HEADERS = {
+    "User-Agent": BROWSER_USER_AGENT,
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "es-MX,es;q=0.9,en-US;q=0.7,en;q=0.6",
+    "Cache-Control": "no-cache",
+    "Pragma": "no-cache",
+}
 YEAR_RE = re.compile(r"CC-MAIN-(20\d{2})-\d+")
 MONTH_WORDS = {
     "jan",
@@ -102,7 +136,7 @@ def load_commoncrawl_indexes(
     if index_ids:
         selected = [normalize_index_id(index_id) for index_id in index_ids]
     else:
-        response = fetch(COLLINFO_URL, timeout, body_text_limit=5_000_000, profile="browser")
+        response = fetch_commoncrawl(COLLINFO_URL, timeout, body_text_limit=5_000_000)
         selected = parse_collinfo_indexes(response.get("text") or "")
         if not selected:
             selected = list(DEFAULT_RECENT_INDEXES)
@@ -148,6 +182,7 @@ def discover_commoncrawl_urls(
             rows.append(error_row(source, pd.NA, pd.NA, pd.NA, "no_commoncrawl_url_pattern"))
             continue
         seen_source_urls: set[str] = set()
+        consecutive_transport_errors = 0
         for index_number, index_id in enumerate(index_ids, start=1):
             for pattern in patterns:
                 if max_urls_per_source is not None and len(seen_source_urls) >= max_urls_per_source:
@@ -178,6 +213,15 @@ def discover_commoncrawl_urls(
                     f"    rows={len(query_rows):,}, new_urls={urls:,}, "
                     f"errors={errors:,}, source_total={len(seen_source_urls):,}"
                 )
+                if any(str(row.get("error", "")).startswith("requests_commoncrawl:") for row in query_rows):
+                    consecutive_transport_errors += 1
+                    if consecutive_transport_errors >= 3 and not seen_source_urls:
+                        raise RuntimeError(
+                            f"Common Crawl connection failed for {consecutive_transport_errors} "
+                            f"consecutive queries: {query_rows[0]['error']}"
+                        )
+                else:
+                    consecutive_transport_errors = 0
                 if pause_seconds:
                     time.sleep(pause_seconds)
             else:
@@ -213,9 +257,9 @@ def discover_commoncrawl_query(
         limit=limit_per_query,
         page_size=page_size,
     )
-    response = fetch(query_url, timeout, body_text_limit=body_text_limit, profile="browser")
+    response = fetch_commoncrawl(query_url, timeout, body_text_limit=body_text_limit)
     status = response.get("status")
-    if status == 404:
+    if isinstance(status, int) and status == 404:
         return []
     if not isinstance(status, int) or status < 200 or status >= 300:
         error = response.get("error")
@@ -232,13 +276,72 @@ def discover_commoncrawl_query(
             continue
         if url in seen_source_urls:
             continue
-        if not likely_commoncrawl_article_url(url):
+        if not likely_commoncrawl_article_url(url, source_id=source.get("source_id")):
             continue
         seen_source_urls.add(str(url))
         rows.append(url_row(source, record, str(url), index_id, url_pattern, status))
     if parse_errors:
         rows.append(error_row(source, index_id, url_pattern, status, f"json_parse_errors_{parse_errors}"))
     return rows
+
+
+def fetch_commoncrawl(url: str, timeout: float, *, body_text_limit: int) -> dict[str, object]:
+    """Fetch Common Crawl endpoints with requests to avoid local curl TLS failures."""
+    global _SDP_INDEX_API_UNAVAILABLE
+    parsed_url = urlparse(url)
+    sdp_query = parsed_url.path.endswith("-index") and "sdpnoticias.com" in url
+    requested_url = parse_qs(parsed_url.query).get("url", [""])[0]
+    broad_sdp_query = requested_url.rstrip("/") in {"sdpnoticias.com", "www.sdpnoticias.com"}
+    if sdp_query and (broad_sdp_query or _SDP_INDEX_API_UNAVAILABLE):
+        return fetch_sdp_archive_response(url, timeout, body_text_limit=body_text_limit)
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    try:
+        response = requests.get(
+            url,
+            timeout=float(timeout),
+            verify=False,
+            headers=BROWSER_HEADERS,
+            allow_redirects=True,
+        )
+    except Exception as exc:
+        if sdp_query:
+            _SDP_INDEX_API_UNAVAILABLE = True
+            return fetch_sdp_archive_response(
+                url, timeout, body_text_limit=body_text_limit, api_error=str(exc)
+            )
+        return {
+            "status": pd.NA,
+            "final_url": pd.NA,
+            "content_type": pd.NA,
+            "text": "",
+            "error": f"requests_commoncrawl: {exc}",
+        }
+    return {
+        "status": int(response.status_code),
+        "final_url": response.url,
+        "content_type": response.headers.get("content-type") or pd.NA,
+        "text": response.text[:body_text_limit],
+        "error": pd.NA,
+    }
+
+
+def fetch_sdp_archive_response(
+    url: str, timeout: float, *, body_text_limit: int, api_error: str | None = None
+) -> dict[str, object]:
+    """Return archive data or a regular discovery error row on archive failure."""
+    try:
+        return fetch_sdp_archive_query(url, timeout, body_text_limit=body_text_limit)
+    except Exception as exc:
+        error = f"archive_fallback: {type(exc).__name__}: {exc}"
+        if api_error:
+            error = f"requests_commoncrawl: {api_error}; {error}"
+        return {
+            "status": pd.NA,
+            "final_url": pd.NA,
+            "content_type": pd.NA,
+            "text": "",
+            "error": error,
+        }
 
 
 def parse_collinfo_indexes(text: str) -> list[str]:
@@ -327,6 +430,8 @@ def commoncrawl_url_patterns(
         hosts.append(f"www.{host}")
 
     article_paths = article_path_candidates(source, path_patterns=path_patterns)
+    if include_broad_domain and str(source.get("source_id")) == "sdpnoticias":
+        return [f"{candidate_host}/{base_path}*" for candidate_host in hosts]
     patterns = []
     for candidate_host in hosts:
         for article_path in article_paths:
@@ -335,6 +440,8 @@ def commoncrawl_url_patterns(
             patterns.append(f"{candidate_host}/{article_path}/*")
         if include_broad_domain:
             patterns.append(f"{candidate_host}/{base_path}*")
+    if str(source.get("source_id")) == "eluniversal" and not path_patterns:
+        patterns.append("archivo.eluniversal.com.mx/notas/*")
     return dedupe_preserve_order(patterns)
 
 
@@ -344,6 +451,9 @@ def article_path_candidates(source: pd.Series, *, path_patterns: list[str] | Non
     if path_patterns:
         candidates.extend(clean_path_pattern(pattern) for pattern in path_patterns)
         return [value for value in dedupe_preserve_order(candidates) if value]
+
+    if str(source.get("source_id")) == "eluniversal":
+        return list(ELUNIVERSAL_ARTICLE_PATHS)
 
     hints = source.get("category_hints")
     if pd.notna(hints):
@@ -369,7 +479,7 @@ def clean_path_pattern(value: str) -> str:
     return cleaned
 
 
-def likely_commoncrawl_article_url(url: object) -> bool:
+def likely_commoncrawl_article_url(url: object, *, source_id: object = pd.NA) -> bool:
     """Return True when a CDX URL is likely to be a newspaper article."""
     if pd.isna(url):
         return False
@@ -381,6 +491,16 @@ def likely_commoncrawl_article_url(url: object) -> bool:
     lowered = text.lower()
     if any(token in lowered for token in ["/tag/", "/tags/", "/author/", "/search/", "/feed/", "/rss/"]):
         return False
+    if str(source_id) == "sdpnoticias":
+        if segments[0].lower() in {
+            "autor", "autores", "coberturas", "page", "cdn-cgi", "tema", "temas"
+        }:
+            return False
+        return slug_word_count(segments[-1]) >= 2
+    if str(source_id) == "eluniversal":
+        from crawler_core.eluniversal import is_eluniversal_article_url
+
+        return is_eluniversal_article_url(text)
     if likely_article_url(text):
         return True
     return has_article_date_path(segments) and slug_word_count(segments[-1]) >= 3
@@ -444,7 +564,7 @@ def url_row(
         "commoncrawl_languages": record.get("languages"),
         "status": status,
         "error": pd.NA,
-        "discovered_at": pd.Timestamp.utcnow().isoformat(),
+        "discovered_at": pd.Timestamp.now("UTC").isoformat(),
     }
 
 
@@ -479,7 +599,7 @@ def error_row(
         "commoncrawl_languages": pd.NA,
         "status": status,
         "error": error,
-        "discovered_at": pd.Timestamp.utcnow().isoformat(),
+        "discovered_at": pd.Timestamp.now("UTC").isoformat(),
     }
 
 
@@ -527,6 +647,12 @@ def write_commoncrawl_outputs(
     """Write Common Crawl discovery CSV/parquet and report files."""
     discovery_dir.mkdir(parents=True, exist_ok=True)
     reports_dir.mkdir(parents=True, exist_ok=True)
+    discovered = discovered.copy()
+    for column in discovered.columns:
+        if column == "status":
+            discovered[column] = pd.to_numeric(discovered[column], errors="coerce").astype("Int64")
+        else:
+            discovered[column] = discovered[column].astype("string")
     discovered_csv = discovery_dir / "discovered_urls_commoncrawl.csv"
     discovered_parquet = discovery_dir / "discovered_urls_commoncrawl.parquet"
     report_path = reports_dir / "commoncrawl_discovery_report.md"
@@ -534,7 +660,7 @@ def write_commoncrawl_outputs(
     parquet_error = None
     try:
         discovered.to_parquet(discovered_parquet, index=False)
-    except ImportError as exc:
+    except Exception as exc:
         discovered_parquet = None
         parquet_error = str(exc).splitlines()[0]
     report_path.write_text(report, encoding="utf-8")

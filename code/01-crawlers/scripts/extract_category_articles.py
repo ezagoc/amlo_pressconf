@@ -66,6 +66,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--progress-seconds", type=float, default=60.0)
     parser.add_argument("--workers", type=int, default=2)
     parser.add_argument(
+        "--missing-text-retries",
+        type=int,
+        default=0,
+        help="Retry transient missing_main_text responses this many times (used by Aristegui).",
+    )
+    parser.add_argument(
+        "--retry-backoff-seconds",
+        type=float,
+        default=1.0,
+        help="Base delay between transient missing-text retries.",
+    )
+    parser.add_argument(
         "--fetch-profile",
         choices=["default", "browser"],
         default="browser",
@@ -121,6 +133,8 @@ def main() -> None:
         progress_every=args.progress_every,
         progress_seconds=args.progress_seconds,
         workers=args.workers,
+        missing_text_retries=args.missing_text_retries,
+        retry_backoff_seconds=args.retry_backoff_seconds,
         row_log=args.row_log,
         keep_rows=not args.no_final_output,
         fetch_profile=args.fetch_profile,

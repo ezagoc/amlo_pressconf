@@ -7,6 +7,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections import deque
 from dataclasses import dataclass
+from pathlib import Path
 from urllib.parse import urljoin, urlparse, urlunparse
 
 import pandas as pd
@@ -60,6 +61,15 @@ class MvsDiscoveryOutputs:
     parquet_error: str | None = None
 
 
+@dataclass
+class CheckpointState:
+    """Track periodic discovery checkpoint writes."""
+
+    path: Path | None = None
+    every: int = 5_000
+    last_rows: int = 0
+
+
 def discover_mvs_urls(
     *,
     max_section_pages: int = 10,
@@ -71,6 +81,8 @@ def discover_mvs_urls(
     pause_seconds: float = 0.1,
     fetch_profile: str = "browser",
     workers: int = 1,
+    checkpoint_path: Path | None = None,
+    checkpoint_every: int = 5_000,
 ) -> pd.DataFrame:
     """Discover MVS article URLs by expanding sections, articles, and topic archives."""
     rows: list[dict[str, object]] = []
@@ -79,6 +91,7 @@ def discover_mvs_urls(
     seen_topics: set[str] = set()
     article_probe_queue: deque[str] = deque()
     topic_queue: deque[str] = deque()
+    checkpoint = CheckpointState(checkpoint_path, checkpoint_every)
 
     for seed in SECTION_SEEDS:
         listing_url = canonical_url(seed)
@@ -97,8 +110,9 @@ def discover_mvs_urls(
             fetch_profile=fetch_profile,
             max_urls=max_urls,
         )
+        maybe_write_checkpoint(rows, checkpoint)
         if max_urls is not None and len(seen_articles) >= max_urls:
-            return pd.DataFrame(rows)
+            return finalize_discovered(rows, checkpoint)
 
     probed_articles = 0
     print(
@@ -126,7 +140,8 @@ def discover_mvs_urls(
             if max_topics is not None and len(seen_topics) >= max_topics:
                 break
             if max_urls is not None and len(seen_articles) >= max_urls:
-                return pd.DataFrame(rows)
+                return finalize_discovered(rows, checkpoint)
+            maybe_write_checkpoint(rows, checkpoint)
     else:
         batch_size = max(25, workers * 8)
         with ThreadPoolExecutor(max_workers=workers) as executor:
@@ -144,8 +159,13 @@ def discover_mvs_urls(
                         article_probe_queue,
                         seen_articles,
                     )
+                    try:
+                        result = future.result()
+                    except Exception as exc:
+                        rows.append(error_row(pd.NA, pd.NA, pd.NA, f"article_probe_failure: {type(exc).__name__}: {exc}"))
+                        continue
                     apply_article_probe_result(
-                        future.result(),
+                        result,
                         seen_topics=seen_topics,
                         topic_queue=topic_queue,
                         seen_articles=seen_articles,
@@ -161,7 +181,8 @@ def discover_mvs_urls(
                 if max_topics is not None and len(seen_topics) >= max_topics:
                     break
                 if max_urls is not None and len(seen_articles) >= max_urls:
-                    return pd.DataFrame(rows)
+                    return finalize_discovered(rows, checkpoint)
+                maybe_write_checkpoint(rows, checkpoint)
 
     topics_processed = 0
     print(f"  mvs_topic_queue: queued={len(topic_queue):,}", flush=True)
@@ -188,11 +209,17 @@ def discover_mvs_urls(
             fetch_profile=fetch_profile,
             max_urls=max_urls,
         )
+        maybe_write_checkpoint(rows, checkpoint)
         if max_topics is not None and topics_processed >= max_topics:
             break
         if max_urls is not None and len(seen_articles) >= max_urls:
             break
 
+    return finalize_discovered(rows, checkpoint)
+
+
+def finalize_discovered(rows: list[dict[str, object]], checkpoint: CheckpointState) -> pd.DataFrame:
+    """Dedupe discovery rows and force one final checkpoint."""
     discovered = pd.DataFrame(rows)
     if not discovered.empty and "url" in discovered.columns:
         url_rows = discovered[discovered["url"].notna()].drop_duplicates(
@@ -200,7 +227,27 @@ def discover_mvs_urls(
         )
         error_rows = discovered[discovered["url"].isna()]
         discovered = pd.concat([url_rows, error_rows], ignore_index=True).reset_index(drop=True)
+    write_checkpoint(discovered, checkpoint, force=True)
     return discovered
+
+
+def maybe_write_checkpoint(rows: list[dict[str, object]], checkpoint: CheckpointState) -> None:
+    """Write a checkpoint when enough new rows have accumulated."""
+    if checkpoint.path is None or checkpoint.every <= 0:
+        return
+    if len(rows) - checkpoint.last_rows < checkpoint.every:
+        return
+    write_checkpoint(pd.DataFrame(rows), checkpoint, force=True)
+
+
+def write_checkpoint(discovered: pd.DataFrame, checkpoint: CheckpointState, *, force: bool) -> None:
+    """Write checkpoint CSV for long MVS discovery runs."""
+    if checkpoint.path is None or not force:
+        return
+    checkpoint.path.parent.mkdir(parents=True, exist_ok=True)
+    discovered.to_csv(checkpoint.path, index=False, encoding="utf-8")
+    checkpoint.last_rows = len(discovered)
+    print(f"  checkpoint: wrote {len(discovered):,} rows to {checkpoint.path}", flush=True)
 
 
 def log_article_probe(
@@ -226,7 +273,7 @@ def probe_article(article_url: str, timeout: float, fetch_profile: str) -> dict[
     status = response["status"]
     if not isinstance(status, int) or not 200 <= status < 300:
         return {"article_url": article_url, "status": status, "topic_urls": [], "article_urls": []}
-    page = parse_page(response.get("text") or "", article_url)
+    page = parse_page(safe_text(response.get("text")), article_url)
     return {
         "article_url": article_url,
         "status": status,
@@ -286,10 +333,10 @@ def discover_listing_chain(
         response = fetch_mvs(current_url, timeout, profile=fetch_profile)
         status = response["status"]
         if not isinstance(status, int) or not 200 <= status < 300:
-            rows.append(error_row(seed_url, current_url, status, response.get("error") or f"http_status_{status}"))
+            rows.append(error_row(seed_url, current_url, status, fallback_error(response.get("error"), f"http_status_{status}")))
             break
 
-        parsed = parse_page(response.get("text") or "", current_url)
+        parsed = parse_page(safe_text(response.get("text")), current_url)
         new_count = 0
         for article_url in parsed["article_urls"]:
             if article_url in seen_articles:
@@ -482,8 +529,27 @@ def parse_html(html: str) -> BeautifulSoup:
         return BeautifulSoup(html, "html.parser")
 
 
+def safe_text(value: object) -> str:
+    if is_missing(value):
+        return ""
+    return str(value)
+
+
+def fallback_error(value: object, fallback: str) -> object:
+    if is_missing(value) or str(value).strip() == "":
+        return fallback
+    return value
+
+
+def is_missing(value: object) -> bool:
+    try:
+        return bool(pd.isna(value))
+    except (TypeError, ValueError):
+        return value is None
+
+
 def canonical_url(value: object, base_url: str = BASE_URL) -> str:
-    return strip_fragment(urljoin(base_url, str(value or "").strip()))
+    return strip_fragment(urljoin(base_url, safe_text(value).strip()))
 
 
 def strip_fragment(url: str) -> str:

@@ -8,13 +8,17 @@ import time
 import html as html_lib
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from dataclasses import dataclass
+from datetime import date, timedelta
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 import pandas as pd
 from bs4 import BeautifulSoup, Comment, FeatureNotFound
 
 from crawler_core.capabilities import fetch, markdown_table
+from crawler_core.grupo_healy import fetch_grupo_healy
+from crawler_core.mvs import fetch_mvs
+from crawler_core.sdpnoticias import fetch_sdp
 from crawler_core.sitemaps import likely_article_url
 from crawler_core.wordpress_articles import (
     is_parquet_path,
@@ -218,11 +222,20 @@ def prepare_sitemap_article_queue(
     queue = queue[queue["url"].notna()].copy()
     if "error" in queue.columns:
         queue = queue[queue["error"].isna()].copy()
-    queue = queue[queue.apply(lambda row: likely_article_url_for_source(row.get("source_id"), row.get("url")), axis=1)].copy()
+    queue = queue[
+        queue.apply(
+            lambda row: likely_article_url_for_source(
+                row.get("source_id"),
+                first_present(row.get("original_url"), row.get("canonical_url"), row.get("url")),
+            ),
+            axis=1,
+        )
+    ].copy()
     if source_ids:
         queue = queue[queue["source_id"].isin(source_ids)].copy()
 
     queue = queue.drop_duplicates(ARTICLE_KEY_COLUMNS, keep="last")
+    queue = dedupe_source_specific_queue(queue)
     if existing_articles is not None and not existing_articles.empty:
         existing = existing_articles.copy()
         existing = existing[existing["source_id"].notna() & existing["url"].notna()].copy()
@@ -248,9 +261,22 @@ def prepare_sitemap_article_queue(
         queue = queue.merge(done, on=ARTICLE_KEY_COLUMNS, how="left")
         queue = queue[queue["_already_done"].isna()].drop(columns=["_already_done"]).copy()
 
-    sort_columns = [column for column in ["source_id", "lastmod", "url"] if column in queue.columns]
-    if sort_columns:
-        queue = queue.sort_values(sort_columns, ascending=[True] + [False] * (len(sort_columns) - 1))
+    if "wayback_timestamp" in queue.columns and queue["wayback_timestamp"].notna().any():
+        queue["_wayback_sort"] = (
+            queue["wayback_timestamp"].astype("string").str.replace(r"\.0$", "", regex=True)
+        )
+        queue = queue.sort_values(
+            ["source_id", "_wayback_sort", "url"],
+            ascending=[True, True, True],
+            na_position="last",
+        ).drop(columns=["_wayback_sort"])
+    else:
+        sort_columns = [column for column in ["source_id", "lastmod", "url"] if column in queue.columns]
+        if sort_columns:
+            queue = queue.sort_values(
+                sort_columns,
+                ascending=[True] + [False] * (len(sort_columns) - 1),
+            )
     if limit is not None:
         queue = queue.head(limit)
     return queue.reset_index(drop=True)
@@ -261,11 +287,15 @@ def extract_sitemap_articles(
     *,
     state_db_path: Path,
     checkpoint_every: int = 100,
+    checkpoint_seconds: float = 60.0,
     timeout: float = 30.0,
     pause_seconds: float = 0.1,
     progress_every: int = 100,
     progress_seconds: float = 60.0,
     workers: int = 1,
+    request_retries: int = 0,
+    missing_text_retries: int = 0,
+    retry_backoff_seconds: float = 1.0,
     row_log: bool = False,
     keep_rows: bool = False,
     fetch_profile: str = "default",
@@ -277,6 +307,7 @@ def extract_sitemap_articles(
     started_at = time.monotonic()
     last_progress_at = 0.0
     processed_since_checkpoint = 0
+    last_checkpoint_at = 0.0
     pending_rows: list[dict[str, object]] = []
     processed = 0
     errors = 0
@@ -292,12 +323,16 @@ def extract_sitemap_articles(
                     timeout=timeout,
                     row_log=row_log,
                     fetch_profile=fetch_profile,
+                    request_retries=request_retries,
+                    missing_text_retries=missing_text_retries,
+                    retry_backoff_seconds=retry_backoff_seconds,
                 )
                 processed += 1
                 (
                     rows,
                     pending_rows,
                     processed_since_checkpoint,
+                    last_checkpoint_at,
                     errors,
                     blank_text,
                     sample_error,
@@ -318,6 +353,8 @@ def extract_sitemap_articles(
                     progress_every=progress_every,
                     progress_seconds=progress_seconds,
                     checkpoint_every=checkpoint_every,
+                    checkpoint_seconds=checkpoint_seconds,
+                    last_checkpoint_at=last_checkpoint_at,
                     state_db_path=state_db_path,
                 )
                 if pause_seconds:
@@ -339,11 +376,16 @@ def extract_sitemap_articles(
                             timeout=timeout,
                             row_log=row_log,
                             fetch_profile=fetch_profile,
+                            request_retries=request_retries,
+                            missing_text_retries=missing_text_retries,
+                            retry_backoff_seconds=retry_backoff_seconds,
                         )
                     )
                     return True
 
-                for _ in range(workers * 4):
+                # Keep only one active request per worker so pause_seconds is a
+                # real throttle instead of allowing a hidden request backlog.
+                for _ in range(workers):
                     if not submit_next():
                         break
 
@@ -356,6 +398,7 @@ def extract_sitemap_articles(
                             rows,
                             pending_rows,
                             processed_since_checkpoint,
+                            last_checkpoint_at,
                             errors,
                             blank_text,
                             sample_error,
@@ -376,8 +419,12 @@ def extract_sitemap_articles(
                             progress_every=progress_every,
                             progress_seconds=progress_seconds,
                             checkpoint_every=checkpoint_every,
+                            checkpoint_seconds=checkpoint_seconds,
+                            last_checkpoint_at=last_checkpoint_at,
                             state_db_path=state_db_path,
                         )
+                        if pause_seconds:
+                            time.sleep(pause_seconds)
                         submit_next()
     except KeyboardInterrupt:
         print("Interrupted by user; progress already saved to SQLite.")
@@ -397,6 +444,7 @@ def update_progress_and_checkpoint(
     chunk_rows: list[dict[str, object]],
     keep_rows: bool,
     processed_since_checkpoint: int,
+    last_checkpoint_at: float,
     processed: int,
     total: int,
     errors: int,
@@ -407,8 +455,9 @@ def update_progress_and_checkpoint(
     progress_every: int,
     progress_seconds: float,
     checkpoint_every: int,
+    checkpoint_seconds: float,
     state_db_path: Path,
-) -> tuple[list[dict[str, object]], list[dict[str, object]], int, int, int, object, float]:
+) -> tuple[list[dict[str, object]], list[dict[str, object]], int, float, int, int, object, float]:
     """Save progress, update counters, and print compact terminal status."""
     if keep_rows:
         rows.extend(chunk_rows)
@@ -423,18 +472,36 @@ def update_progress_and_checkpoint(
         elif is_blank_value(row.get("main_text")):
             blank_text += 1
 
-    if processed_since_checkpoint >= checkpoint_every:
+    now = time.monotonic()
+    checkpoint_due_by_count = bool(
+        checkpoint_every and processed_since_checkpoint >= checkpoint_every
+    )
+    checkpoint_due_by_time = bool(
+        checkpoint_seconds
+        and pending_rows
+        and (last_checkpoint_at == 0.0 or now - last_checkpoint_at >= checkpoint_seconds)
+    )
+    if checkpoint_due_by_count or checkpoint_due_by_time:
         save_sitemap_articles_to_sqlite(pd.DataFrame(pending_rows), state_db_path)
         pending_rows.clear()
         processed_since_checkpoint = 0
+        last_checkpoint_at = now
 
-    now = time.monotonic()
     should_print_count = bool(progress_every and (processed % progress_every == 0 or processed == total))
     should_print_time = bool(progress_seconds and now - last_progress_at >= progress_seconds)
     if should_print_count or should_print_time:
         print_progress(processed, total, started_at, errors, blank_text, sample_error)
         last_progress_at = now
-    return rows, pending_rows, processed_since_checkpoint, errors, blank_text, sample_error, last_progress_at
+    return (
+        rows,
+        pending_rows,
+        processed_since_checkpoint,
+        last_checkpoint_at,
+        errors,
+        blank_text,
+        sample_error,
+        last_progress_at,
+    )
 
 
 def extract_one_sitemap_article(
@@ -450,7 +517,15 @@ def extract_one_sitemap_article(
     if row_log:
         print(f"{source_id} {url}")
 
-    response = fetch(url, timeout, body_text_limit=HTML_BODY_TEXT_LIMIT, profile=fetch_profile)
+    source_text = str(source_id)
+    if source_text == "mvsnoticias":
+        response = fetch_mvs(url, timeout, profile=fetch_profile)
+    elif source_text == "sdpnoticias":
+        response = fetch_sdp(url, timeout, profile=fetch_profile)
+    elif source_text.startswith("elimparcial_"):
+        response = fetch_grupo_healy(url, timeout, profile=fetch_profile)
+    else:
+        response = fetch(url, timeout, body_text_limit=HTML_BODY_TEXT_LIMIT, profile=fetch_profile)
     row = base_sitemap_article_row(item)
     row["status"] = response["status"]
     row["final_url"] = response["final_url"]
@@ -484,6 +559,14 @@ def extract_one_sitemap_article(
                 fields[key] = value
 
     row.update(fields)
+    inferred_wayback_date = infer_aristegui_wayback_date(
+        source_id=source_id,
+        discovery_strategy=item.get("discovery_strategy"),
+        original_url=item.get("original_url"),
+        wayback_timestamp=item.get("wayback_timestamp"),
+    )
+    if is_blank_value(row.get("date_published")) and not is_blank_value(inferred_wayback_date):
+        row["date_published"] = inferred_wayback_date
     if pd.isna(row.get("date_published")) and pd.notna(item.get("lastmod")):
         row["date_published"] = item.get("lastmod")
     if is_blank_value(row.get("date")):
@@ -503,19 +586,66 @@ def safe_extract_one_sitemap_article(
     timeout: float,
     row_log: bool = False,
     fetch_profile: str = "default",
+    request_retries: int = 0,
+    missing_text_retries: int = 0,
+    retry_backoff_seconds: float = 1.0,
 ) -> dict[str, object]:
     """Extract one article and convert unexpected failures into error rows."""
+    source_id = str(item.get("source_id"))
+    missing_retries_left = max(0, missing_text_retries) if source_id == "aristeguinoticias" else 0
+    request_retries_left = max(0, request_retries)
+    attempt = 0
+    last_row = None
+    while True:
+        attempt += 1
+        try:
+            row = extract_one_sitemap_article(
+                item,
+                timeout=timeout,
+                row_log=row_log,
+                fetch_profile=fetch_profile,
+            )
+        except Exception as exc:
+            row = base_sitemap_article_row(item)
+            row["error"] = f"{type(exc).__name__}: {exc}"
+        last_row = row
+        error = str(row.get("error"))
+        if error == "missing_main_text" and missing_retries_left:
+            missing_retries_left -= 1
+        elif is_transient_fetch_error(row) and request_retries_left:
+            request_retries_left -= 1
+        else:
+            return row
+        delay = max(0.0, retry_backoff_seconds) * attempt
+        if row_log:
+            print(f"{source_id} retrying {error} in {delay:.2f}s: {item.get('url')}")
+        if delay:
+            time.sleep(delay)
+
+
+def is_transient_fetch_error(row: dict[str, object]) -> bool:
+    """Return True for network and HTTP failures that are worth retrying."""
+    status = row.get("status")
     try:
-        return extract_one_sitemap_article(
-            item,
-            timeout=timeout,
-            row_log=row_log,
-            fetch_profile=fetch_profile,
+        status_number = int(status)
+    except (TypeError, ValueError):
+        status_number = 0
+    if status_number == 0 or status_number in {408, 425, 429} or status_number >= 500:
+        return True
+    error_value = row.get("error")
+    error = "" if is_blank_value(error_value) else str(error_value).lower()
+    return any(
+        marker in error
+        for marker in (
+            "connection",
+            "could not connect",
+            "curl:",
+            "remote disconnected",
+            "temporarily unavailable",
+            "timeout",
+            "timed out",
         )
-    except Exception as exc:
-        row = base_sitemap_article_row(item)
-        row["error"] = f"{type(exc).__name__}: {exc}"
-        return row
+    )
 
 
 def base_sitemap_article_row(item: pd.Series) -> dict[str, object]:
@@ -559,6 +689,7 @@ def article_fields_from_html(html: str, *, url: str, source_id: object = pd.NA) 
     """Extract article fields from an HTML page."""
     soup = parse_html(html)
     json_items = extract_json_ld_items(soup)
+    archive_fields = eluniversal_archive_fields(soup, html, url, source_id)
     raw_visible_text = soup.get_text("\n", strip=True)
     for comment in soup.find_all(string=lambda value: isinstance(value, Comment)):
         comment.extract()
@@ -568,16 +699,19 @@ def article_fields_from_html(html: str, *, url: str, source_id: object = pd.NA) 
 
     article_json = first_article_json(json_items)
     title = first_present(
+        archive_fields.get("title"),
         value_from_json(article_json, "headline"),
         first_meta_content(soup, TITLE_META_NAMES),
         text_or_na(soup.find("h1")),
         clean_title(text_or_na(soup.find("title")), url),
     )
     summary = first_present(
+        archive_fields.get("summary"),
         value_from_json(article_json, "description"),
         first_meta_content(soup, SUMMARY_META_NAMES),
     )
     date_published = first_present(
+        archive_fields.get("date_published"),
         value_from_json(article_json, "datePublished"),
         first_meta_content(soup, DATE_META_NAMES),
         first_time_datetime(soup),
@@ -587,7 +721,11 @@ def article_fields_from_html(html: str, *, url: str, source_id: object = pd.NA) 
         value_from_json(article_json, "dateModified"),
         first_meta_content(soup, ("article:modified_time", "dateModified", "og:updated_time")),
     )
-    authors = first_present(authors_from_json(article_json), first_meta_content(soup, AUTHOR_META_NAMES))
+    authors = first_present(
+        archive_fields.get("authors"),
+        authors_from_json(article_json),
+        first_meta_content(soup, AUTHOR_META_NAMES),
+    )
     canonical_url = first_present(canonical_from_html(soup), url)
     json_body = clean_article_body(value_from_json(article_json, "articleBody"))
     visible_byline_body = text_from_visible_byline(source_id, raw_visible_text, title)
@@ -600,6 +738,7 @@ def article_fields_from_html(html: str, *, url: str, source_id: object = pd.NA) 
         )
     else:
         main_text = first_present(
+            archive_fields.get("main_text"),
             json_body,
             visible_byline_body,
             source_specific_main_text(soup, source_id),
@@ -607,7 +746,7 @@ def article_fields_from_html(html: str, *, url: str, source_id: object = pd.NA) 
         )
     language = soup.html.get("lang") if soup.html and soup.html.get("lang") else pd.NA
 
-    return {
+    fields = {
         "canonical_url": canonical_url,
         "title": title,
         "summary": summary,
@@ -617,6 +756,40 @@ def article_fields_from_html(html: str, *, url: str, source_id: object = pd.NA) 
         "date_published": date_published,
         "date_modified": date_modified,
         "language": language,
+    }
+    if not is_blank_value(archive_fields.get("topic")):
+        fields["topic"] = archive_fields["topic"]
+        fields["section"] = archive_fields["topic"]
+    return fields
+
+
+def eluniversal_archive_fields(
+    soup: BeautifulSoup,
+    html: str,
+    url: str,
+    source_id: object,
+) -> dict[str, object]:
+    """Extract the legacy numeric-note layout used by El Universal's archive."""
+    parsed = urlparse(url)
+    if str(source_id) != "eluniversal" or not re.fullmatch(r"/notas/\d+\.html/?", parsed.path):
+        return {}
+
+    title = text_or_na(soup.select_one("#titleNote"))
+    summary = text_or_na(soup.select_one("#descriptionNote"))
+    authors = text_or_na(soup.select_one("#authorNote"))
+    date_node = soup.select_one(".noteText .noteInfo")
+    date_published = first_spanish_text_date(text_or_na(date_node))
+    body_node = soup.select_one("#contentNote")
+    main_text = dedupe_lines(readable_text(body_node)) if body_node else pd.NA
+    topic_match = re.search(r"name=eluniversal\.([^.\"'&]+)\.", html, flags=re.I)
+    topic = topic_match.group(1).lower() if topic_match else pd.NA
+    return {
+        "title": title,
+        "summary": summary,
+        "authors": authors,
+        "date_published": date_published,
+        "main_text": main_text,
+        "topic": topic,
     }
 
 
@@ -670,12 +843,156 @@ def row_date_after(row: pd.Series, cutoff: str) -> bool:
     return parsed > parsed_cutoff
 
 
+def dedupe_source_specific_queue(queue: pd.DataFrame) -> pd.DataFrame:
+    """Collapse archived URL aliases that point to the same source article."""
+    if queue.empty or "discovery_strategy" not in queue.columns:
+        return queue
+    mask = queue["source_id"].eq("aristeguinoticias") & queue["discovery_strategy"].eq(
+        "wayback"
+    )
+    if not mask.any():
+        return queue
+
+    archived = queue.loc[mask].copy()
+    archived["_article_path"] = archived.apply(
+        lambda row: normalized_aristegui_article_path(
+            first_present(row.get("original_url"), row.get("canonical_url"), row.get("url"))
+        ),
+        axis=1,
+    )
+    archived["_capture_length"] = pd.to_numeric(
+        archived.get("wayback_length", pd.Series(index=archived.index, dtype="float64")),
+        errors="coerce",
+    )
+    archived["_host_rank"] = archived.apply(
+        lambda row: aristegui_archive_host_rank(
+            first_present(row.get("original_url"), row.get("canonical_url"), row.get("url"))
+        ),
+        axis=1,
+    )
+    archived = archived.sort_values(
+        ["_article_path", "_capture_length", "_host_rank", "wayback_timestamp"],
+        ascending=[True, False, True, True],
+        na_position="last",
+    ).drop_duplicates("_article_path", keep="first")
+    archived = archived.drop(columns=["_article_path", "_capture_length", "_host_rank"])
+    return pd.concat([queue.loc[~mask], archived], ignore_index=True)
+
+
+def normalized_aristegui_article_path(url: object) -> str:
+    """Return the normalized DDMM/section/slug identity for an Aristegui URL."""
+    if is_blank_value(url):
+        return ""
+    path = unquote(urlparse(str(url)).path).strip("/").lower()
+    return re.sub(r"/+", "/", path)
+
+
+def aristegui_archive_host_rank(url: object) -> int:
+    """Prefer canonical public hosts when archived captures have equal sizes."""
+    if is_blank_value(url):
+        return 9
+    host = urlparse(str(url)).netloc.lower()
+    ranks = {
+        "aristeguinoticias.com": 0,
+        "www.aristeguinoticias.com": 1,
+        "aristeguinoticias.com:80": 2,
+        "editorial.aristeguinoticias.com": 3,
+    }
+    return ranks.get(host, 9)
+
+
+def infer_aristegui_wayback_date(
+    *,
+    source_id: object,
+    discovery_strategy: object,
+    original_url: object,
+    wayback_timestamp: object,
+) -> object:
+    """Infer an Aristegui publication date from its DDMM path and capture year."""
+    if str(source_id) != "aristeguinoticias" or str(discovery_strategy) != "wayback":
+        return pd.NA
+    if is_blank_value(original_url) or is_blank_value(wayback_timestamp):
+        return pd.NA
+    segments = path_segments(original_url)
+    if not segments or not re.fullmatch(r"\d{4}", segments[0]):
+        return pd.NA
+    day = int(segments[0][:2])
+    month = int(segments[0][2:])
+    timestamp = re.sub(r"\.0$", "", str(wayback_timestamp).strip())
+    if not re.fullmatch(r"\d{8,14}", timestamp):
+        return pd.NA
+    capture_date = date(int(timestamp[:4]), int(timestamp[4:6]), int(timestamp[6:8]))
+    try:
+        candidate = date(capture_date.year, month, day)
+    except ValueError:
+        return pd.NA
+    # A December article first captured in January belongs to the prior year.
+    if candidate > capture_date + timedelta(days=7):
+        candidate = date(capture_date.year - 1, month, day)
+    return candidate.isoformat()
+
+
+def repair_aristegui_wayback_missing_dates(db_path: Path) -> int:
+    """Repair saved missing-date rows without downloading their HTML again."""
+    import sqlite3
+
+    if not db_path.exists():
+        return 0
+    with sqlite3.connect(db_path) as connection:
+        table = connection.execute(
+            "select 1 from sqlite_master where type = 'table' and name = 'sitemap_articles'"
+        ).fetchone()
+        if table is None:
+            return 0
+        rows = connection.execute(
+            """
+            select source_id, url, discovery_strategy, original_url, wayback_timestamp
+            from sitemap_articles
+            where error = 'missing_date'
+              and main_text is not null
+              and trim(main_text) != ''
+            """
+        ).fetchall()
+        updates = []
+        for source_id, url, strategy, original_url, timestamp in rows:
+            inferred = infer_aristegui_wayback_date(
+                source_id=source_id,
+                discovery_strategy=strategy,
+                original_url=original_url,
+                wayback_timestamp=timestamp,
+            )
+            if not is_blank_value(inferred):
+                updates.append((inferred, inferred, source_id, url))
+        if updates:
+            connection.executemany(
+                """
+                update sitemap_articles
+                set date = ?, date_published = ?, error = null
+                where source_id = ? and url = ?
+                """,
+                updates,
+            )
+            connection.commit()
+    return len(updates)
+
+
 def likely_article_url_for_source(source_id: object, url: object) -> bool:
     """Apply generic and source-specific sitemap article URL filters."""
     if pd.isna(url):
         return False
     source_text = str(source_id)
     segments = path_segments(url)
+
+    if source_text == "aristeguinoticias":
+        if len(segments) != 3 or not re.fullmatch(r"\d{4}", segments[0]):
+            return False
+        slug_words = [part for part in re.split(r"[-_]+", segments[-1].strip("-_")) if len(part) >= 2]
+        return len(slug_words) >= 2
+
+    if source_text == "eluniversal":
+        from crawler_core.eluniversal import is_eluniversal_article_url
+
+        return is_eluniversal_article_url(url)
 
     if source_text in LAJORNADA_MAYA_SOURCE_IDS:
         return likely_article_url(url) and len(segments) >= 3 and segments[1].isdigit()
@@ -687,6 +1004,16 @@ def likely_article_url_for_source(source_id: object, url: object) -> bool:
         return len(segments) == 1 and not any(segment.startswith(("tag", "category", "author")) for segment in segments)
     if source_text == "tiempo":
         return len(segments) >= 2 and segments[0] in TIEMPO_SECTION_SLUGS
+    if source_text == "sdpnoticias":
+        if len(segments) < 2:
+            return False
+        lowered = [segment.lower() for segment in segments]
+        if any(segment in {"tag", "tags", "author", "search", "feed", "rss"} for segment in lowered):
+            return False
+        if lowered[0] in {"autor", "autores", "coberturas", "page", "cdn-cgi", "tema", "temas"}:
+            return False
+        slug_words = [part for part in re.split(r"[-_]+", segments[-1].strip("-_")) if len(part) >= 2]
+        return len(slug_words) >= 2
     if source_text == "cuartopoder" and segments and segments[0] in {"videos", "fotogalerias"}:
         return False
     if not likely_article_url(url):
@@ -1353,7 +1680,7 @@ def print_progress(
         f"errors={errors:,} | blank_text={blank_text:,}"
     )
     if pd.notna(sample_error):
-        message += f" | sample_error={shorten_error(sample_error)}"
+        message += f" | first_error={shorten_error(sample_error)}"
     print(message)
 
 
@@ -1504,8 +1831,8 @@ def build_sitemap_article_report(articles: pd.DataFrame) -> str:
                 rows=("url", "size"),
                 errors=("error", lambda values: values.notna().sum()),
                 missing_text=("main_text", lambda values: values.fillna("").astype(str).str.strip().eq("").sum()),
-                min_date=("date_published", "min"),
-                max_date=("date_published", "max"),
+                min_date=("date_published", min_nonblank_text),
+                max_date=("date_published", max_nonblank_text),
             )
             .reset_index()
             .sort_values(["rows", "source_id"], ascending=[False, True])
@@ -1520,3 +1847,21 @@ def build_sitemap_article_report(articles: pd.DataFrame) -> str:
         lines.append(markdown_table(sample))
     lines.append("")
     return "\n".join(lines)
+
+
+def min_nonblank_text(values: pd.Series) -> object:
+    """Return the lexical minimum after dropping pandas/SQLite missing sentinels."""
+    clean = values.dropna().astype(str).str.strip()
+    clean = clean[clean.ne("")]
+    if clean.empty:
+        return pd.NA
+    return clean.min()
+
+
+def max_nonblank_text(values: pd.Series) -> object:
+    """Return the lexical maximum after dropping pandas/SQLite missing sentinels."""
+    clean = values.dropna().astype(str).str.strip()
+    clean = clean[clean.ne("")]
+    if clean.empty:
+        return pd.NA
+    return clean.max()
