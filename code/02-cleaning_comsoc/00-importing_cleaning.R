@@ -60,6 +60,7 @@ clean_polizas <- function(df){
   return(df)
 }
 
+
 export <- function(year){
   df <- readxl::read_excel(paste0(path_co, '00-raw/polizas_', year, '.xlsx'), 
                            sheet = 1)
@@ -79,10 +80,16 @@ export <- function(year){
   print(year)
 }
 
+read_data <- function(year){
+  df <- read_parquet(file.path(path_co, '01-intermediate',
+                               paste0('polizas_clean_', year, '.parquet')))
+  return(df)
+}
+
 c(2012:2023) |> map(~export(.x))
 
 # Diff processing for 2024
-
+df3 <- df
 year <- 2024
 
 df <- readxl::read_excel(paste0(path_co, '00-raw/polizas_', year, '.xlsx'), 
@@ -137,14 +144,14 @@ df$year.contrato <- year(df$fecha.de.contrato)
 df <- df |> rename(
   entidad = clave.de.la.entidad, 
   beneficiario = nombre.del.proveedor, 
+  descripcion.producto = clase.de.beneficiario,
   nombre = institucion,
   fecha.de.contratopedido = fecha.de.contrato,
   producto = clave.del.producto,
-  descripcion.producto = descripcion.del.producto,
   campana = clave.de.campana, 
   descripcion.unidad = descripcion.de.la.unidad, 
   costo = monto
-)
+) |> select(-descripcion.del.producto)
 
 df <- df |> mutate(across(c(costo, unidad.de.medida, 
                           cantidad:iva), ~as.numeric(.x)))

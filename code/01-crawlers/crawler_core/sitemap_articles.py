@@ -15,6 +15,7 @@ from urllib.parse import unquote, urlparse
 import pandas as pd
 from bs4 import BeautifulSoup, Comment, FeatureNotFound
 
+from crawler_core.abcnoticias import fetch_abc
 from crawler_core.capabilities import fetch, markdown_table
 from crawler_core.grupo_healy import fetch_grupo_healy
 from crawler_core.mvs import fetch_mvs
@@ -520,6 +521,8 @@ def extract_one_sitemap_article(
     source_text = str(source_id)
     if source_text == "mvsnoticias":
         response = fetch_mvs(url, timeout, profile=fetch_profile)
+    elif source_text == "abcnoticias":
+        response = fetch_abc(url, timeout, body_text_limit=HTML_BODY_TEXT_LIMIT, profile=fetch_profile)
     elif source_text == "sdpnoticias":
         response = fetch_sdp(url, timeout, profile=fetch_profile)
     elif source_text.startswith("elimparcial_"):
@@ -845,11 +848,34 @@ def row_date_after(row: pd.Series, cutoff: str) -> bool:
 
 def dedupe_source_specific_queue(queue: pd.DataFrame) -> pd.DataFrame:
     """Collapse archived URL aliases that point to the same source article."""
-    if queue.empty or "discovery_strategy" not in queue.columns:
+    if queue.empty:
         return queue
-    mask = queue["source_id"].eq("aristeguinoticias") & queue["discovery_strategy"].eq(
-        "wayback"
-    )
+
+    eluniversal_mask = queue["source_id"].eq("eluniversal")
+    if eluniversal_mask.any():
+        eluniversal = queue.loc[eluniversal_mask].copy()
+        eluniversal["_article_identity"] = eluniversal.apply(
+            lambda row: normalized_eluniversal_article_identity(
+                first_present(row.get("original_url"), row.get("canonical_url"), row.get("url"))
+            ),
+            axis=1,
+        )
+        eluniversal["_url_rank"] = eluniversal.apply(
+            lambda row: eluniversal_url_rank(
+                first_present(row.get("original_url"), row.get("canonical_url"), row.get("url"))
+            ),
+            axis=1,
+        )
+        eluniversal = (
+            eluniversal.sort_values(["_article_identity", "_url_rank"])
+            .drop_duplicates("_article_identity", keep="first")
+            .drop(columns=["_article_identity", "_url_rank"])
+        )
+        queue = pd.concat([queue.loc[~eluniversal_mask], eluniversal], ignore_index=True)
+
+    if "discovery_strategy" not in queue.columns:
+        return queue
+    mask = queue["source_id"].eq("aristeguinoticias") & queue["discovery_strategy"].eq("wayback")
     if not mask.any():
         return queue
 
@@ -877,6 +903,30 @@ def dedupe_source_specific_queue(queue: pd.DataFrame) -> pd.DataFrame:
     ).drop_duplicates("_article_path", keep="first")
     archived = archived.drop(columns=["_article_path", "_capture_length", "_host_rank"])
     return pd.concat([queue.loc[~mask], archived], ignore_index=True)
+
+
+def normalized_eluniversal_article_identity(url: object) -> str:
+    """Return a stable path identity for El Universal URL variants."""
+    if is_blank_value(url):
+        return ""
+    path = re.sub(r"/+", "/", unquote(urlparse(str(url)).path).lower()).rstrip("/")
+    note_match = re.fullmatch(r"/notas/(\d+)\.html", path)
+    if note_match:
+        return f"/notas/{note_match.group(1)}.html"
+    return path
+
+
+def eluniversal_url_rank(url: object) -> tuple[int, int, int, int]:
+    """Prefer clean HTTPS El Universal URLs when aliases share an identity."""
+    if is_blank_value(url):
+        return (9, 9, 9, 9)
+    parsed = urlparse(str(url))
+    return (
+        int(bool(parsed.query)),
+        int(parsed.scheme.lower() != "https"),
+        int(parsed.netloc.lower().endswith(":443")),
+        int(not parsed.path.endswith("/")),
+    )
 
 
 def normalized_aristegui_article_path(url: object) -> str:

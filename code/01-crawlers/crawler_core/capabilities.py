@@ -28,6 +28,7 @@ SITEMAP_PATHS = (
     "/sitemap_index.xml",
     "/wp-sitemap.xml",
     "/news-sitemap.xml",
+    "/sitemaps/index.xml",
 )
 FEED_PATHS = (
     "/feed/",

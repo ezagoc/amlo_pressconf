@@ -24,8 +24,12 @@ from crawler_core.eluniversal import (  # noqa: E402
     parse_queryly_payload,
     queryly_item_row,
 )
-from crawler_core.sitemap_articles import likely_article_url_for_source  # noqa: E402
-from crawler_core.sitemap_articles import article_fields_from_html  # noqa: E402
+from crawler_core.sitemap_articles import (  # noqa: E402
+    article_fields_from_html,
+    likely_article_url_for_source,
+    prepare_sitemap_article_queue,
+)
+import pandas as pd  # noqa: E402
 
 
 class ElUniversalTests(unittest.TestCase):
@@ -138,6 +142,39 @@ class ElUniversalTests(unittest.TestCase):
             self.assertEqual(len(output_rows), 1)
             self.assertEqual(summary.urls, 1)
             self.assertEqual(summary.duplicates_skipped, 1)
+
+    def test_extraction_queue_collapses_eluniversal_url_variants(self) -> None:
+        base = "https://www.eluniversal.com.mx/nacion/example-article-title"
+        discovered = pd.DataFrame(
+            [
+                {
+                    "source_id": "eluniversal",
+                    "url": base + "/?outputType=amp",
+                    "canonical_url": base + "/?outputType=amp",
+                    "discovery_strategy": "commoncrawl",
+                    "error": pd.NA,
+                },
+                {
+                    "source_id": "eluniversal",
+                    "url": base + "/",
+                    "canonical_url": base + "/",
+                    "discovery_strategy": "commoncrawl",
+                    "error": pd.NA,
+                },
+                {
+                    "source_id": "eluniversal",
+                    "url": "http://www.eluniversal.com.mx/nacion/example-article-title",
+                    "canonical_url": "http://www.eluniversal.com.mx/nacion/example-article-title",
+                    "discovery_strategy": "commoncrawl",
+                    "error": pd.NA,
+                },
+            ]
+        )
+
+        queued = prepare_sitemap_article_queue(discovered)
+
+        self.assertEqual(len(queued), 1)
+        self.assertEqual(queued.iloc[0]["url"], base + "/")
 
 
 if __name__ == "__main__":
