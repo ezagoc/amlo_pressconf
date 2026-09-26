@@ -1852,3 +1852,35 @@ Suggested MVS full run:
 ```powershell
 python .\code\01-crawlers\scripts\discover_google_urls.py --source-id mvsnoticias --from 2018-01-01 --to 2026-09-14 --query-mode date-inurl --query-mode date-range --section-path nacional --section-path mundo --section-path economia --section-path entretenimiento --section-path deportes --section-path entrevistas --section-path nuevo-leon --saturation-threshold 80 --max-results-per-query 100 --max-urls-per-source 200000 --timeout 60 --pause-seconds 1 --append-existing
 ```
+
+
+## 2026-09-26 Kevin: bounded Tiempo Mac validation
+
+A separate 65-URL pilot is complete under the configured Media root at
+`data/00-newspaper_data/crawler/pilots/Kevin/tiempo_2026-09-26`. Production
+SQLite/Parquet/discovery data and trackers were not changed. This is not a
+full historical completion or an exclusive team assignment.
+
+Use `scripts/run_tiempo_pilot.py` and `TIEMPO_PILOT.md` for the explicit-input,
+maximum-80-URL Mac workflow. The standard Tiempo HTML parser now uses article
+DOM, visible bylines and explicit publication metadata, records field evidence,
+keeps short news, and rejects source error pages and unknown layouts. The shared
+network helper uses the platform curl with verified TLS and rejects partial or
+truncated responses. Other source-specific extractors retain their prior parsing.
+
+Pilot: 60 unique news candidates across 2018–2025, 3 site-error controls and
+2 validated canonical aliases. There are 52 unique records with complete core
+fields; 8 real pages have empty title/h1/og/headline in the source and remain
+flagged with null titles. All 65 stored HTML pages were individually checked.
+P003 (Messi/Alaves 2018 article) reproduces the current page's short visible text
+but is flagged `source_fragment_suspected`; complete fields do not establish
+historical text completeness. Do not restore missing titles from URL guesses.
+
+Saved-HTML offline reparse fixed omitted social embed links after backup. All
+102 unit tests passed. A separate 10-URL real CLI check survived SIGINT after
+4 committed results and SIGKILL after 6, resumed only pending URLs, and made
+zero new fetch calls on a completed rerun. Each committed row is durable; an
+in-flight response without a complete snapshot may need another request.
+Reports, full sample checks, source-file hashes and Kevin notes are stored with
+the isolated pilot and Kevin's task-2 local delivery. Task 3 bulk collection and
+shared tracker completion updates have not begun.

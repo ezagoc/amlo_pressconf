@@ -535,6 +535,9 @@ def extract_one_sitemap_article(
     row["content_type"] = response["content_type"]
 
     status = response["status"]
+    if not is_blank_value(response.get("error")):
+        row["error"] = response["error"]
+        return row
     if not isinstance(status, int) or status < 200 or status >= 300:
         error = response["error"]
         if pd.isna(error):
@@ -570,10 +573,23 @@ def extract_one_sitemap_article(
     )
     if is_blank_value(row.get("date_published")) and not is_blank_value(inferred_wayback_date):
         row["date_published"] = inferred_wayback_date
-    if pd.isna(row.get("date_published")) and pd.notna(item.get("lastmod")):
+    if source_text != "tiempo" and pd.isna(row.get("date_published")) and pd.notna(item.get("lastmod")):
         row["date_published"] = item.get("lastmod")
-    if is_blank_value(row.get("date")):
+    if source_text != "tiempo" and is_blank_value(row.get("date")):
         row["date"] = first_present(row.get("date_published"), row.get("date_modified"), row.get("lastmod"))
+    if source_text == "tiempo":
+        row["date"] = row.get("date_published")
+        if not is_blank_value(row.get("source_specific_error")):
+            row["error"] = row["source_specific_error"]
+        elif is_blank_value(row.get("title")):
+            row["error"] = "missing_title"
+        elif is_blank_value(row.get("main_text")):
+            row["error"] = "missing_main_text"
+        elif is_blank_value(row.get("date_published")):
+            row["error"] = "missing_date"
+        else:
+            row["error"] = pd.NA
+        return row
     if is_blank_value(row.get("main_text")) or is_low_quality_source_text(source_id, row.get("main_text")):
         row["error"] = "missing_main_text"
     elif is_blank_value(first_present(row.get("date_published"), row.get("date"), row.get("lastmod"))):
@@ -671,7 +687,7 @@ def base_sitemap_article_row(item: pd.Series) -> dict[str, object]:
         "summary": pd.NA,
         "main_text": pd.NA,
         "authors": pd.NA,
-        "date": item.get("lastmod"),
+        "date": pd.NA if str(item.get("source_id")) == "tiempo" else item.get("lastmod"),
         "date_published": pd.NA,
         "date_modified": item.get("lastmod"),
         "lastmod": item.get("lastmod"),
@@ -690,6 +706,9 @@ def base_sitemap_article_row(item: pd.Series) -> dict[str, object]:
 
 def article_fields_from_html(html: str, *, url: str, source_id: object = pd.NA) -> dict[str, object]:
     """Extract article fields from an HTML page."""
+    if str(source_id) == "tiempo":
+        from crawler_core.tiempo_html import tiempo_fields
+        return tiempo_fields(html, url=url)
     soup = parse_html(html)
     json_items = extract_json_ld_items(soup)
     archive_fields = eluniversal_archive_fields(soup, html, url, source_id)

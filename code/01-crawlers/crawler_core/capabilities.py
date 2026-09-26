@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import re
+import shutil
 import subprocess
+import sys
 import time
 from dataclasses import dataclass
+from email.message import Message
 from html import unescape
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -258,55 +261,72 @@ def fetch(
     headers: list[str] | None = None,
     referer: str | None = None,
 ) -> dict[str, object]:
-    """Fetch a URL with curl and return bounded response metadata and text."""
+    """Fetch complete text with verified TLS; fail explicitly on transport/size errors.
+
+    ``body_text_limit`` is a decoded-character limit. A response exceeding it
+    is rejected, rather than returning a plausible but incomplete article.
+    """
+    if body_text_limit < 1:
+        raise ValueError("body_text_limit must be at least 1 character")
     with TemporaryDirectory() as tmp_dir:
         body_path = Path(tmp_dir) / "body.txt"
         completed = run_curl(
             url,
             body_path,
             timeout,
-            insecure=False,
             profile=profile,
             headers=headers,
             referer=referer,
         )
-        if isinstance(completed, subprocess.CompletedProcess) and should_retry_insecure(completed):
-            completed = run_curl(
-                url,
-                body_path,
-                timeout,
-                insecure=True,
-                profile=profile,
-                headers=headers,
-                referer=referer,
-            )
-
-        if not isinstance(completed, subprocess.CompletedProcess):
-            return {
-                "status": pd.NA,
-                "final_url": pd.NA,
-                "content_type": pd.NA,
-                "text": "",
-                "error": completed,
-            }
-        stdout = completed.stdout.strip()
-        parts = stdout.split("\t")
-        status = int(parts[0]) if parts and parts[0].isdigit() else pd.NA
-        final_url = parts[1] if len(parts) > 1 and parts[1] else pd.NA
-        content_type = parts[2] if len(parts) > 2 and parts[2] else pd.NA
-        text = ""
-        if body_path.exists():
-            text = body_path.read_text(encoding="utf-8", errors="ignore")[:body_text_limit]
-        error = pd.NA
-        if completed.returncode != 0:
-            error = completed.stderr.strip() or f"curl_exit_{completed.returncode}"
-        return {
-            "status": status,
-            "final_url": final_url,
-            "content_type": content_type,
-            "text": text,
-            "error": error,
+        result: dict[str, object] = {
+            "status": pd.NA,
+            "final_url": pd.NA,
+            "content_type": pd.NA,
+            "text": "",
+            "error": pd.NA,
+            "curl_exit_code": None,
+            "body_text_limit_exceeded": False,
         }
+        if not isinstance(completed, subprocess.CompletedProcess):
+            result["error"] = completed
+            return result
+        parts = (completed.stdout or "").strip().split("\t", 2)
+        result.update(
+            {
+                "status": int(parts[0]) if parts and parts[0].isdigit() else pd.NA,
+                "final_url": parts[1] if len(parts) > 1 and parts[1] else pd.NA,
+                "content_type": parts[2] if len(parts) > 2 and parts[2] else pd.NA,
+                "curl_exit_code": completed.returncode,
+            }
+        )
+        if completed.returncode != 0:
+            detail = (completed.stderr or "").strip()
+            result["error"] = f"curl_exit_{completed.returncode}" + (f": {detail}" if detail else "")
+            # curl can report HTTP 200 before a timeout or incomplete transfer.
+            # Never make that partial body available to downstream extractors.
+            return result
+        if not parts or not parts[0].isdigit() or int(parts[0]) == 0:
+            result["error"] = "missing_or_invalid_http_status"
+            return result
+        if not body_path.exists():
+            result["error"] = "missing_response_body_file"
+            return result
+        try:
+            content_type = Message()
+            if isinstance(result["content_type"], str):
+                content_type["Content-Type"] = result["content_type"]
+            encoding = content_type.get_content_charset() or "utf-8"
+            with body_path.open(encoding=encoding, errors="strict") as handle:
+                text = handle.read(body_text_limit + 1)
+        except (OSError, UnicodeError, LookupError) as exc:
+            result["error"] = f"response_body_read_error: {type(exc).__name__}"
+            return result
+        if len(text) > body_text_limit:
+            result["body_text_limit_exceeded"] = True
+            result["error"] = f"body_text_limit_exceeded: more than {body_text_limit} characters"
+            return result
+        result["text"] = text
+        return result
 
 
 def run_curl(
@@ -314,16 +334,19 @@ def run_curl(
     body_path: Path,
     timeout: float,
     *,
-    insecure: bool,
     profile: str = "default",
     headers: list[str] | None = None,
     referer: str | None = None,
 ) -> subprocess.CompletedProcess[str] | str:
-    """Run curl once, optionally with TLS certificate verification disabled."""
+    """Run the platform's curl once, retaining normal TLS verification."""
+    executable_name = "curl.exe" if sys.platform == "win32" else "curl"
+    executable = shutil.which(executable_name)
+    if executable is None:
+        return f"CurlNotFound: {executable_name} was not found on PATH"
     user_agent = BROWSER_USER_AGENT if profile in {"browser", "ajax"} else USER_AGENT
     command = [
-        "curl.exe",
-        "--ssl-no-revoke",
+        executable,
+        "--disable",  # First option: do not inherit TLS/retry settings from .curlrc.
         "-L",
         "-sS",
         "--compressed",
@@ -376,9 +399,7 @@ def run_curl(
         command.extend(["-e", referer])
     for header in headers or []:
         command.extend(["-H", header])
-    if insecure:
-        command.insert(2, "--insecure")
-    command.append(url)
+    command.extend(["--url", url])
     try:
         return subprocess.run(
             command,
@@ -388,23 +409,8 @@ def run_curl(
         )
     except subprocess.TimeoutExpired:
         return f"TimeoutExpired: curl exceeded {timeout + 5:.1f}s for {url}"
-
-
-def should_retry_insecure(completed: subprocess.CompletedProcess[str]) -> bool:
-    """Return True for curl TLS failures that may be Schannel/cert-chain specific."""
-    if completed.returncode == 0:
-        return False
-    message = (completed.stderr or "").lower()
-    retry_markers = (
-        "schannel",
-        "ssl",
-        "tls",
-        "certificate",
-        "cert",
-        "secur",
-        "acquirecredentialshandle",
-    )
-    return any(marker in message for marker in retry_markers)
+    except OSError as exc:
+        return f"CurlExecutionError: {type(exc).__name__}: {exc}"
 
 
 def first_available_xml(base_url: str, paths: tuple[str, ...], timeout: float) -> dict[str, object]:

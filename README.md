@@ -66,3 +66,9 @@ output_file <- media_output_path("data", "folder", "output.csv")
 ## Presentations
 
 The existing `presentations/` folder contains project PDFs that are small enough to keep with the repo unless you decide to move them into Dropbox later.
+
+## Bounded Tiempo pilot on macOS
+
+See [the Tiempo pilot guide](code/01-crawlers/TIEMPO_PILOT.md) for an isolated,
+explicit-input trial with raw webpage snapshots, field evidence, backups and
+per-article resume. This workflow does not write the shared production corpus.
