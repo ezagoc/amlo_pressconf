@@ -25,6 +25,8 @@ from urllib.parse import urlsplit, urlunsplit
 
 import pandas as pd
 
+from crawler_core.tiempo_review import ReviewAnnotationError, apply_reviews
+
 MAX_URLS = 80
 REQUIRED_INPUT = {"sample_id", "url", "expected_year"}
 ARTICLE_COLUMNS = [
@@ -39,6 +41,14 @@ ARTICLE_COLUMNS = [
     "manifest_sha256", "updated_at", "attempt_id",
 ]
 OUTPUT_NAMES = ("articles.csv", "articles.parquet", "attempts.csv", "attempts.parquet", "export_manifest.json")
+ANNOTATION_NAME = "review_annotations.json"
+REVIEW_COLUMNS = [
+    "manual_review_status", "manual_review_result", "prior_review_result",
+    "manual_reviewer", "manual_reviewed_at", "manual_review_note", "prior_review_note",
+    "source_quality_issue", "prior_source_quality_issue", "review_fields_sha256",
+    "review_annotation_snapshot_sha256", "review_annotation_fields_sha256",
+    "review_stale_reasons", "review_missing_reason", "review_annotation_file_sha256",
+]
 
 
 class PilotError(ValueError):
@@ -152,7 +162,7 @@ def validate_run_dir(run_dir: Path, media_root: Path, repo_root: Path | None = N
     note = safe_path(run_dir, "Kevin_NOTE.md")
     if not note.is_file():
         raise PilotError("Create Kevin_NOTE.md in the pilot directory before running.")
-    for name in ("pilot.sqlite", "attempts.jsonl", "manifest.json", ".pilot.lock", "raw_html", "backups", *OUTPUT_NAMES):
+    for name in ("pilot.sqlite", "attempts.jsonl", "manifest.json", ".pilot.lock", "raw_html", "backups", "review_history", ANNOTATION_NAME, *OUTPUT_NAMES):
         safe_path(run_dir, name)
     return run_dir
 
@@ -191,7 +201,7 @@ class Backups:
         destination = safe_path(self.run_dir, Path("backups") / stamp)
         destination.mkdir(parents=True)
         hashes = {}
-        for name in ("pilot.sqlite", "manifest.json", "attempts.jsonl", *OUTPUT_NAMES):
+        for name in ("pilot.sqlite", "manifest.json", "attempts.jsonl", ANNOTATION_NAME, *OUTPUT_NAMES):
             source = safe_path(self.run_dir, name)
             if not source.is_file():
                 continue
@@ -202,14 +212,26 @@ class Backups:
             else:
                 shutil.copy2(source, target)
             hashes[name] = digest(target.read_bytes())
+        history = safe_path(self.run_dir, "review_history")
+        for source in history.glob("*.json") if history.exists() else []:
+            source = safe_path(self.run_dir, source.relative_to(self.run_dir))
+            data = source.read_bytes()
+            if not re.fullmatch(r"[0-9a-f]{64}", source.stem) or digest(data) != source.stem:
+                raise PilotError("Review history hash mismatch; refusing an incomplete backup.")
+            relative = Path("review_history") / source.name
+            target = destination / relative
+            target.parent.mkdir(exist_ok=True)
+            target.write_bytes(data)
+            hashes[str(relative)] = digest(data)
         atomic_bytes(destination / "backup_manifest.json", json_bytes({"reason": reason, "created_at": now(), "sha256": hashes, "author": "Kevin"}))
         append_note(self.run_dir, f"Backup before {reason}: {destination.relative_to(self.run_dir)}. Existing results/exports retained; no shared source data modified.")
         self.directory = destination
         return destination
 
 
-def connect_db(run_dir: Path) -> sqlite3.Connection:
-    conn = sqlite3.connect(safe_path(run_dir, "pilot.sqlite"))
+def connect_db(run_dir: Path, *, allow_create=False) -> sqlite3.Connection:
+    path = safe_path(run_dir, "pilot.sqlite")
+    conn = sqlite3.connect(path.as_uri() + ("?mode=rwc" if allow_create else "?mode=rw"), uri=True)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA synchronous=FULL")
     conn.execute("PRAGMA journal_mode=DELETE")
@@ -224,6 +246,75 @@ def connect_db(run_dir: Path) -> sqlite3.Connection:
         manifest_sha256 TEXT NOT NULL, response_json TEXT, result_json TEXT)""")
     conn.commit()
     return conn
+
+
+def validate_bound_state(conn, run_dir, items, manifest_hash):
+    """Reject mixed/restored state before any mutation or export replacement."""
+    if [r[0] for r in conn.execute("PRAGMA quick_check")] != ["ok"]:
+        raise PilotError("Pilot database integrity check failed; restore a verified backup.")
+    selected = {r["url"]: r["sample_id"] for r in items}
+    checked_snapshots = set()
+
+    def check_identity(record):
+        if selected.get(record["url"]) != record["sample_id"] or record["manifest_sha256"] != manifest_hash:
+            raise PilotError("Pilot database does not match this input manifest; restore matching files or use a new directory.")
+
+    def check_snapshot(record):
+        key = (record["snapshot_path"], record["snapshot_sha256"], record["url"], record["sample_id"])
+        if key in checked_snapshots:
+            return
+        if not key[0] or not key[1]:
+            raise PilotError("A committed result has no bound snapshot.")
+        html_path = safe_path(run_dir, key[0])
+        metadata_path = safe_path(run_dir, Path(key[0]).with_suffix(".json"))
+        try:
+            raw = html_path.read_bytes()
+            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise PilotError(f"Snapshot evidence is missing or unreadable for {record['sample_id']}.") from exc
+        if (digest(raw) != key[1] or metadata.get("snapshot_sha256") != key[1]
+                or metadata.get("snapshot_bytes") != len(raw) or metadata.get("snapshot_path") != key[0]
+                or metadata.get("url") != key[2] or metadata.get("sample_id") != key[3]
+                or metadata.get("manifest_sha256") != manifest_hash):
+            raise PilotError(f"Snapshot binding/hash mismatch for {record['sample_id']}.")
+        checked_snapshots.add(key)
+
+    try:
+        for raw in conn.execute("SELECT url,sample_id,manifest_sha256,qa_status,snapshot_path,snapshot_sha256,payload_json FROM articles"):
+            record = dict(raw)
+            check_identity(record)
+            payload = json.loads(record.pop("payload_json"))
+            if any(payload.get(k) != v for k, v in record.items()) or payload.get("source_id") != "tiempo":
+                raise PilotError("Pilot database columns and article payload disagree.")
+            check_snapshot(record)
+        for raw in conn.execute("SELECT url,sample_id,manifest_sha256,completed_at,snapshot_path,snapshot_sha256 FROM fetch_attempts"):
+            record = dict(raw)
+            check_identity(record)
+            if record["completed_at"] and record["snapshot_path"]:
+                check_snapshot(record)
+    except (sqlite3.DatabaseError, ValueError, TypeError, KeyError) as exc:
+        if isinstance(exc, PilotError):
+            raise
+        raise PilotError("Pilot database schema or records are invalid; restore matching files.") from exc
+
+
+def can_finish_initialization(run_dir, manifest):
+    """Only a marked, still-pristine first initialization may create its DB."""
+    if manifest.get("database_initialized") is not False:
+        return False
+    if any(safe_path(run_dir, name).exists() for name in ("attempts.jsonl", "raw_html", *OUTPUT_NAMES)):
+        return False
+    path = safe_path(run_dir, "pilot.sqlite")
+    if not path.exists():
+        return True
+    try:
+        with sqlite3.connect(path.as_uri() + "?mode=ro", uri=True) as conn:
+            tables = [r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")]
+            if any(name not in {"articles", "fetch_attempts"} for name in tables):
+                return False
+            return all(conn.execute(f'SELECT COUNT(*) FROM "{name}"').fetchone()[0] == 0 for name in tables)
+    except sqlite3.DatabaseError:
+        return False
 
 
 def append_log(run_dir: Path, event: dict) -> None:
@@ -258,7 +349,7 @@ def save_snapshot(run_dir, item, attempt_id, manifest_hash, response):
     return metadata
 
 
-def find_snapshot(run_dir, item, *, manifest_hash=None):
+def find_snapshot(run_dir, item, *, manifest_hash=None, pending_attempt_ids=None):
     folder = safe_path(run_dir, Path("raw_html") / digest(item["url"].encode()))
     if not folder.exists():
         return None
@@ -266,6 +357,8 @@ def find_snapshot(run_dir, item, *, manifest_hash=None):
     for path in folder.glob("*.json"):
         metadata = json.loads(safe_path(run_dir, path.relative_to(run_dir)).read_text(encoding="utf-8"))
         if metadata.get("url") != item["url"] or metadata.get("sample_id") != item["sample_id"]:
+            continue
+        if pending_attempt_ids is not None and metadata.get("attempt_id") not in pending_attempt_ids:
             continue
         if not metadata.get("response_complete"):
             continue
@@ -349,6 +442,12 @@ def commit_result(conn, run_dir, row, response, *, cached_recovery=False):
                      (now(), row.get("status"), row.get("error"), row["qa_status"], row["snapshot_path"], row["snapshot_sha256"],
                       int(cached_recovery), int(retained), json.dumps(clean({k: v for k, v in response.items() if k != "text"}), ensure_ascii=False),
                       json.dumps(row, ensure_ascii=False), row["attempt_id"]))
+        # Older attempts interrupted before a committed response are historical,
+        # not still-running work once a replacement result has been committed.
+        conn.execute("""UPDATE fetch_attempts SET completed_at=?,qa_status='interrupted',
+                     error='interrupted_without_committed_result; superseded' WHERE url=? AND manifest_sha256=?
+                     AND attempt_id<>? AND completed_at IS NULL""",
+                     (now(), row["url"], row["manifest_sha256"], row["attempt_id"]))
     append_log(run_dir, {"event": "completed", "attempt_id": row["attempt_id"], "url": row["url"], "qa_status": row["qa_status"],
                         "status": row.get("status"), "error": row.get("error"), "cached_recovery": cached_recovery, "retained_success": retained, "time": now()})
     return retained
@@ -367,8 +466,95 @@ def canonical_identity(row):
     return "https://tiempo.com.mx" + p.path.rstrip("/")
 
 
-def export_outputs(conn, run_dir, manifest_hash, backups):
+def previous_review_summary(run_dir):
+    manifest = safe_path(run_dir, "export_manifest.json")
+    if not manifest.is_file():
+        return {}
+    try:
+        prior = json.loads(manifest.read_text(encoding="utf-8")).get("manual_review", {})
+        if not isinstance(prior, dict):
+            raise ValueError("manual_review must be an object")
+    except (ValueError, TypeError, AttributeError) as exc:
+        raise PilotError("Existing export manifest is invalid; restore it before continuing.") from exc
+    return prior
+
+
+def validate_review_continuity(run_dir, summary):
+    prior = previous_review_summary(run_dir)
+    if prior.get("annotation_file_present") and not summary["annotation_file_present"]:
+        raise PilotError("Previously used review annotations are missing; restore the sidecar instead of dropping source warnings.")
+    removed = set(prior.get("annotation_sample_ids", [])) - set(summary.get("annotation_sample_ids", []))
+    if removed:
+        raise PilotError("Previously used review records were removed: " + ", ".join(sorted(removed))
+                         + ". Preserve the records and explicitly mark a new review decision.")
+
+
+def review_context(run_dir, *, persist=False):
+    """Pin this export's review versions; never use editable CSV as history."""
+    current = safe_path(run_dir, ANNOTATION_NAME)
+    try:
+        _, summary = apply_reviews([], current)
+    except ReviewAnnotationError as exc:
+        raise PilotError(f"Invalid manual review evidence: {exc}") from exc
+    validate_review_continuity(run_dir, summary)
+    prior = previous_review_summary(run_dir)
+    history = prior.get("annotation_history_sha256", [])
+    if not isinstance(history, list) or any(not isinstance(h, str) or not re.fullmatch(r"[0-9a-f]{64}", h) for h in history):
+        raise PilotError("Invalid review history in export manifest.")
+    existing_history = set(history)
+    history = list(history)
+    current_hash = summary["annotation_file_sha256"]
+    # An export written before history support can be upgraded only if its
+    # exact previously used sidecar is still available, never by guessing.
+    if not history and prior.get("annotation_file_present"):
+        old_hash = prior.get("annotation_file_sha256")
+        if not old_hash or old_hash != current_hash:
+            raise PilotError("Previous review history is unavailable; restore the exact prior sidecar before changing reviews.")
+        history.append(old_hash)
+    if current_hash and (not history or history[-1] != current_hash):
+        history.append(current_hash)
+    paths = []
+    for sha in history:
+        target = safe_path(run_dir, Path("review_history") / (sha + ".json"))
+        if target.exists():
+            if target.is_symlink() or not target.is_file() or digest(target.read_bytes()) != sha:
+                raise PilotError("Review history hash mismatch; restore the original review evidence.")
+            paths.append(target)
+        elif sha in existing_history or sha != current_hash:
+            raise PilotError("A referenced review history file is missing; restore it before continuing.")
+        else:
+            data = current.read_bytes()
+            if digest(data) != sha:
+                raise PilotError("Review sidecar changed during validation; retry with a stable file.")
+            if persist:
+                atomic_bytes(target, data)
+                paths.append(target)
+            else:
+                paths.append(current)
+    return {"paths": paths, "current": current, "history_sha256": history}
+
+
+def reviewed_rows(rows, run_dir, context=None):
+    context = context or review_context(run_dir)
+    try:
+        # Reapply immutable versions in order. This carries prior warnings and
+        # lets only a matching current decision explicitly resolve a warning.
+        annotated = list(rows)
+        for path in context["paths"] or [context["current"]]:
+            annotated, summary = apply_reviews(annotated, path)
+        summary["annotation_path"] = str(context["current"])
+        summary["annotation_history_sha256"] = context["history_sha256"]
+        return annotated, summary
+    except ReviewAnnotationError as exc:
+        raise PilotError(f"Invalid manual review evidence: {exc}") from exc
+
+
+def export_outputs(conn, run_dir, manifest_hash, backups, items):
+    validate_bound_state(conn, run_dir, items, manifest_hash)
     stored = [json.loads(r[0]) for r in conn.execute("SELECT payload_json FROM articles ORDER BY ordinal")]
+    context = review_context(run_dir, persist=True)
+    stored, review_summary = reviewed_rows(stored, run_dir, context)
+    validate_review_continuity(run_dir, review_summary)
     successful = [r for r in stored if r["qa_status"] == "success"]
     groups, url_to_primary, url_to_role = {}, {}, {}
     for row in successful:
@@ -377,11 +563,21 @@ def export_outputs(conn, run_dir, manifest_hash, backups):
     articles, collision_groups = [], 0
     for identity, group in groups.items():
         normalized = lambda value: re.sub(r"\s+", " ", str(value or "")).strip()
-        signatures = {tuple(normalized(r.get(k)) for k in ("title", "date_published", "main_text")) for r in group}
+        def signature(row):
+            fields = ("title", "summary", "main_text", "authors", "date_published", "date_modified", "topic", "section", "language")
+            media = row.get("media_embeds") or []
+            if isinstance(media, str):
+                try:
+                    media = json.loads(media)
+                except ValueError:
+                    media = [media]
+            media = tuple(sorted(normalized(x) for x in media)) if isinstance(media, list) else (normalized(media),)
+            return tuple(normalized(row.get(k)) for k in fields) + (media,)
+        signatures = {signature(r) for r in group}
         collision = len(signatures) > 1
         if collision:
             collision_groups += 1
-        # Equal canonicals with different content/date/title remain separate.
+        # Metadata and embedded-media disagreements also remain visible.
         for subset in ([group] if not collision else [[row] for row in group]):
             row = dict(subset[0])
             row["alias_urls"] = json.dumps([r["url"] for r in subset[1:]], ensure_ascii=False)
@@ -389,6 +585,23 @@ def export_outputs(conn, run_dir, manifest_hash, backups):
             row["canonical_dedup_status"] = "collision_review" if collision else "identical_aliases_merged" if len(subset) > 1 else "single"
             row["canonical_collision"] = collision
             row["canonical_identity"] = identity if not identity.startswith("raw:") else None
+            # Keep each alias's independently bound review. Its source warning
+            # must not disappear merely because another URL became the primary.
+            row["primary_review_annotation"] = json.dumps(
+                {key: subset[0].get(key) for key in ["sample_id", "url", "snapshot_sha256", *REVIEW_COLUMNS]}, ensure_ascii=False)
+            row["alias_review_annotations"] = json.dumps([
+                {key: member.get(key) for key in ["sample_id", "url", "snapshot_sha256", *REVIEW_COLUMNS]}
+                for member in subset[1:]
+            ], ensure_ascii=False)
+            states = {member["manual_review_status"] for member in subset}
+            decisions = {member.get("manual_review_result") or member.get("prior_review_result") for member in subset}
+            row["manual_review_disagreement"] = len(states) > 1 or len(decisions) > 1
+            row["manual_review_status"] = "stale" if "stale" in states else "not_reviewed" if "not_reviewed" in states else "reviewed"
+            row["manual_review_result"] = None
+            if row["manual_review_status"] == "reviewed":
+                row["manual_review_result"] = next((value for value in ("FAIL", "REQUIRES_REVIEW", "PASS_SOURCE_GAP_RECORDED", "PASS") if value in decisions), None)
+            issues = list(dict.fromkeys(member["source_quality_issue"] for member in subset if member.get("source_quality_issue")))
+            row["source_quality_issue"] = "; ".join(issues) or None
             articles.append(row)
             for member in subset:
                 url_to_primary[member["url"]] = row["url"]
@@ -397,15 +610,19 @@ def export_outputs(conn, run_dir, manifest_hash, backups):
     for raw in conn.execute("SELECT * FROM fetch_attempts ORDER BY started_at, attempt_id"):
         record = dict(raw)
         payload = json.loads(record.pop("result_json") or "null") or {}
+        if payload:
+            annotated, _ = reviewed_rows([payload], run_dir, context)
+            record.update({key: annotated[0].get(key) for key in REVIEW_COLUMNS})
         record.update({k: payload.get(k) for k in ("title", "date_published", "main_text", "expected_kind", "expected_year", "selection_reason")})
         primary = url_to_primary.get(record["url"])
         record["export_role"] = url_to_role.get(record["url"], "not_exported")
         record["primary_export_url"] = primary
         attempts.append(record)
-    article_fields = list(dict.fromkeys(ARTICLE_COLUMNS + [k for row in articles for k in row] + ["alias_urls", "alias_sample_ids", "canonical_dedup_status", "canonical_collision", "canonical_identity"]))
+    article_fields = list(dict.fromkeys(ARTICLE_COLUMNS + REVIEW_COLUMNS + [k for row in articles for k in row] + ["alias_urls", "alias_sample_ids", "canonical_dedup_status", "canonical_collision", "canonical_identity", "primary_review_annotation", "alias_review_annotations", "manual_review_disagreement"]))
     attempt_fields = ["attempt_id", "sample_id", "url", "action", "network_request", "started_at", "completed_at", "status", "error", "qa_status",
                       "snapshot_path", "snapshot_sha256", "cached_recovery", "retained_success", "manifest_sha256", "response_json",
                       "title", "date_published", "main_text", "expected_kind", "expected_year", "selection_reason", "export_role", "primary_export_url"]
+    attempt_fields += REVIEW_COLUMNS
     staged = {}
     for stem, records, columns in (("articles", articles, article_fields), ("attempts", attempts, attempt_fields)):
         serial = [{k: json.dumps(clean(v), ensure_ascii=False) if isinstance(v, (dict, list)) else clean(v) for k, v in r.items()} for r in records]
@@ -430,6 +647,7 @@ def export_outputs(conn, run_dir, manifest_hash, backups):
                "network_fetch_calls_started": sum(int(r["network_request"]) for r in attempts),
                "request_count_definition": "Calls to capabilities.fetch, including interrupted calls; redirects may add HTTP exchanges.",
                "incomplete_attempts": sum(r["completed_at"] is None for r in attempts),
+               "manual_review": review_summary,
                "csv_nulls": "Empty CSV fields denote null; Parquet retains typed nulls.",
                "files": {name: {"sha256": digest(data), "bytes": len(data)} for name, data in staged.items()}}
     atomic_bytes(safe_path(run_dir, "export_manifest.json"), json_bytes(summary))
@@ -446,18 +664,19 @@ def run_pilot(input_path: Path, run_dir: Path, media_root: Path, *, repo_root=No
     items, manifest_hash = load_input(input_path)
     run_dir = validate_run_dir(run_dir, media_root, repo_root)
     with exclusive_run(run_dir):
+        # Bad review evidence stops before a fetch, DB change or export rewrite.
+        _, review_preflight = reviewed_rows([], run_dir)
+        validate_review_continuity(run_dir, review_preflight)
         backups = Backups(run_dir)
         manifest_path = safe_path(run_dir, "manifest.json")
         new_manifest = {"format_version": 1, "source_id": "tiempo", "input_sha256": manifest_hash,
-                        "input_name": input_path.name, "created_at": now(), "items": items, "author": "Kevin"}
+                        "input_name": input_path.name, "created_at": now(), "items": items, "author": "Kevin", "database_initialized": False}
         if manifest_path.exists():
             previous = json.loads(manifest_path.read_text(encoding="utf-8"))
-            if previous.get("input_sha256") != manifest_hash:
-                same_urls = {(r["sample_id"], r["url"]) for r in previous.get("items", [])} == {(r["sample_id"], r["url"]) for r in items}
-                if not reparse_cache or not same_urls:
-                    raise PilotError("Input manifest changed. Use the original CSV, or --reparse-cache for metadata-only changes to the same sample_id/URL set.")
-                backups.ensure("offline reparse with changed input metadata")
-                atomic_bytes(manifest_path, json_bytes(new_manifest))
+            if previous.get("input_sha256") != manifest_hash or previous.get("items") != items:
+                raise PilotError("Input manifest changed. Use the original CSV; changed metadata requires a new independent pilot directory.")
+            if previous.get("source_id") != "tiempo" or previous.get("format_version") != 1:
+                raise PilotError("Unrecognized pilot manifest.")
         else:
             if export_only or reparse_cache or retry_errors:
                 raise PilotError("This mode requires an existing bound pilot manifest.")
@@ -465,9 +684,30 @@ def run_pilot(input_path: Path, run_dir: Path, media_root: Path, *, repo_root=No
                 raise PilotError("Unbound data already exists in run-dir; choose a new pilot directory.")
             atomic_bytes(manifest_path, json_bytes(new_manifest))
             append_note(run_dir, f"Started selected-URL pilot with {len(items)} inputs, input SHA256 {manifest_hash}; one worker, pause {pause_seconds}s. Shared outputs untouched.")
+            previous = new_manifest
+        initializing = can_finish_initialization(run_dir, previous)
+        database_path = safe_path(run_dir, "pilot.sqlite")
+        if not database_path.exists() and not initializing:
+            raise PilotError("Bound pilot database is missing. Restore its matching database; refusing to create an empty replacement.")
+        if initializing and (export_only or reparse_cache or retry_errors):
+            raise PilotError("Pilot initialization is incomplete. Resume the original normal run first.")
+        if database_path.exists() and not initializing:
+            try:
+                with sqlite3.connect(database_path.as_uri() + "?mode=ro", uri=True) as checked:
+                    checked.row_factory = sqlite3.Row
+                    validate_bound_state(checked, run_dir, items, manifest_hash)
+            except sqlite3.DatabaseError as exc:
+                raise PilotError("Bound pilot database is unreadable; restore matching files.") from exc
         if retry_errors or reparse_cache:
             backups.ensure("retrying existing errors" if retry_errors else "offline cache reparse")
-        conn = connect_db(run_dir)
+        conn = connect_db(run_dir, allow_create=initializing)
+        if initializing:
+            try:
+                previous["database_initialized"] = True
+                atomic_bytes(manifest_path, json_bytes(previous))
+            except BaseException:
+                conn.close()
+                raise
         interrupted = False
         try:
             if not export_only:
@@ -483,7 +723,10 @@ def run_pilot(input_path: Path, run_dir: Path, media_root: Path, *, repo_root=No
                         continue
                     if retry_errors and not existing:
                         continue
-                    metadata = None if retry_errors else find_snapshot(run_dir, item, manifest_hash=None if reparse_cache else manifest_hash)
+                    pending = None
+                    if retry_errors:
+                        pending = {r[0] for r in conn.execute("SELECT attempt_id FROM fetch_attempts WHERE url=? AND manifest_sha256=? AND action='fetch' AND completed_at IS NULL", (item["url"], manifest_hash))}
+                    metadata = find_snapshot(run_dir, item, manifest_hash=manifest_hash, pending_attempt_ids=pending)
                     was_cached = metadata is not None
                     if reparse_cache and not metadata:
                         append_log(run_dir, {"event": "reparse_skipped_no_complete_snapshot", "sample_id": item["sample_id"], "url": item["url"], "time": now()})
@@ -492,7 +735,7 @@ def run_pilot(input_path: Path, run_dir: Path, media_root: Path, *, repo_root=No
                         action = "reparse" if reparse_cache else "fetch"
                         attempt_id = start_attempt(conn, run_dir, item, manifest_hash, action,
                                                    attempt_id=None if reparse_cache else metadata["attempt_id"],
-                                                   started_at=metadata["captured_at"], recovering=not reparse_cache)
+                                                   started_at=None if reparse_cache else metadata["captured_at"], recovering=not reparse_cache)
                         response = {**metadata["response"], "text": metadata.pop("text")}
                     else:
                         attempt_id = start_attempt(conn, run_dir, item, manifest_hash, "fetch")
@@ -515,7 +758,7 @@ def run_pilot(input_path: Path, run_dir: Path, media_root: Path, *, repo_root=No
             append_note(run_dir, "Interrupted. Committed rows are durable; complete cached responses can be recovered on resume. No successful result was removed.")
         finally:
             try:
-                summary = export_outputs(conn, run_dir, manifest_hash, backups)
+                summary = export_outputs(conn, run_dir, manifest_hash, backups, items)
             finally:
                 conn.close()
         summary["interrupted"] = interrupted

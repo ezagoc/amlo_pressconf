@@ -10,6 +10,7 @@ import time
 from dataclasses import dataclass
 from email.message import Message
 from html import unescape
+from html.parser import HTMLParser
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from urllib.parse import urljoin
@@ -252,6 +253,44 @@ def build_capability_report(capabilities: pd.DataFrame) -> str:
     return "\n".join(lines)
 
 
+class _HTMLCharsetDeclaration(HTMLParser):
+    """Read actual meta tags without interpreting script text as markup."""
+
+    def __init__(self):
+        super().__init__()
+        self.encoding = None
+
+    def handle_starttag(self, tag, attrs):
+        if tag != "meta" or self.encoding:
+            return
+        attributes = dict(attrs)
+        if attributes.get("charset"):
+            self.encoding = attributes["charset"].strip()
+        elif (attributes.get("http-equiv") or "").lower() == "content-type":
+            declaration = Message()
+            declaration["Content-Type"] = attributes.get("content") or ""
+            self.encoding = declaration.get_content_charset()
+
+
+def _body_encoding(content_type: Message, prefix: bytes) -> tuple[str, str]:
+    declared = content_type.get_content_charset()
+    if declared:
+        return declared, "http_charset"
+    for marker, encoding in ((b"\xef\xbb\xbf", "utf-8-sig"), (b"\xff\xfe\x00\x00", "utf-32"),
+                             (b"\x00\x00\xfe\xff", "utf-32"), (b"\xff\xfe", "utf-16"), (b"\xfe\xff", "utf-16")):
+        if prefix.startswith(marker):
+            return encoding, "byte_order_mark"
+    xml = re.match(br'''\s*<\?xml\s+[^?]*\bencoding\s*=\s*["']([^"']+)["']''', prefix, re.I)
+    if xml:
+        return xml.group(1).decode("ascii", errors="strict"), "xml_declaration"
+    if content_type.get_content_type() in {"text/html", "application/xhtml+xml"}:
+        parser = _HTMLCharsetDeclaration()
+        parser.feed(prefix.decode("latin-1"))  # Byte-preserving tag inspection, not a decoding guess.
+        if parser.encoding:
+            return parser.encoding, "html_meta_charset"
+    return "utf-8", "default_utf8"
+
+
 def fetch(
     url: str,
     timeout: float,
@@ -315,7 +354,11 @@ def fetch(
             content_type = Message()
             if isinstance(result["content_type"], str):
                 content_type["Content-Type"] = result["content_type"]
-            encoding = content_type.get_content_charset() or "utf-8"
+            with body_path.open("rb") as handle:
+                prefix = handle.read(4096)
+            encoding, encoding_source = _body_encoding(content_type, prefix)
+            result["body_encoding"] = encoding
+            result["body_encoding_source"] = encoding_source
             with body_path.open(encoding=encoding, errors="strict") as handle:
                 text = handle.read(body_text_limit + 1)
         except (OSError, UnicodeError, LookupError) as exc:

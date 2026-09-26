@@ -52,9 +52,16 @@ An interrupted response without a complete snapshot must be fetched again.
 - `--reparse-cache`: back up and re-extract saved complete snapshots, offline.
 - `--export-only`: regenerate exports without making requests.
 
-These three modes are mutually exclusive. Changing the sample URL set requires
-a separate run folder. A lock prevents two processes from writing the same run.
+These three modes are mutually exclusive. Changing any input CSV content,
+including selection metadata, requires a separate run folder. A lock prevents
+two processes from writing the same run.
 Before revising existing pilot results, backups and a Kevin note are recorded.
+An initialized run with a missing, mismatched or corrupt database stops instead
+of creating an empty replacement. Committed snapshot files and their metadata
+are checked before resuming or exporting. A complete, uncommitted retry response
+is recovered without another request; an incomplete response may be requested
+again. Equal canonical URLs merge only when all research fields agree,
+including author, summary and embedded media. Disagreements remain separate.
 
 ## Extraction and review contract
 
@@ -81,6 +88,51 @@ request outcomes including error controls and URL aliases. Empty CSV fields
 mean null; Parquet preserves nulls. SQLite is the resumable source of truth.
 `export_manifest.json` contains counts and file hashes. Always reconcile
 attempted URLs, successful URLs and unique articles separately.
+
+Exports are replaced atomically per file, with the hash manifest written last.
+SQLite and saved pages are the recoverable source of truth; after an interrupted
+export, resume or run `--export-only` and verify all manifest hashes before
+consuming CSV/Parquet together. This is not a transactional cloud-sync protocol.
+
+## Bound manual review annotations
+
+The optional `review_annotations.json` in the run folder is a versioned input
+to every native article and attempt export. Its schema and digest helper are
+defined in `crawler_core/tiempo_review.py`. Each review binds the sample ID,
+captured-page SHA256, and a digest of title, summary, body, author, publication
+date, canonical URL and embedded links. Review metadata never fills or changes
+news fields. The raw SQLite payload remains the extraction record; consumers
+reading it directly must also apply the bound review sidecar.
+
+- `manual_review_status=reviewed` means the annotation matches these exact data.
+- `stale` means the page or extracted fields changed: old PASS is no longer
+  current, and source warnings remain visible for a new review.
+- `not_reviewed` means this row has no bound manual decision.
+
+`source_quality_issue` travels with CSV/Parquet. Alias-member review evidence is
+retained in `alias_review_annotations`, with source warnings propagated to the
+primary export. `primary_review_annotation` retains the primary URL's original
+decision; combined status/result use the most cautious member decision, and
+`manual_review_disagreement` exposes differences. An alias FAIL cannot be
+hidden behind the primary URL's PASS. A correctly identified unavailable page can pass its manual
+classification check while still having `qa_status=error`; these are different
+questions. Malformed or removed previously used review evidence stops the run.
+Back up annotations before editing, keep a Kevin note, and do not erase a known
+source warning merely to make a record appear accepted.
+Each used annotation version is retained by hash in `review_history/`, with its
+history listed in the export manifest. Missing or altered history stops the run.
+A stale replacement with a blank warning cannot erase an earlier warning;
+only a matching current review can explicitly resolve it, preserving its history.
+
+## Limits before larger collection
+
+This command remains deliberately limited to 80 input URLs and a single worker.
+Do not remove that cap to turn a validated pilot into an unattended full crawl.
+A later collection stage needs its own frozen queue, isolated batch state,
+discovery/section acceptance rules, failure limits, baseline comparison and
+reviewed merge plan. The pilot cannot certify complete monthly coverage or
+restore source-deleted titles/text. The original sample was purposively chosen;
+its yield is not an estimate of the newspaper's population success rate.
 
 Automated success is not manual acceptance: compare every pilot row with its
 saved webpage, including title, all prose, publication evidence, canonical URL

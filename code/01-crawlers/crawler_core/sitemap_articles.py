@@ -545,13 +545,24 @@ def extract_one_sitemap_article(
         row["error"] = error
         return row
 
+    content_type = response.get("content_type")
+    content_type = "" if is_blank_value(content_type) else str(content_type).strip().lower()
+    if source_text == "tiempo" and not re.match(r"^(text/html|application/xhtml\+xml)(?:;|$)", content_type):
+        row["error"] = "non_html_response"
+        return row
+
     text = response["text"] or ""
     if not text.strip():
         row["error"] = "empty_response_body"
         return row
 
     try:
-        fields = article_fields_from_html(text, url=url, source_id=source_id)
+        # Relative canonicals belong to the document's final location after a
+        # redirect. Keep the requested URL separately as the input identity.
+        document_url = response.get("final_url") if source_text == "tiempo" else url
+        if is_blank_value(document_url):
+            document_url = url
+        fields = article_fields_from_html(text, url=document_url, source_id=source_id)
     except Exception as exc:
         row["error"] = f"{type(exc).__name__}: {exc}"
         return row

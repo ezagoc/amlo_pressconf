@@ -160,18 +160,21 @@ class TiempoPilotTests(unittest.TestCase):
         self.assertTrue(retried.call_args.args[0].endswith("article-1/"))
         self.assertEqual(result["error_results"], 0)
 
-    def test_manifest_change_refused_except_metadata_only_offline_reparse(self):
+    def test_manifest_change_refused_even_for_metadata_only_offline_reparse(self):
         self.write_input(1)
         self.execute()
+        original_manifest = (self.run_dir / "manifest.json").read_bytes()
+        original_row = self.rows()[0]["payload_json"]
         self.input.write_text(self.input.read_text(encoding="utf-8-sig").replace("1999", "2000"), encoding="utf-8")
         fetch = Mock()
         with self.assertRaisesRegex(PilotError, "manifest changed"):
             self.execute(fetcher=fetch)
         fetch.assert_not_called()
-        self.execute(fetcher=fetch, reparse_cache=True)
+        with self.assertRaisesRegex(PilotError, "manifest changed"):
+            self.execute(fetcher=fetch, reparse_cache=True)
         fetch.assert_not_called()
-        self.assertEqual(self.rows()[0]["expected_year"], "2000")
-        self.assertEqual(self.rows()[0]["date_published"], "2024-06-01T12:00:00-06:00")
+        self.assertEqual((self.run_dir / "manifest.json").read_bytes(), original_manifest)
+        self.assertEqual(self.rows()[0]["payload_json"], original_row)
 
     def test_shared_run_dir_missing_note_and_symlink_outputs_are_rejected(self):
         shared = self.media / "data/00-newspaper_data/crawler/articles_sitemap"

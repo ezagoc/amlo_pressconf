@@ -1884,3 +1884,52 @@ in-flight response without a complete snapshot may need another request.
 Reports, full sample checks, source-file hashes and Kevin notes are stored with
 the isolated pilot and Kevin's task-2 local delivery. Task 3 bulk collection and
 shared tracker completion updates have not begun.
+
+## 2026-09-26 Kevin: Task 2 complete re-audit and independent holdout
+
+The follow-up review found and fixed real state/export and extraction boundary
+defects beyond the original passing sample. The bounded pilot now validates
+manifest/database/snapshot identity before writes, refuses a missing initialized
+database, reuses complete uncommitted retry snapshots, and preserves author and
+media conflicts when comparing canonical aliases. Input metadata cannot be
+changed in place. An actual process SIGKILL/restart at the retry-snapshot boundary
+passed using synthetic offline responses, separate from the earlier live test.
+
+Tiempo parsing now handles scoped JSON-LD graphs/type arrays, actual date
+precision, wrapped/direct lead text and table boundaries. Its standard entry
+agrees with the pilot on MIME and final-URL handling. Transport honors explicit
+document encoding declarations while retaining verified TLS and partial-response
+rejection. Re-parsing the original 65 pages left every reviewed core field
+unchanged; only extraction provenance was expanded.
+
+Manual review is now machine-readable through `review_annotations.json`, bound
+to both snapshot and extracted-field hashes, and applied to every native export.
+Immutable `review_history/` versions preserve prior warnings. Missing evidence
+stops the run; changed content makes a review stale. Canonical aliases retain
+individual reviews and a conservative aggregate decision, so an alias FAIL is
+not hidden by a primary PASS. Raw SQLite payloads remain extraction records;
+direct SQL consumers must also apply the review sidecar. See `TIEMPO_PILOT.md`.
+
+All 163 integrated tests passed. An additional 12-URL holdout was selected with
+fixed SHA256 ranking from the existing queue before viewing live results, with
+no overlap with the original 65 and no outcome-based replacements. The parser
+was frozen before these requests and was not tuned using them. Ten current
+news pages and two HTTP-200 error pages were individually reviewed; no extraction
+defect remained. H011 preserves a source-internal injury-count discrepancy with
+a warning. H012's current 3,382-character text is fully preserved, whereas its
+old 428-character extraction cannot establish current article length.
+
+Combined: 77 requested URLs, 62 unique core-field-complete news records, 8
+source-missing-title pages, 5 source-error pages, 2 aliases. P003's possible source
+fragment and H011's inconsistent source wording remain flagged. This is still
+purposive/stratified method validation, not a population yield estimate or
+historical-completeness proof. Current pages share a common outer template;
+the combined sample spans 10 sections. Missing-author/date, date conflicts and
+transport failures have synthetic coverage, not newly claimed live instances.
+
+The original pilot and separate `reaudit_holdout_12` directory preserve inputs,
+snapshots, data, review histories and Kevin notes. Formal shared data and trackers
+remain unchanged. Task 2 is accepted for proceeding to Task 3's controlled queue
+and batch setup; Task 3 itself has not started. The maximum-80 pilot must not be
+turned into an unattended bulk run by just removing its cap. Code remains on
+Kevin's local branch until separately published to the team repository.
