@@ -27,6 +27,62 @@ def _instagram_permalink(value):
                      and len(parts) >= 2 and parts[0] in {'p', 'reel', 'tv'}) else None
 
 
+def _instagram_timed_footer(node, permalink):
+    """Recognize only the evidenced old Instagram attribution/date template.
+
+    This is separate from a genuine post caption. A grey, ellipsized paragraph
+    must contain exactly one direct link and one direct time element, with no
+    extra text beyond the full attribution and a recognizable display date.
+    """
+    style = dict(part.split(':', 1) for part in re.sub(r'\s+', '', node.get('style', '').casefold()).split(';') if ':' in part)
+    if (style.get('color') != '#c9c8cd' or style.get('text-overflow') != 'ellipsis'
+            or style.get('white-space') != 'nowrap' or style.get('font-size') != '14px'
+            or style.get('line-height') != '17px' or not style.get('font-family', '').startswith('arial')):
+        return False
+    tags = node.find_all(True)
+    if ([tag.name for tag in tags] != ['a', 'time']
+            or any(tag.parent is not node for tag in tags)):
+        return False
+    anchor, stamp = tags
+    if not anchor.get('href') or not stamp.get('datetime'):
+        return False
+    display = _text(stamp) or ''
+    month_names = {'ene': 1, 'enero': 1, 'feb': 2, 'febrero': 2, 'mar': 3, 'marzo': 3,
+                   'abr': 4, 'abril': 4, 'may': 5, 'mayo': 5, 'jun': 6, 'junio': 6,
+                   'jul': 7, 'julio': 7, 'ago': 8, 'agosto': 8, 'sep': 9, 'sept': 9,
+                   'septiembre': 9, 'oct': 10, 'octubre': 10, 'nov': 11, 'noviembre': 11,
+                   'dic': 12, 'diciembre': 12}
+    date_match = re.fullmatch(r'(\d{1,2}) (?:de )?([A-Za-z]+),? (?:de )?(20\d{2}) a las (\d{1,2}):(\d{2}) (PDT|PST)', display)
+    if not date_match or date_match[2].casefold() not in month_names:
+        return False
+    try:
+        datetime(int(date_match[3]), month_names[date_match[2].casefold()], int(date_match[1]),
+                 int(date_match[4]), int(date_match[5]))
+        parsed_stamp = datetime.fromisoformat(stamp['datetime'].replace('Z', '+00:00'))
+        if parsed_stamp.tzinfo is None:
+            return False
+    except (ValueError, TypeError):
+        return False
+    text = _text(node) or ''
+    suffix = ' el ' + display
+    if not text.endswith(suffix):
+        return False
+    attribution = text[:-len(suffix)]
+    match = re.fullmatch(r'Una publicación compartida (?:por|de) (.+) \(@([A-Za-z0-9_.]{1,30})\)', attribution)
+    if not match:
+        return False
+    link = urlparse(anchor['href'])
+    if (link.scheme not in {'http', 'https'} or link.hostname not in {'instagram.com', 'www.instagram.com'}
+            or link.username is not None or link.password is not None or link.fragment):
+        return False
+    anchor_text = _text(anchor)
+    if anchor_text == attribution:
+        return bool(_instagram_permalink(anchor['href'])
+                    and link.path.rstrip('/') == urlparse(permalink).path.rstrip('/'))
+    return (anchor_text == match[1] and link.path.strip('/').casefold() == match[2].casefold()
+            and len([part for part in link.path.split('/') if part]) == 1)
+
+
 def _clean_body_templates(copy, removed):
     """Remove only evidenced template leaves, retaining captions and prose."""
     def record(node, reason, href=None):
@@ -44,6 +100,9 @@ def _clean_body_templates(copy, removed):
                     and 'color:#3897f0' in style and 'font-family:arial' in style and 'padding-top:8px' in parent_style):
                 record(node, 'instagram_view_post_ui', permalink)
         for node in list(embed.select('p')):
+            if _instagram_timed_footer(node, permalink):
+                record(node, 'instagram_timed_shared_post_ui', permalink)
+                continue
             anchors = node.find_all('a', href=True)
             style = re.sub(r'\s+', '', node.get('style', '').casefold())
             if (len(anchors) == 1 and not node.find(['p', 'div', 'blockquote'])
