@@ -1933,3 +1933,32 @@ remain unchanged. Task 2 is accepted for proceeding to Task 3's controlled queue
 and batch setup; Task 3 itself has not started. The maximum-80 pilot must not be
 turned into an unattended bulk run by just removing its cap. Code remains on
 Kevin's local branch until separately published to the team repository.
+
+## 2026-09-26 Kevin: Task 3 started; isolated discovery and expansion
+
+This entry supersedes the earlier Task3-not-started status, while preserving that
+historical record. Read `TIEMPO_TASK3.md`, `TIEMPO_DISCOVERY.md` and
+`TIEMPO_BATCHES.md` before continuing. Current task is not complete.
+
+The current652-child official sitemap index was processed and a protected old
+DB/export identity baseline was built. The strict target request queue contains
+132,801 new/error/short/missing-field candidates, with discovery-date conflicts
+and pre2018 history kept separate. Article source dates remain authoritative;
+sitemap metadata is discovery provenance. Shared research data and tracker have
+not been overwritten or marked complete.
+
+Expansion400 uses five80-URL batches selected in advance across20 months. The
+first8 exposed terminal related-link/Instagram UI contamination; narrowly fixed
+parsing and source-empty-title evidence were independently checked, and all237
+integrated tests passed. Old Task2 core fields and source evidence are unchanged.
+The8 v1 responses were imported into a separate v2 plan offline; no hidden refetch.
+Read the live v2 state, approvals and batch reports instead of assuming all400
+have passed from this note. Do not change the six frozen program modules during
+that plan, lower its review minimum, or approve rows that were not actually read.
+
+All active data, snapshots and Kevin notes are below
+`crawler/pilots/Kevin/tiempo_task3_2026-09-26`. Work is locally staged and not yet
+merged into shared final articles. Upcoming production stages require a new
+explicit protocol after the400 gate, bounded by month/category, preserving raw
+snapshots, failures, real review coverage and restart evidence. Other newspapers,
+Task4 and the final bilingual Joaquín report remain outstanding.

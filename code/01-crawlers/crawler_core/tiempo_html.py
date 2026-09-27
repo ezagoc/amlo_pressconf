@@ -18,7 +18,58 @@ def _text(node):
     return (re.sub(r"\s+", " ", node.get_text(" ", strip=True)).strip() or None) if node else None
 
 
-def _body(node):
+def _instagram_permalink(value):
+    if not isinstance(value, str):
+        return None
+    parsed = urlparse(value)
+    parts = [part for part in parsed.path.split('/') if part]
+    return value if (parsed.scheme in {'http', 'https'} and parsed.hostname in {'instagram.com', 'www.instagram.com'}
+                     and len(parts) >= 2 and parts[0] in {'p', 'reel', 'tv'}) else None
+
+
+def _clean_body_templates(copy, removed):
+    """Remove only evidenced template leaves, retaining captions and prose."""
+    def record(node, reason, href=None):
+        removed.append({'reason': reason, 'text': _text(node), 'href': href})
+        node.decompose()
+
+    for embed in copy.select('blockquote.instagram-media[data-instgrm-permalink]'):
+        permalink = _instagram_permalink(embed.get('data-instgrm-permalink'))
+        if not permalink:
+            continue
+        for node in list(embed.select('div')):
+            style = re.sub(r'\s+', '', node.get('style', '').casefold())
+            parent_style = re.sub(r'\s+', '', node.parent.get('style', '').casefold()) if node.parent else ''
+            if (_text(node) == 'Ver esta publicación en Instagram' and not node.find(['div', 'p', 'blockquote'])
+                    and 'color:#3897f0' in style and 'font-family:arial' in style and 'padding-top:8px' in parent_style):
+                record(node, 'instagram_view_post_ui', permalink)
+        for node in list(embed.select('p')):
+            anchors = node.find_all('a', href=True)
+            style = re.sub(r'\s+', '', node.get('style', '').casefold())
+            if (len(anchors) == 1 and not node.find(['p', 'div', 'blockquote'])
+                    and _text(node) == _text(anchors[0])
+                    and re.fullmatch(r'Una publicación compartida por .+ \(@[^()]+\)', _text(node) or '')
+                    and 'color:#c9c8cd' in style and 'text-overflow:ellipsis' in style
+                    and _instagram_permalink(anchors[0]['href'])
+                    and urlparse(anchors[0]['href']).path.rstrip('/') == urlparse(permalink).path.rstrip('/')):
+                record(node, 'instagram_shared_post_ui', anchors[0]['href'])
+
+    # Only a terminal, standalone recommendation paragraph: never an enclosing
+    # malformed paragraph containing real prose, or a link cited mid-article.
+    for node in reversed(list(copy.find_all('p'))):
+        anchors = node.find_all('a', href=True)
+        if (len(anchors) != 1 or node.find(['p', 'div', 'blockquote', 'ul', 'ol', 'table'])
+                or _text(node) != _text(anchors[0])
+                or not re.match(r'^Podría interesarte:\s*\S', _text(anchors[0]) or '', re.I)):
+            continue
+        texts = list(copy.strings)
+        own = list(node.strings)
+        last = next((i for i in range(len(texts) - 1, -1, -1) if own and texts[i] is own[-1]), None)
+        if last is not None and not any(str(value).strip() for value in texts[last + 1:]):
+            record(node, 'terminal_related_article_link', anchors[0]['href'])
+
+
+def _body(node, *, removed=None):
     if node is None:
         return None
     copy = BeautifulSoup(str(node), "lxml")
@@ -26,6 +77,7 @@ def _body(node):
         comment.extract()
     for el in copy.select("script,style,noscript,iframe,form,button,nav,footer,aside,.share-buttons,.publicidad-content,.ad,#sidebar"):
         el.decompose()
+    _clean_body_templates(copy, removed if removed is not None else [])
     for el in copy.find_all(["p", "div", "section", "li", "ul", "ol", "h1", "h2", "h3", "h4", "h5", "h6",
                             "blockquote", "br", "table", "tr", "th", "td", "dl", "dt", "dd", "figcaption"]):
         el.insert_before("\n")
@@ -177,10 +229,65 @@ def _lead_text(lead, byline):
     return value
 
 
+def _source_title_audit(soup, article, article_json, jsonld_errors, fields, content, body_text, canonical):
+    channels = []
+
+    def add(source, value, *, slash_placeholder=False):
+        if value is None:
+            status = 'absent'
+        elif not isinstance(value, str):
+            status = 'unassessable_value'
+        elif not value.strip():
+            status = 'empty'
+        elif slash_placeholder and value.strip() == '/':
+            status = 'observed_meta_title_placeholder'
+        else:
+            status = 'informative'
+        channels.append({'channel': source, 'value': value, 'status': status})
+
+    h1s = article.select(':scope > header > h1')
+    recognized_empty_h1 = bool(h1s) and all(not (_text(node) or '') for node in h1s)
+    for selector, scope, label in [('h1', article, 'current_article.h1'), ('title', soup, 'document.title'),
+                                  (':scope > header h2, :scope > header h3, :scope > header h4, :scope > header h5, :scope > header h6, :scope > header [itemprop~="headline"], :scope > header [data-headline], :scope > header .headline', article, 'current_header.potential_headline')]:
+        nodes = scope.select(selector)
+        if not nodes:
+            add(label, None)
+        for index, node in enumerate(nodes):
+            add(f'{label}[{index}]', node.get_text(' ', strip=True))
+            for attr in ('content', 'data-headline'):
+                if node.has_attr(attr):
+                    add(f'{label}[{index}].{attr}', node.get(attr))
+    for key in ('title', 'og:title', 'twitter:title'):
+        metas = [node for node in soup.find_all('meta') if any(str(node.get(attr, '')).casefold() == key for attr in ('name', 'property'))]
+        if not metas:
+            add('meta.' + key, None)
+        for index, node in enumerate(metas):
+            add(f'meta.{key}[{index}]', node.get('content'), slash_placeholder=(key == 'title' and str(node.get('name', '')).casefold() == 'title'))
+    for index, item in enumerate(article_json):
+        for key in ('headline', 'name', 'alternativeHeadline'):
+            add(f'current_jsonld[{index}].{key}', item.get(key))
+    if not article_json:
+        add('current_jsonld.headline', None)
+    all_empty = not jsonld_errors and all(item['status'] in {'absent', 'empty', 'observed_meta_title_placeholder'} for item in channels)
+    conditions = {
+        'recognized_empty_h1': recognized_empty_h1,
+        'all_title_channels_empty': all_empty,
+        'recognized_nonempty_body': content is not None and bool(body_text),
+        'explicit_valid_canonical': bool(canonical and canonical.get('href') and fields['canonical_url']),
+        'verified_publication_date': bool(fields['date_published'] and fields['publication_date_source'] and not fields['date_conflict']),
+        'no_other_source_error': fields['source_specific_error'] is None,
+    }
+    status = ('confirmed_source_empty' if fields['title'] is None and all(conditions.values())
+              else 'title_present' if fields['title'] else 'unconfirmed_missing')
+    fields['source_title_status'] = status
+    fields['source_title_evidence'] = json.dumps({'schema_version': 1, **conditions, 'channels': channels,
+                                                'jsonld_parse_errors': jsonld_errors}, ensure_ascii=False)
+
+
 def tiempo_fields(html: str, *, url: str) -> dict[str, object]:
     soup = BeautifulSoup(html, "lxml")
     article = soup.select_one("article#article-post")
-    fields = dict.fromkeys(("canonical_url", "title", "summary", "main_text", "authors", "date", "date_published", "date_modified", "topic", "section", "language", "publication_date_source", "publication_date_evidence", "date_conflict", "author_source", "body_selector", "source_specific_error", "media_embeds", "jsonld_article_selection"))
+    fields = dict.fromkeys(("canonical_url", "title", "summary", "main_text", "authors", "date", "date_published", "date_modified", "topic", "section", "language", "publication_date_source", "publication_date_evidence", "date_conflict", "author_source", "body_selector", "source_specific_error", "media_embeds", "jsonld_article_selection", "source_title_status", "source_title_evidence", "removed_body_elements", "related_links"))
     fields["language"] = soup.html.get("lang") if soup.html else None
     title = _text(article.select_one("h1") if article else soup.select_one("h1"))
     fields["title"] = title
@@ -199,11 +306,12 @@ def tiempo_fields(html: str, *, url: str) -> dict[str, object]:
 
     # This site emits literal newlines inside JSON strings; strict=False permits
     # those control characters without executing or inventing any content.
-    objects = []
-    for node in soup.select('script[type="application/ld+json"]'):
+    objects, jsonld_errors = [], []
+    for index, node in enumerate(soup.select('script[type="application/ld+json"]')):
         try:
             parsed = json.loads(node.string or node.get_text(), strict=False)
         except (ValueError, TypeError):
+            jsonld_errors.append({'script_index': index, 'error': 'unparseable_jsonld'})
             continue
         objects.extend(_jsonld_objects(parsed))
     article_json, selection, ambiguous = _current_article_json(objects, url=url, canonical=fields["canonical_url"])
@@ -266,15 +374,22 @@ def tiempo_fields(html: str, *, url: str) -> dict[str, object]:
     content = article.select_one(".complementos-container")
     if content is None:
         fields["source_specific_error"] = "unrecognized_tiempo_body"
-    fields["main_text"] = "\n".join(x for x in (fields["summary"], _body(content)) if x) or None
+    removed = []
+    body_text = _body(content, removed=removed)
+    fields["main_text"] = "\n".join(x for x in (fields["summary"], body_text) if x) or None
+    fields['removed_body_elements'] = json.dumps(removed, ensure_ascii=False)
+    fields['related_links'] = json.dumps([{'url': item['href'], 'text': item['text']} for item in removed if item['reason'] == 'terminal_related_article_link'], ensure_ascii=False)
     fields["body_selector"] = "article#article-post > blockquote + .complementos-container"
     embed_urls = []
     if content:
         embed_urls.extend(n["src"] for n in content.select("iframe[src]"))
         embed_urls.extend(n["cite"] for n in content.select("blockquote[cite]"))
+        embed_urls.extend(link for n in content.select('blockquote.instagram-media[data-instgrm-permalink]')
+                          if (link := _instagram_permalink(n.get('data-instgrm-permalink'))))
         for node in content.select("blockquote.twitter-tweet a[href], blockquote.twitter-video a[href]"):
             if re.search(r"/(?:status|statuses)/\d+", node["href"]):
                 embed_urls.append(node["href"])
     fields["media_embeds"] = json.dumps(list(dict.fromkeys(embed_urls)), ensure_ascii=False)
     fields["topic"] = fields["section"] = _text(article.select_one("header .breadcrumb li.active a"))
+    _source_title_audit(soup, article, article_json, jsonld_errors, fields, content, body_text, canonical)
     return fields

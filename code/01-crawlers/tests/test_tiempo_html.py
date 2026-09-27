@@ -94,6 +94,105 @@ class TiempoHTMLTests(unittest.TestCase):
         self.assertEqual(f['error'],'curl: timeout')
         self.assertTrue(pd.isna(f['main_text']))
 
+    def test_instagram_ui_removed_caption_and_link_retained(self):
+        link = 'https://www.instagram.com/p/ABC123/?utm_source=ig_embed'
+        embed = f'''<blockquote class="instagram-media" data-instgrm-permalink="{link}">
+        <div style="padding-top: 8px"><div style="color: #3897f0; font-family: Arial,sans-serif">Ver esta publicación en Instagram</div></div>
+        <p>Texto real de la publicación.</p><p>El autor dijo “Ver esta publicación en Instagram”.</p>
+        <p style="color: #c9c8cd; text-overflow: ellipsis"><a href="{link}">Una publicación compartida por alguien (@persona)</a></p></blockquote>'''
+        f = tiempo_fields(page(body='<p>Noticia antes.</p>' + embed + '<p>Noticia después.</p>'), url=URL)
+        self.assertEqual(f['main_text'], 'Entrada breve.\nNoticia antes.\nTexto real de la publicación.\nEl autor dijo “Ver esta publicación en Instagram”.\nNoticia después.')
+        self.assertEqual(json.loads(f['media_embeds']), [link])
+        self.assertEqual([row['reason'] for row in json.loads(f['removed_body_elements'])], ['instagram_view_post_ui', 'instagram_shared_post_ui'])
+
+    def test_instagram_words_outside_template_not_removed(self):
+        text = '<p>Ver esta publicación en Instagram</p><p>Una publicación compartida por alguien (@persona)</p>'
+        for body in [text, '<blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/ABC/">' + text + '</blockquote>']:
+            with self.subTest(body=body):
+                f = tiempo_fields(page(body=body), url=URL)
+                self.assertIn('Ver esta publicación en Instagram', f['main_text'])
+                self.assertIn('Una publicación compartida por alguien (@persona)', f['main_text'])
+                self.assertEqual(json.loads(f['removed_body_elements']), [])
+
+    def test_terminal_recommendation_removed_with_audit_video_kept(self):
+        rec = '<p><strong><a href="https://puentelibre.mx/noticia/example/">Podría interesarte: Otra nota</a></strong></p>'
+        f = tiempo_fields(page(body='<p>Texto real.</p>' + rec + '<p><iframe src="https://example.test/video"></iframe></p>'), url=URL)
+        self.assertEqual(f['main_text'], 'Entrada breve.\nTexto real.')
+        self.assertEqual(json.loads(f['related_links']), [{'url': 'https://puentelibre.mx/noticia/example/', 'text': 'Podría interesarte: Otra nota'}])
+        self.assertEqual(json.loads(f['media_embeds']), ['https://example.test/video'])
+
+    def test_recommendation_words_with_body_or_middle_link_retained(self):
+        cases = ['<p>El reportero dijo: Podría interesarte: esta historia.</p>',
+                 '<p>Texto importante <a href="https://example.test">Podría interesarte: noticia</a></p>',
+                 '<p><a href="https://example.test">Podría interesarte: noticia</a></p><p>Más noticia real.</p>',
+                 '<p><a href="https://example.test">Referencia del artículo</a></p>']
+        for body in cases:
+            with self.subTest(body=body):
+                f = tiempo_fields(page(body=body), url=URL)
+                self.assertEqual(json.loads(f['removed_body_elements']), [])
+
+    def test_malformed_nested_recommendation_does_not_remove_parent_body(self):
+        f = tiempo_fields(page(body='<p>Texto real previo.<p><strong><a href="https://example.test">Podría interesarte: noticia</a></strong></p></p>'), url=URL)
+        self.assertIn('Texto real previo.', f['main_text'])
+        self.assertNotIn('Podría interesarte', f['main_text'])
+
+    def test_confirmed_source_empty_requires_narrow_evidence(self):
+        html = page(meta='<title> </title><meta name="title" content="/"><meta property="og:title" content=""><meta name="twitter:title" content="">', ld={'@type': 'NewsArticle', 'headline': ' '}).replace('<h1>Título real</h1>', '<h1> </h1>')
+        f = tiempo_fields(html, url=URL)
+        self.assertIsNone(f['title'])
+        self.assertIsNone(f['source_specific_error'])
+        self.assertEqual(f['source_title_status'], 'confirmed_source_empty')
+        evidence = json.loads(f['source_title_evidence'])
+        self.assertTrue(evidence['recognized_empty_h1'])
+        self.assertTrue(evidence['all_title_channels_empty'])
+        self.assertTrue(any(row['status'] == 'observed_meta_title_placeholder' for row in evidence['channels']))
+        response = {'text': html, 'status': 200, 'final_url': URL, 'content_type': 'text/html', 'error': None}
+        with patch('crawler_core.sitemap_articles.fetch', return_value=response):
+            row = extract_one_sitemap_article(pd.Series({'source_id': 'tiempo', 'url': URL}), timeout=1)
+        self.assertEqual(row['error'], 'missing_title')
+
+    def test_any_current_title_channel_information_blocks_source_empty(self):
+        for meta, ld in [('<title>Actual title</title>', None), ('<meta name="title" content="Actual">', None),
+                         ('<meta property="og:title" content="Actual">', None), ('<meta name="twitter:title" content="Actual">', None),
+                         ('', {'@type': 'NewsArticle', 'headline': 'Actual'}), ('', {'@type': 'NewsArticle', 'name': 'Actual'}),
+                         ('<meta property="og:title" content="/"></meta>', None),
+                         ('<meta name="title" content="/"><meta name="title" content="Actual">', None)]:
+            with self.subTest(meta=meta, ld=ld):
+                f = tiempo_fields(page(meta=meta, ld=ld).replace('<h1>Título real</h1>', '<h1> </h1>'), url=URL)
+                self.assertNotEqual(f['source_title_status'], 'confirmed_source_empty')
+                self.assertFalse(json.loads(f['source_title_evidence'])['all_title_channels_empty'])
+
+    def test_new_heading_layout_or_nonempty_h1_never_confirmed_empty(self):
+        for heading in ['', '<h2>Different layout</h2>', '<h1> </h1><h2>Other heading</h2>', '<h1>/</h1>',
+                        '<h1> </h1><span itemprop="headline" content="Actual"></span>', '<h1> </h1><span data-headline="Actual"></span>']:
+            with self.subTest(heading=heading):
+                f = tiempo_fields(page().replace('<h1>Título real</h1>', heading), url=URL)
+                self.assertNotEqual(f['source_title_status'], 'confirmed_source_empty')
+
+    def test_missing_title_other_errors_and_unparseable_ld_not_confirmed(self):
+        empty = page().replace('<h1>Título real</h1>', '<h1> </h1>')
+        cases = [empty.replace('class="complementos-container"', 'class="unknown"'),
+                 empty.replace(f'<link rel="canonical" href="{URL}">', ''),
+                 empty.replace('01 Junio 2024', '31 Febrero 2024'),
+                 empty.replace('</head>', '<script type="application/ld+json">{bad</script></head>'),
+                 empty.replace('01 Junio 2024 12:01', '')]
+        for html in cases:
+            with self.subTest(html=html):
+                self.assertNotEqual(tiempo_fields(html, url=URL)['source_title_status'], 'confirmed_source_empty')
+
+    def test_other_article_headline_not_used_to_mask_current_source_empty(self):
+        ld = [{'@type': 'NewsArticle', 'url': URL, 'headline': ''},
+              {'@type': 'NewsArticle', 'url': 'https://www.tiempo.com.mx/local/other/', 'headline': 'Related headline'}]
+        f = tiempo_fields(page(ld=ld).replace('<h1>Título real</h1>', '<h1> </h1>'), url=URL)
+        self.assertEqual(f['source_title_status'], 'confirmed_source_empty')
+        self.assertNotIn('Related headline', f['source_title_evidence'])
+
+    def test_alternative_headline_blocks_source_empty_without_filling_title(self):
+        f = tiempo_fields(page(ld={'@type': 'NewsArticle', 'headline': '', 'alternativeHeadline': 'Another real title'}).replace('<h1>Título real</h1>', '<h1> </h1>'), url=URL)
+        self.assertIsNone(f['title'])
+        self.assertEqual(f['source_title_status'], 'unconfirmed_missing')
+        self.assertFalse(json.loads(f['source_title_evidence'])['all_title_channels_empty'])
+
 
 if __name__ == '__main__':
     unittest.main()
