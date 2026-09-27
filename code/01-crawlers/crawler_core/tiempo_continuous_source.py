@@ -109,8 +109,49 @@ def remove_known_instagram_ui(body):
    if same_post or same_profile:remove(node,'instagram_timed_shared_post_ui')
  return removed
 
+def remove_contract_main_image_captions(article):
+ """Only the standalone lead-image caption container, on a disposable DOM.
+
+ This is a structural scope rule, not a judgment about caption truth. Any
+ unexpected child/text, nested body location, or changed placement remains
+ unexplained. The caption and image reference are retained as audit evidence.
+ """
+ removed=[]
+ if article is None or article.name!='article' or article.get('id')!='article-post':return removed
+ children=[n for n in article.children if getattr(n,'name',None)]
+ headers=[n for n in children if n.name=='header']
+ leads=[]
+ for n in children:
+  if n.name=='blockquote':leads.append(n)
+  elif n.name=='p' and set(n.get('class',[]))=={'lead'}:
+   inner=[x for x in n.children if getattr(x,'name',None)]
+   if len(inner)==1 and inner[0].name=='blockquote' and not any(norm(str(x)) for x in n.children if not getattr(x,'name',None) and not isinstance(x,Comment)):
+    leads.append(n)
+ bodies=[n for n in children if 'complementos-container' in n.get('class',[])]
+ if len(headers)!=1 or len(leads)!=1 or len(bodies)!=1:return removed
+ lead_block=leads[0] if leads[0].name=='blockquote' else leads[0].find('blockquote',recursive=False)
+ actual_leads=[x for x in article.select('blockquote') if not x.find_parent(class_='complementos-container')]
+ if actual_leads!=[lead_block]:return removed
+ h,l,b=[children.index(n) for n in [headers[0],leads[0],bodies[0]]]
+ if not h<l<b:return removed
+ candidates=[n for n in children[h+1:l] if n.name=='div' and set(n.get('class',[]))=={'complemento-item','m-t-md'}]
+ # This recognized layout has one standalone main image. Multiple candidates
+ # are ambiguous and must remain visible to the outside-text check.
+ if len(candidates)!=1:return removed
+ node=candidates[0];tags=[n for n in node.children if getattr(n,'name',None)]
+ if [n.name for n in tags]!=['img','p']:return removed
+ img,caption=tags
+ if set(img.get('class',[]))!={'img-responsive','complemento-img'} or set(caption.get('class',[]))!={'text-center'}:return removed
+ if caption.find(True) is not None or not norm(caption.get_text(' ',strip=True)):return removed
+ if any(norm(str(n)) for n in node.children if not getattr(n,'name',None) and not isinstance(n,Comment)):return removed
+ src=img.get('src');image=urlsplit(src or '')
+ if image.scheme not in {'http','https'} or image.hostname!='static.tiempo.com.mx' or not image.path.startswith('/uploads/imagen/'):return removed
+ removed.append({'reason':'standalone_main_image_caption_outside_article_body_contract','caption_text':norm(caption.get_text(' ',strip=True)),'image_src':src,'image_alt':img.get('alt'),'selector':'article#article-post > div.complemento-item.m-t-md > p.text-center','placement':'after_header_before_direct_or_p_lead_wrapped_blockquote_and_body'})
+ node.decompose()
+ return removed
+
 def diagnose(p,run_dir):
- flags=[]
+ flags=[];outside_caption_evidence=[]
  qa=p.get('qa_status');has_error=bool(p.get('error'))
  for channel in ['url','final_url','canonical_url']:
   value=urlsplit(p.get(channel) or '')
@@ -135,6 +176,7 @@ def diagnose(p,run_dir):
   # A second news body or prose sibling must not disappear through the same
   # select_one blind spot as the parser. Only known non-news channels are ignored.
   outside=BeautifulSoup(str(article),'html.parser')
+  outside_caption_evidence=remove_contract_main_image_captions(outside.select_one('article#article-post'))
   for node in outside.select('header,blockquote,.complementos-container,script,style,figure,figcaption,nav,footer'):
    if node.parent:node.decompose()
   for node in outside.find_all(string=lambda v:isinstance(v,Comment)):node.extract()
@@ -229,6 +271,7 @@ def diagnose(p,run_dir):
  types=([f'route:{route}'] if route else [])+['embed_host:'+h for h in hosts]+['layout:'+json.dumps(layout,sort_keys=True,separators=(',',':'))]
  rec={'sample_id':p['sample_id'],'url':p['url'],'article_date':published,'discovery_day':day,'route':route,'chars':chars,'error':p.get('error'),'qa_status':p.get('qa_status'),'confirmed_source_empty':confirmed_empty(p),'automatic_flags':sorted(set(flags)),'observed_types':types,'body_compact_sha256':hashlib.sha256(compact(p.get('main_text')).encode()).hexdigest() if p.get('main_text') else None,'snapshot_sha256':p.get('snapshot_sha256'),'fields_sha256':fields_digest(p),'manual_review_status':'not_reviewed'}
  rec['independently_recognized_template_ui']=known_ui
+ rec['outside_body_scope_evidence']=outside_caption_evidence
 
  if p.get('error') and not confirmed_empty(p):rec['automatic_flags'].append('unexplained_result_error')
  if p.get('source_specific_error'):rec['automatic_flags'].append('source_specific_error')
