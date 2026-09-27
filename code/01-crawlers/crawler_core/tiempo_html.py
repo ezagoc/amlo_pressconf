@@ -48,7 +48,7 @@ def _clean_body_templates(copy, removed):
             style = re.sub(r'\s+', '', node.get('style', '').casefold())
             if (len(anchors) == 1 and not node.find(['p', 'div', 'blockquote'])
                     and _text(node) == _text(anchors[0])
-                    and re.fullmatch(r'Una publicación compartida por .+ \(@[^()]+\)', _text(node) or '')
+                    and re.fullmatch(r'Una publicación compartida (?:por|de) .+ \(@[^()]+\)', _text(node) or '')
                     and 'color:#c9c8cd' in style and 'text-overflow:ellipsis' in style
                     and _instagram_permalink(anchors[0]['href'])
                     and urlparse(anchors[0]['href']).path.rstrip('/') == urlparse(permalink).path.rstrip('/')):

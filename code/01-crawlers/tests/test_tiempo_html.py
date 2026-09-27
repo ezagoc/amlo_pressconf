@@ -105,6 +105,38 @@ class TiempoHTMLTests(unittest.TestCase):
         self.assertEqual(json.loads(f['media_embeds']), [link])
         self.assertEqual([row['reason'] for row in json.loads(f['removed_body_elements'])], ['instagram_view_post_ui', 'instagram_shared_post_ui'])
 
+
+    def test_real_instagram_de_footer_removed_caption_retained(self):
+        # Saved May27 row7's real footer wording, permalink and defining styles.
+        link = 'https://www.instagram.com/p/C7dm5IQygLO/?utm_source=ig_embed&utm_campaign=loading'
+        wording = 'Una publicación compartida de BLΛƆKPIИK (@blackpinkofficial)'
+        footer = f'<p style="color: #c9c8cd; text-overflow: ellipsis"><a href="{link}">{wording}</a></p>'
+        embed = f'<blockquote class="instagram-media" data-instgrm-permalink="{link}"><p>Texto real de la publicación.</p>{footer}</blockquote>'
+        fields = tiempo_fields(page(body='<p>Antes.</p>' + embed + '<p>Después.</p>'), url=URL)
+        self.assertEqual(fields['main_text'], 'Entrada breve.\nAntes.\nTexto real de la publicación.\nDespués.')
+        self.assertEqual(json.loads(fields['media_embeds']), [link])
+        self.assertEqual(json.loads(fields['removed_body_elements']), [{'reason': 'instagram_shared_post_ui', 'text': wording, 'href': link}])
+
+    def test_instagram_de_words_without_ui_style_or_embed_are_prose(self):
+        link = 'https://www.instagram.com/p/ABC/'
+        wording = 'Una publicación compartida de alguien (@persona)'
+        plain = f'<p><a href="{link}">{wording}</a></p>'
+        styled = f'<p style="color: #c9c8cd; text-overflow: ellipsis"><a href="{link}">{wording}</a></p>'
+        cases = [plain, styled, f'<blockquote class="instagram-media" data-instgrm-permalink="{link}">{plain}</blockquote>']
+        for body in cases:
+            with self.subTest(body=body):
+                fields = tiempo_fields(page(body=body), url=URL)
+                self.assertIn(wording, fields['main_text'])
+                self.assertEqual(json.loads(fields['removed_body_elements']), [])
+
+    def test_instagram_de_different_post_link_not_removed(self):
+        link = 'https://www.instagram.com/p/ABC/'
+        wording = 'Una publicación compartida de alguien (@persona)'
+        footer = f'<p style="color: #c9c8cd; text-overflow: ellipsis"><a href="https://www.instagram.com/p/DIFFERENT/">{wording}</a></p>'
+        fields = tiempo_fields(page(body=f'<blockquote class="instagram-media" data-instgrm-permalink="{link}">{footer}</blockquote>'), url=URL)
+        self.assertIn(wording, fields['main_text'])
+        self.assertEqual(json.loads(fields['removed_body_elements']), [])
+
     def test_instagram_words_outside_template_not_removed(self):
         text = '<p>Ver esta publicación en Instagram</p><p>Una publicación compartida por alguien (@persona)</p>'
         for body in [text, '<blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/ABC/">' + text + '</blockquote>']:
