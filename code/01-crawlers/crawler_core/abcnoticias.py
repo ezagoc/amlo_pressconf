@@ -39,6 +39,7 @@ TLS_ERROR_MARKERS = (
     "ssl",
     "tls",
 )
+_NODE_TLS_REQUIRED = False
 
 
 @dataclass(frozen=True)
@@ -201,6 +202,9 @@ def fetch_abc(
     profile: str = "browser",
 ) -> dict[str, object]:
     """Fetch ABC normally, with a verified Node TLS fallback for Schannel failures."""
+    global _NODE_TLS_REQUIRED
+    if _NODE_TLS_REQUIRED:
+        return fetch_abc_with_node(url, timeout, body_text_limit=body_text_limit)
     response = fetch(
         url,
         timeout,
@@ -209,6 +213,7 @@ def fetch_abc(
     )
     if is_ok(response.get("status")) or not is_tls_error(response.get("error")):
         return response
+    _NODE_TLS_REQUIRED = True
     fallback = fetch_abc_with_node(url, timeout, body_text_limit=body_text_limit)
     if is_ok(fallback.get("status")):
         return fallback

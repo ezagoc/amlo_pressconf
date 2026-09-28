@@ -26,7 +26,10 @@ from crawler_core.commoncrawl import (  # noqa: E402
     write_commoncrawl_outputs,
 )
 from crawler_core.commoncrawl_archive import (  # noqa: E402
+    fetch_domain_archive_query,
     fetch_sdp_archive_query,
+    load_host_archive_records,
+    normalize_grupo_reforma_url,
     load_sdp_archive_records,
     read_range,
 )
@@ -131,6 +134,49 @@ class CommonCrawlFailureTests(unittest.TestCase):
         self.assertIn("historical-story", response["text"])
         self.assertNotIn("another-story", response["text"])
         self.assertNotIn("bare-host-story", response["text"])
+
+    def test_direct_archive_query_uses_exact_requested_host(self) -> None:
+        records = (
+            {"url": "https://www.reforma.com/one-story/ar123456"},
+            {"url": "https://reforma.com/bare-story/ar123457"},
+            {"url": "https://www.elnorte.com/other-story/ar123458"},
+        )
+        url = "https://index.commoncrawl.org/CC-MAIN-2020-50-index?url=www.reforma.com%2F&limit=10"
+        with patch("crawler_core.commoncrawl_archive.load_host_archive_records", return_value=records):
+            response = fetch_domain_archive_query(url, 1, body_text_limit=1000)
+        self.assertEqual(response["status"], 200)
+        self.assertIn("one-story", response["text"])
+        self.assertIn("https://www.reforma.com/bare-story", response["text"])
+        self.assertNotIn("other-story", response["text"])
+
+    def test_subscription_redirect_recovers_article_url(self) -> None:
+        source = (
+            "https://www.reforma.com/libre/acceso/accesofb.htm?"
+            "urlredirect=/historical-story/op193269"
+        )
+        self.assertEqual(
+            normalize_grupo_reforma_url(source, "www.reforma.com"),
+            "https://www.reforma.com/historical-story/op193269",
+        )
+
+    def test_host_archive_records_use_www_surt_prefix(self) -> None:
+        record = {
+            "url": "https://www.reforma.com/old-story/ar123456",
+            "mime": "text/html",
+            "status": "200",
+        }
+        line = b"com,reforma)/old-story/ar123456 20201101020304 " + json.dumps(record).encode()
+        compressed = gzip.compress(line + b"\n")
+        load_host_archive_records.cache_clear()
+        with patch("crawler_core.commoncrawl_archive.head_content_length", return_value=100):
+            with patch(
+                "crawler_core.commoncrawl_archive.find_surt_blocks",
+                return_value=[("cdx-00001.gz", 0, len(compressed))],
+            ):
+                with patch("crawler_core.commoncrawl_archive.read_range", return_value=compressed):
+                    records = load_host_archive_records("CC-MAIN-2020-50", "www.reforma.com", 1)
+        self.assertEqual(records[0]["timestamp"], "20201101020304")
+        load_host_archive_records.cache_clear()
 
     def test_archive_range_retry_uses_alternate_host(self) -> None:
         class Response:

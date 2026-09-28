@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import calendar
 import json
+import re
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -12,7 +13,7 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 import pandas as pd
 
 from crawler_core.capabilities import fetch, markdown_table
-from crawler_core.commoncrawl import article_path_candidates
+from crawler_core.commoncrawl import article_path_candidates, augment_sources_from_registry
 from crawler_core.category_pagination import infer_topic_from_url
 from crawler_core.sitemaps import likely_article_url
 
@@ -35,12 +36,18 @@ def load_wayback_sources(
     capabilities_path: Path,
     *,
     strategies: set[str] | None = None,
+    registry_path: Path | None = None,
+    requested_source_ids: list[str] | None = None,
 ) -> pd.DataFrame:
     """Load sources for Wayback discovery."""
     capabilities = pd.read_csv(capabilities_path)
     if strategies:
         capabilities = capabilities[capabilities["recommended_strategy"].isin(strategies)].copy()
-    return capabilities.reset_index(drop=True)
+    return augment_sources_from_registry(
+        capabilities,
+        registry_path=registry_path,
+        requested_source_ids=requested_source_ids,
+    )
 
 
 def discover_wayback_urls(
@@ -201,6 +208,8 @@ def likely_wayback_article_url(url: object, source_id: object) -> bool:
     if str(source_id) == "aristeguinoticias":
         segments = [segment for segment in urlparse(str(url)).path.strip("/").split("/") if segment]
         return len(segments) >= 3 and len(segments[0]) == 4 and segments[0].isdigit()
+    if str(source_id) in {"reforma", "elnorte"}:
+        return bool(re.search(r"/(?:ar|op)\d+/?$", urlparse(str(url)).path, flags=re.I))
     return likely_article_url(url)
 
 
@@ -323,6 +332,8 @@ def wayback_url_patterns(
         hosts.append(f"www.{host}")
 
     article_paths = article_path_candidates(source, path_patterns=path_patterns)
+    if include_broad_domain and str(source.get("source_id")) in {"reforma", "elnorte"}:
+        return dedupe_preserve_order(f"{candidate_host}/{base_path}*" for candidate_host in hosts)
     patterns = []
     for candidate_host in hosts:
         for article_path in article_paths:

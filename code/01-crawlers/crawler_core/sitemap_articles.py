@@ -562,6 +562,8 @@ def extract_one_sitemap_article(
                 fields[key] = value
 
     row.update(fields)
+    if not is_blank_value(row.get("main_text")):
+        row["body_character_count"] = len(str(row["main_text"]))
     inferred_wayback_date = infer_aristegui_wayback_date(
         source_id=source_id,
         discovery_strategy=item.get("discovery_strategy"),
@@ -574,7 +576,9 @@ def extract_one_sitemap_article(
         row["date_published"] = item.get("lastmod")
     if is_blank_value(row.get("date")):
         row["date"] = first_present(row.get("date_published"), row.get("date_modified"), row.get("lastmod"))
-    if is_blank_value(row.get("main_text")) or is_low_quality_source_text(source_id, row.get("main_text")):
+    if str(source_id) in {"reforma", "elnorte"} and row.get("access_type") == "premium":
+        row["error"] = "subscription_teaser_only"
+    elif is_blank_value(row.get("main_text")) or is_low_quality_source_text(source_id, row.get("main_text")):
         row["error"] = "missing_main_text"
     elif is_blank_value(first_present(row.get("date_published"), row.get("date"), row.get("lastmod"))):
         row["error"] = "missing_date"
@@ -670,6 +674,7 @@ def base_sitemap_article_row(item: pd.Series) -> dict[str, object]:
         "title": pd.NA,
         "summary": pd.NA,
         "main_text": pd.NA,
+        "body_character_count": pd.NA,
         "authors": pd.NA,
         "date": item.get("lastmod"),
         "date_published": pd.NA,
@@ -678,6 +683,7 @@ def base_sitemap_article_row(item: pd.Series) -> dict[str, object]:
         "topic": item.get("topic"),
         "section": item.get("topic"),
         "language": pd.NA,
+        "access_type": pd.NA,
         "discovery_strategy": item.get("discovery_strategy", "sitemap"),
         "extractor_strategy": "sitemap_html",
         "sitemap_url": item.get("sitemap_url"),
@@ -748,6 +754,7 @@ def article_fields_from_html(html: str, *, url: str, source_id: object = pd.NA) 
             extract_main_text(soup),
         )
     language = soup.html.get("lang") if soup.html and soup.html.get("lang") else pd.NA
+    access_type = article_access_type(soup, article_json, source_id)
 
     fields = {
         "canonical_url": canonical_url,
@@ -759,11 +766,36 @@ def article_fields_from_html(html: str, *, url: str, source_id: object = pd.NA) 
         "date_published": date_published,
         "date_modified": date_modified,
         "language": language,
+        "access_type": access_type,
     }
     if not is_blank_value(archive_fields.get("topic")):
         fields["topic"] = archive_fields["topic"]
         fields["section"] = archive_fields["topic"]
     return fields
+
+
+def article_access_type(
+    soup: BeautifulSoup, article_json: dict[str, object], source_id: object
+) -> object:
+    """Return a normalized free/premium marker when the page declares one."""
+    if str(source_id) in {"reforma", "elnorte"}:
+        premium = first_meta_content(soup, ("cxenseparse:ref-premium",))
+        if not is_blank_value(premium):
+            lowered = str(premium).strip().lower()
+            if lowered in {"true", "1", "yes"}:
+                return "premium"
+            if lowered in {"false", "0", "no"}:
+                return "free"
+    accessible = article_json.get("isAccessibleForFree")
+    if isinstance(accessible, bool):
+        return "free" if accessible else "premium"
+    if not is_blank_value(accessible):
+        lowered = str(accessible).strip().lower()
+        if lowered in {"true", "1", "yes"}:
+            return "free"
+        if lowered in {"false", "0", "no"}:
+            return "premium"
+    return pd.NA
 
 
 def eluniversal_archive_fields(
@@ -1043,6 +1075,9 @@ def likely_article_url_for_source(source_id: object, url: object) -> bool:
         from crawler_core.eluniversal import is_eluniversal_article_url
 
         return is_eluniversal_article_url(url)
+
+    if source_text in {"reforma", "elnorte"}:
+        return bool(re.search(r"/(?:ar|op)\d+/?$", urlparse(str(url)).path, flags=re.I))
 
     if source_text in LAJORNADA_MAYA_SOURCE_IDS:
         return likely_article_url(url) and len(segments) >= 3 and segments[1].isdigit()

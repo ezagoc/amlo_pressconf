@@ -1852,3 +1852,57 @@ Suggested MVS full run:
 ```powershell
 python .\code\01-crawlers\scripts\discover_google_urls.py --source-id mvsnoticias --from 2018-01-01 --to 2026-09-14 --query-mode date-inurl --query-mode date-range --section-path nacional --section-path mundo --section-path economia --section-path entretenimiento --section-path deportes --section-path entrevistas --section-path nuevo-leon --saturation-threshold 80 --max-results-per-query 100 --max-urls-per-source 200000 --timeout 60 --pause-seconds 1 --append-existing
 ```
+
+## Reforma and El Norte discovery
+
+2026-09-28 completed the official sitemap and Common Crawl discovery passes for
+Reforma and El Norte.
+
+- Official rolling sitemap discovery:
+  - Reforma: 15,089 URLs.
+  - El Norte: 6,369 URLs.
+  - The feeds cover roughly 2026-06-28 onward; they are not historical archives.
+- Direct Common Crawl index-file discovery:
+  - all 82 available indexes from 2018 through 2026 completed after checkpointed
+    retries;
+  - Reforma: 124,384 historical URLs;
+  - El Norte: 111,871 historical URLs;
+  - historical URL families include both `/arNNNNNN` news and `/opNNNNNN`
+    opinion pages.
+- Final merged outputs:
+  - `discovered_urls_reforma.csv` / `.parquet`: 139,473 unique URLs;
+  - `discovered_urls_elnorte.csv` / `.parquet`: 118,240 unique URLs;
+  - reports: `reforma_discovery_report.md` and
+    `elnorte_discovery_report.md`.
+- Integrity audit: zero null URLs, zero duplicate `source_id,url` keys, and all
+  URLs use the expected canonical host.
+
+New reusable code:
+
+- `crawler_core/news_sitemaps.py`
+- `scripts/discover_news_sitemap_urls.py`
+- `crawler_core/commoncrawl_archive.py` now supports direct range reads for
+  Reforma and El Norte when the public CDX query server returns 504s.
+- `crawler_core/discovery_merge.py`
+- `scripts/merge_discovery_urls.py`
+- `crawler_core/gdelt.py`
+- `scripts/discover_gdelt_urls.py`
+
+Known coverage limitation:
+
+- Common Crawl article coverage ends around article ID 2,612,143 (May 2023),
+  while the rolling sitemap begins around ID 3,227,530 (June 2026).
+- GDELT returns useful canonical domain-specific URLs for this gap, but its API
+  was returning persistent HTTP 429 responses on 2026-09-28 even after a
+  65-second cooldown. The GDELT crawler checkpoints each weekly interval and
+  adaptively splits capped queries; rerun it later rather than starting over.
+- Grupo Reforma's `/x/ar<ID>` route resolves valid numeric IDs and exposes the
+  source-independent `cXenseParse:ref-origen` metadata field. This is a valid
+  fallback for the remaining gap, but probing the entire 615,000-ID range would
+  be far heavier than a successful GDELT pass.
+
+GDELT gap command:
+
+```powershell
+python .\code\01-crawlers\scripts\discover_gdelt_urls.py --source-id reforma --source-id elnorte --from-date 2023-05-27 --to-date 2026-06-27 --state-db .\tmp\gdelt_grupo_reforma\gdelt.sqlite --output-dir .\tmp\gdelt_grupo_reforma\discovery --reports-dir .\tmp\gdelt_grupo_reforma\reports --window-days 7 --request-interval-seconds 6 --request-retries 3 --retry-backoff-seconds 10 --timeout 90 --resume
+```
