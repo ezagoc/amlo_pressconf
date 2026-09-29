@@ -1,0 +1,15 @@
+{
+  "final_dataset": "output/amlo_tracking_poll_daily.csv",
+  "accepted_observations": "inputs/accepted_observations.csv",
+  "calendar_days": 1997,
+  "approval_observed_days": 1919,
+  "approval_interpolated_days": 78,
+  "disapproval_observed_days": 1596,
+  "disapproval_complement_days": 323,
+  "disapproval_interpolated_days": 78,
+  "evidence_images": 1292,
+  "final_sha256": "1e5e36589256946731cbbe79ca52db1f0fe9071d2ee5f5c1fc6e00d9962bcdb7",
+  "accepted_sha256": "68d0544da556c70ad48f7e3ccd459810cf784e5090dab1095a5b70f403ddf868",
+  "selected_source_sha256": "41f65d667fa3d4fc88cd30a05146f9886ea6b14b525da7553d5502211a0a346b",
+  "package_bytes_uncompressed": 241404953
+}

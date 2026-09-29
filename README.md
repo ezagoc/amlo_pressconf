@@ -66,3 +66,10 @@ output_file <- media_output_path("data", "folder", "output.csv")
 ## Presentations
 
 The existing `presentations/` folder contains project PDFs that are small enough to keep with the repo unless you decide to move them into Dropbox later.
+
+## AMLO Tracking Poll approval series
+
+The approval data workflow is documented in
+[`code/06-outcomes/approval_tracking/README.md`](code/06-outcomes/approval_tracking/README.md).
+Its code is tracked here; frozen inputs, evidence images, and generated output
+are in `MEDIA_ROOT/data/06-outcomes/approval_tracking/`.
