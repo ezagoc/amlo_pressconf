@@ -40,7 +40,8 @@ ARTICLE_COLUMNS = [
     "expected_year", "selection_reason", "expected_kind", "sample_metadata_json",
     "manifest_sha256", "updated_at", "attempt_id",
 ]
-OUTPUT_NAMES = ("articles.csv", "articles.parquet", "attempts.csv", "attempts.parquet", "export_manifest.json")
+OUTPUT_NAMES = ("articles.csv", "articles.parquet", "attempts.csv", "attempts.parquet",
+                "retained_results.csv", "retained_results.parquet", "export_manifest.json")
 ANNOTATION_NAME = "review_annotations.json"
 REVIEW_COLUMNS = [
     "manual_review_status", "manual_review_result", "prior_review_result",
@@ -623,8 +624,13 @@ def export_outputs(conn, run_dir, manifest_hash, backups, items):
                       "snapshot_path", "snapshot_sha256", "cached_recovery", "retained_success", "manifest_sha256", "response_json",
                       "title", "date_published", "main_text", "expected_kind", "expected_year", "selection_reason", "export_role", "primary_export_url"]
     attempt_fields += REVIEW_COLUMNS
+    # All request results stay inspectable, including source-empty titles and
+    # zero-prose video pages. This export does not promote errors to success or
+    # merge article units; the legacy successful-article view is unchanged.
+    retained_fields = list(dict.fromkeys(ARTICLE_COLUMNS + REVIEW_COLUMNS + [k for row in stored for k in row]))
     staged = {}
-    for stem, records, columns in (("articles", articles, article_fields), ("attempts", attempts, attempt_fields)):
+    for stem, records, columns in (("articles", articles, article_fields), ("attempts", attempts, attempt_fields),
+                                   ("retained_results", stored, retained_fields)):
         serial = [{k: json.dumps(clean(v), ensure_ascii=False) if isinstance(v, (dict, list)) else clean(v) for k, v in r.items()} for r in records]
         frame = pd.DataFrame(serial, columns=columns)
         for column in ("status", "ordinal", "network_request", "cached_recovery", "retained_success"):
@@ -642,6 +648,8 @@ def export_outputs(conn, run_dir, manifest_hash, backups, items):
             atomic_bytes(target, data)
     summary = {"manifest_sha256": manifest_hash, "exported_at": now(), "source_id": "tiempo", "article_rows": len(articles),
                "successful_url_rows": len(successful), "canonical_alias_rows": len(successful) - len(articles), "result_rows": len(stored),
+               "retained_result_rows": len(stored),
+               "retained_results_definition": "All committed request rows, unmerged; errors and source gaps retained, not article acceptance.",
                "canonical_collision_groups": collision_groups,
                "error_results": len(stored) - len(successful), "attempt_rows": len(attempts),
                "network_fetch_calls_started": sum(int(r["network_request"]) for r in attempts),

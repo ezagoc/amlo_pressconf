@@ -26,6 +26,92 @@ def require(ok,message):
 
 def norm(s):return re.sub(r'\s+',' ',s or '').strip() or None
 def compact(s):return re.sub(r'\s+','',unicodedata.normalize('NFC',s or ''))
+
+def publication_dates_agree(left,right):
+ """Compare independently observed dates at their shared explicit precision.
+
+ Two stated offsets denote instants. If an offset is absent, compare the
+ displayed clock without inventing a timezone. A date-only value supplies no
+ clock evidence. Invalid/non-string values are not equivalent evidence.
+ """
+ def parse(value):
+  if not isinstance(value,str):raise ValueError('Not a date string')
+  value=value.strip()
+  match=re.fullmatch(r'\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2}(?:[.,](\d{1,6}))?)?(?:Z|[+-]\d{2}:?\d{2})?)?',value)
+  if not match:raise ValueError('Unrecognized date precision')
+  date=datetime.fromisoformat(value.replace('Z','+00:00'))
+  precision=0 if len(value)==10 else 1 if not re.search(r'[T ]\d{2}:\d{2}:\d{2}',value) else 2+len(match[1] or '')
+  return date,precision
+ try:a,ap=parse(left);b,bp=parse(right)
+ except (ValueError,TypeError,OverflowError):return False
+ precision=min(ap,bp)
+ if precision==0:return a.date()==b.date()
+ if a.utcoffset() is not None and b.utcoffset() is not None:
+  a,b=a.astimezone(timezone.utc),b.astimezone(timezone.utc)
+ a,b=a.replace(tzinfo=None),b.replace(tzinfo=None)
+ if precision==1:return a.replace(second=0,microsecond=0)==b.replace(second=0,microsecond=0)
+ factor=10**(6-(precision-2))
+ return a.replace(microsecond=a.microsecond//factor*factor)==b.replace(microsecond=b.microsecond//factor*factor)
+
+def remove_terminal_related_links(body):
+ """Exclude only a final standalone recommendation, preserving its evidence.
+
+ This independently inspects the disposable source DOM; it does not consult
+ extracted removed_body_elements. Mid-article links and mixed prose remain.
+ """
+ removed=[]
+ for node in reversed(list(body.find_all('p'))):
+  links=node.find_all('a',href=True)
+  text=norm(node.get_text(' ',strip=True))
+  if (len(links)!=1 or node.find(['p','div','blockquote','ul','ol','table'])
+      or text!=norm(links[0].get_text(' ',strip=True))
+      or not re.match(r'^Podría interesarte:\s*\S',text or '',re.I)):continue
+  strings=list(body.strings);own=list(node.strings)
+  final_index=next((i for i in range(len(strings)-1,-1,-1) if own and strings[i] is own[-1]),None)
+  if final_index is None or any(str(value).strip() for value in strings[final_index+1:]):continue
+  removed.append({'reason':'terminal_related_article_link','text':text,'href':links[0]['href']})
+  node.decompose()
+ return removed
+
+def native_video_links(body,base_url):
+ """Native video resources only, resolved against the response URL."""
+ links=[]
+ excluded={id(node) for node in body.select('script,style,noscript,iframe,form,button,nav,footer,aside,.share-buttons,.publicidad-content,.ad,#sidebar')}
+ for node in body.select('video[src],video source[src]'):
+  if id(node) in excluded or any(id(parent) in excluded for parent in node.parents):continue
+  raw=node.get('src')
+  if not isinstance(raw,str) or not raw.strip():continue
+  try:
+   value=urljoin(base_url,raw.strip());parsed=urlsplit(value)
+   if parsed.scheme not in {'http','https'} or not parsed.hostname or parsed.username is not None or parsed.password is not None:continue
+   parsed.port  # Reject invalid ports rather than making an unusable resource.
+  except ValueError:continue
+  links.append(value)
+ return links
+
+def recognized_source_videos(body,base_url):
+ """Independent video markup evidence, never inferred from output labels."""
+ evidence=[]
+ if body is None:return evidence
+ scopes='script,style,noscript,iframe,form,button,nav,footer,aside,.share-buttons,.publicidad-content,.ad,#sidebar'
+ ignored={id(node) for node in body.select(scopes)}
+ ignored_self={id(node) for node in body.select(scopes.replace(',iframe',''))}
+ for node in body.select('video[src],video source[src],iframe[src],blockquote.twitter-video a[href]'):
+  if id(node) in ignored_self or any(id(parent) in ignored for parent in node.parents):continue
+  attr='href' if node.name=='a' else 'src';raw=node.get(attr)
+  if not isinstance(raw,str) or not raw.strip():continue
+  try:
+   resolved=urljoin(base_url,raw.strip());parsed=urlsplit(resolved);parsed.port
+   if parsed.scheme not in {'http','https'} or not parsed.hostname or parsed.username is not None or parsed.password is not None:continue
+  except ValueError:continue
+  kind=None
+  if node.name in {'video','source'}:kind='native_video'
+  elif node.name=='iframe':
+   if parsed.hostname in {'youtube.com','www.youtube.com','youtube-nocookie.com','www.youtube-nocookie.com'} and re.fullmatch(r'/(?:embed|v)/[^/]+/?',parsed.path):kind='youtube_iframe'
+   elif parsed.hostname=='player.vimeo.com' and re.fullmatch(r'/video/\d+/?',parsed.path):kind='vimeo_iframe'
+  elif parsed.hostname in {'twitter.com','www.twitter.com','x.com','www.x.com'} and re.fullmatch(r'/[^/]+/(?:status|statuses)/\d+/?',parsed.path):kind='twitter_video'
+  if kind:evidence.append({'kind':kind,'tag':node.name,'raw_url':raw,'url':resolved})
+ return evidence
 def confirmed_empty(p):
  try:e=json.loads(p.get('source_title_evidence') or 'null')
  except (ValueError,TypeError):return False
@@ -151,7 +237,7 @@ def remove_contract_main_image_captions(article):
  return removed
 
 def diagnose(p,run_dir):
- flags=[];outside_caption_evidence=[]
+ flags=[];outside_caption_evidence=[];markup_warnings=[];markup_evidence=[]
  qa=p.get('qa_status');has_error=bool(p.get('error'))
  for channel in ['url','final_url','canonical_url']:
   value=urlsplit(p.get(channel) or '')
@@ -170,7 +256,15 @@ def diagnose(p,run_dir):
  bodies=article.select('.complementos-container') if article else []
  leads=[x for x in article.select('blockquote') if not x.find_parent(class_='complementos-container')] if article else []
  body=bodies[0] if bodies else None;lead=leads[0] if leads else None
- if len(soup.select('article'))!=1 or len(articles)!=1 or len(bodies)!=1 or len(leads)!=1:flags.append('ambiguous_article_body_or_lead_containers')
+ extra_articles=[node for node in soup.select('article') if node is not article]
+ nested_body_articles=[node for node in extra_articles if body is not None and any(parent is body for parent in node.parents)]
+ if len(articles)!=1 or len(bodies)!=1 or len(leads)!=1 or len(nested_body_articles)!=len(extra_articles):flags.append('ambiguous_article_body_or_lead_containers')
+ if nested_body_articles:
+  markup_warnings.append('nested_article_markup_inside_body')
+  markup_evidence=[{'tag':'article','attributes':dict(node.attrs)} for node in nested_body_articles]
+  for node in body.select('[data-message-author-role],[data-testid^="conversation-turn-"]'):
+   markup_evidence.append({'tag':node.name,'attributes':dict(node.attrs)})
+  if any('data-message-author-role' in item['attributes'] or str(item['attributes'].get('data-testid','')).startswith('conversation-turn-') for item in markup_evidence):markup_warnings.append('source_embedded_conversation_markup')
  if article:
   if len(article.select('header h1'))!=1:flags.append('ambiguous_visible_title_structure')
   # A second news body or prose sibling must not disappear through the same
@@ -204,12 +298,13 @@ def diagnose(p,run_dir):
  else:flags.append('missing_article_date')
  byline=norm(lead.get_text(' ',strip=True)).split('Por:',1)[-1] if lead else None
  months={'enero':1,'febrero':2,'marzo':3,'abril':4,'mayo':5,'junio':6,'julio':7,'agosto':8,'septiembre':9,'setiembre':9,'octubre':10,'noviembre':11,'diciembre':12}
- visible_date=re.search(r'(\d{1,2})\s+('+'|'.join(months)+r')\s+(\d{4})\s+(\d{1,2}):(\d{2})',byline or '',re.I)
+ visible_date=re.search(r'(\d{1,2})\s+('+'|'.join(months)+r')\s+(\d{4})(?:\s+(\d{1,2}):(\d{2}))?',byline or '',re.I)
  if not visible_date:flags.append('unrecognized_visible_byline_date')
  elif published:
   dd,mm,yy,hh,mi=visible_date.groups()
-  visible_minute=f'{int(yy):04d}-{months[mm.lower()]:02d}-{int(dd):02d}T{int(hh):02d}:{int(mi):02d}'
-  if published[:16]!=visible_minute:flags.append('visible_byline_date_difference')
+  visible_value=f'{int(yy):04d}-{months[mm.lower()]:02d}-{int(dd):02d}'
+  if hh is not None:visible_value+=f'T{int(hh):02d}:{int(mi):02d}'
+  if not publication_dates_agree(visible_value,published):flags.append('visible_byline_date_difference')
  ld_articles=[]
  def scan_ld(value):
   if isinstance(value,dict):
@@ -224,12 +319,16 @@ def diagnose(p,run_dir):
   except (ValueError,TypeError):flags.append('unparseable_jsonld_requires_reading')
  if len(ld_articles)>1:flags.append('multiple_jsonld_articles_requires_reading')
  elif len(ld_articles)==1:
-  if published and ld_articles[0].get('datePublished')!=published:flags.append('article_vs_jsonld_date_difference')
+  value=ld_articles[0].get('datePublished')
+  if published and value not in (None,'') and not publication_dates_agree(value,published):flags.append('article_vs_jsonld_date_difference')
   if not p.get('title') and any(norm(ld_articles[0].get(k)) for k in ['headline','name','alternativeHeadline']):flags.append('available_jsonld_title_while_title_missing')
- author=norm(lead.select_one('a.m-r-sm').get_text(' ',strip=True)) if lead and lead.select_one('a.m-r-sm') else None
+ # The publication byline can be plain text or split across formatting tags;
+ # an author hyperlink is presentation, not required authorship evidence.
+ author_byline=re.search(r'Por:\s*(.*?)\s+\d{1,2}\s+(?:'+'|'.join(months)+r')\s+\d{4}(?:\s+\d{1,2}:\d{2})?',norm(lead.get_text(' ',strip=True)) or '',re.I) if lead else None
+ author=norm(author_byline.group(1)) if author_byline else (norm(lead.select_one('a.m-r-sm').get_text(' ',strip=True)) if lead and lead.select_one('a.m-r-sm') else None)
  if author!=norm(p.get('authors')):flags.append('visible_author_difference')
  og=[x.get('content') for x in soup.select('meta[property="og:article:published_time"],meta[property="article:published_time"]')]
- if published and any(v and v!=published for v in og):flags.append('article_vs_og_date_difference')
+ if published and any(v and not publication_dates_agree(v,published) for v in og):flags.append('article_vs_og_date_difference')
  canonical=[x.get('href') for x in soup.select('link[rel="canonical"]')]
  declared=[value.strip() for value in canonical if isinstance(value,str) and value.strip()]
  identities=set()
@@ -243,14 +342,16 @@ def diagnose(p,run_dir):
    if normalize_url(p['canonical_url']) not in identities:flags.append('canonical_source_difference')
   except ValueError:flags.append('invalid_canonical_output_identity')
  else:flags.append('missing_canonical_output_field')
- bodytext='';known_ui=[]
+ bodytext='';leadtext='';known_ui=[]
  media=[]
  if body:
-  media=[x.get('src') for x in body.select('iframe[src]')]+[x.get('cite') for x in body.select('blockquote[cite]')]+[x.get('data-instgrm-permalink') for x in body.select('blockquote.instagram-media[data-instgrm-permalink]')]+[x.get('href') for x in body.select('blockquote.twitter-tweet a[href]') if re.search(r'/status/\d+',x.get('href',''))]
+  media=[x.get('src') for x in body.select('iframe[src]')]+[x.get('cite') for x in body.select('blockquote[cite]')]+[x.get('data-instgrm-permalink') for x in body.select('blockquote.instagram-media[data-instgrm-permalink]')]+[x.get('href') for x in body.select('blockquote.twitter-tweet a[href],blockquote.twitter-video a[href]') if re.search(r'/(?:status|statuses)/\d+',x.get('href',''))]
+  media+=native_video_links(body,p.get('final_url') or p.get('url') or '')
   clone=BeautifulSoup(str(body),'html.parser')
   for x in clone(['script','style','iframe']):x.decompose()
   for x in clone.find_all(string=lambda x:isinstance(x,Comment)):x.extract()
   known_ui=remove_known_instagram_ui(clone)
+  known_ui+=remove_terminal_related_links(clone)
   bodytext=clone.get_text('',strip=False)
  if lead:
   leadtext=lead.get_text('',strip=False).split('Por:',1)[0]
@@ -272,6 +373,8 @@ def diagnose(p,run_dir):
  rec={'sample_id':p['sample_id'],'url':p['url'],'article_date':published,'discovery_day':day,'route':route,'chars':chars,'error':p.get('error'),'qa_status':p.get('qa_status'),'confirmed_source_empty':confirmed_empty(p),'automatic_flags':sorted(set(flags)),'observed_types':types,'body_compact_sha256':hashlib.sha256(compact(p.get('main_text')).encode()).hexdigest() if p.get('main_text') else None,'snapshot_sha256':p.get('snapshot_sha256'),'fields_sha256':fields_digest(p),'manual_review_status':'not_reviewed'}
  rec['independently_recognized_template_ui']=known_ui
  rec['outside_body_scope_evidence']=outside_caption_evidence
+ rec['source_markup_warnings']=sorted(set(markup_warnings))
+ rec['source_markup_evidence']=markup_evidence
 
  if p.get('error') and not confirmed_empty(p):rec['automatic_flags'].append('unexplained_result_error')
  if p.get('source_specific_error'):rec['automatic_flags'].append('source_specific_error')
@@ -285,6 +388,22 @@ def diagnose(p,run_dir):
   title_channels += [norm(html.unescape(x.get('headline') or '')) for x in ld_articles]
   if any(v and v!=heading for v in title_channels):rec['automatic_flags'].append('source_title_metadata_disagreement')
  rec['automatic_flags']=sorted(set(rec['automatic_flags']))
+ # A missing text body is a known source content limitation only when source
+ # markup independently establishes video and every other contract check holds.
+ # Preserve native qa/error/null fields; never use article_kind as an oracle.
+ video_evidence=recognized_source_videos(body,p.get('final_url') or p.get('url') or '')
+ allowed_video_flags={'missing_body','unexplained_result_error','suspicious_very_short_body_review_only'}
+ verified_video_only=(bool(video_evidence) and qa=='error' and p.get('error')=='missing_body'
+  and p.get('main_text') is None and not norm(p.get('summary')) and not compact(leadtext+bodytext)
+  and bool(title) and bool(published) and bool(p.get('canonical_url')) and bool(declared)
+  and p.get('publication_date_source') in {'visible_byline','jsonld.datePublished','og:article:published_time','article:published_time','datePublished'}
+  and not p.get('source_specific_error') and not p.get('date_conflict')
+  and len(articles)==len(bodies)==len(leads)==1
+  and set(rec['automatic_flags'])<=allowed_video_flags)
+ rec['recognized_video_only']=verified_video_only
+ rec['independent_video_evidence']=video_evidence
+ rec['source_content_warnings']=['source_video_without_text'] if verified_video_only else []
+ if verified_video_only:rec['automatic_flags']=[flag for flag in rec['automatic_flags'] if flag not in {'missing_body','unexplained_result_error'}]
  rec['signature']=hashlib.sha256(json.dumps([rec['observed_types'],'source_empty_title' if confirmed_empty(p) else 'present_title'],ensure_ascii=False,separators=(',',':')).encode()).hexdigest()
  return rec
 

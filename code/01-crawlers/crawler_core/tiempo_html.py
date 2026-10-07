@@ -12,6 +12,8 @@ from bs4 import BeautifulSoup, Comment
 MONTHS = dict(zip("enero febrero marzo abril mayo junio julio agosto septiembre octubre noviembre diciembre".split(), range(1, 13)))
 MONTHS["setiembre"] = 9
 BYLINE = re.compile(r"Por:\s*(.*?)\s+(\d{1,2})\s+(" + "|".join(MONTHS) + r")\s+(20\d{2})(?:\s+(\d{1,2}):(\d{2}))?", re.I)
+MEDIA_CLASSIFICATION_VERSION = "tiempo_media_v1"
+_NON_BODY_MEDIA_SCOPES = "script,style,noscript,iframe,form,button,nav,footer,aside,.share-buttons,.publicidad-content,.ad,#sidebar"
 
 
 def _text(node):
@@ -343,10 +345,84 @@ def _source_title_audit(soup, article, article_json, jsonld_errors, fields, cont
                                                 'jsonld_parse_errors': jsonld_errors}, ensure_ascii=False)
 
 
+def _media_http_url(raw, base):
+    """Resolve a source URL without allowing non-web schemes or credentials."""
+    if not isinstance(raw, str) or not raw.strip():
+        return None
+    try:
+        resolved = urljoin(base, raw.strip())
+        parsed = urlparse(resolved)
+        # Reading port catches malformed explicit ports, even though no port
+        # is needed to extract a URL. Nothing here requests or validates media.
+        parsed.port
+        if (parsed.scheme not in {"http", "https"} or not parsed.hostname
+                or parsed.username is not None or parsed.password is not None):
+            return None
+    except ValueError:
+        return None
+    return resolved
+
+
+def _video_evidence(content, *, url):
+    """Recognize narrow in-body video evidence, not arbitrary embedded links.
+
+    This classification describes observed source markup, not editorial intent,
+    source acceptance, or the contents of the video. Source quotations stay in
+    the ordinary body extraction; no transcript or headline is generated.
+    """
+    if content is None:
+        return [], []
+    ignored = {id(node) for node in content.select(_NON_BODY_MEDIA_SCOPES)}
+    non_iframe_ignored = {id(node) for node in content.select(_NON_BODY_MEDIA_SCOPES.replace(",iframe", ""))}
+
+    def in_body(node):
+        # An iframe is itself a recognized media element, but enclosing ads,
+        # forms, sidebars and fallback iframe descendants are outside the body.
+        current = node.parent
+        while current is not None and current is not content:
+            if id(current) in ignored:
+                return False
+            current = current.parent
+        return current is content and id(node) not in non_iframe_ignored
+
+    evidence, native_urls = [], []
+
+    def add(node, attr, source, *, native=False):
+        raw = node.get(attr)
+        resolved = _media_http_url(raw, url)
+        if resolved and in_body(node):
+            evidence.append({"source": source, "raw_url": raw, "url": resolved, "media_kind": "video"})
+            if native:
+                native_urls.append(resolved)
+
+    for node in content.select("video[src], video source[src]"):
+        source = "native_video.src" if node.name == "video" else "native_video.source.src"
+        add(node, "src", source, native=True)
+    for node in content.select("iframe[src]"):
+        resolved = _media_http_url(node.get("src"), url)
+        if not resolved:
+            continue
+        parsed = urlparse(resolved)
+        if (parsed.hostname in {"youtube.com", "www.youtube.com", "youtube-nocookie.com", "www.youtube-nocookie.com"}
+                and re.fullmatch(r"/(?:embed|v)/[^/]+/?", parsed.path)):
+            add(node, "src", "youtube_iframe.src")
+        elif parsed.hostname == "player.vimeo.com" and re.fullmatch(r"/video/\d+/?", parsed.path):
+            add(node, "src", "vimeo_iframe.src")
+    for node in content.select("blockquote.twitter-video a[href]"):
+        resolved = _media_http_url(node.get("href"), url)
+        if not resolved:
+            continue
+        parsed = urlparse(resolved)
+        if (parsed.hostname in {"twitter.com", "www.twitter.com", "x.com", "www.x.com"}
+                and re.fullmatch(r"/[^/]+/(?:status|statuses)/\d+/?", parsed.path)):
+            add(node, "href", "twitter_video.href")
+    return evidence, native_urls
+
+
 def tiempo_fields(html: str, *, url: str) -> dict[str, object]:
     soup = BeautifulSoup(html, "lxml")
     article = soup.select_one("article#article-post")
-    fields = dict.fromkeys(("canonical_url", "title", "summary", "main_text", "authors", "date", "date_published", "date_modified", "topic", "section", "language", "publication_date_source", "publication_date_evidence", "date_conflict", "author_source", "body_selector", "source_specific_error", "media_embeds", "jsonld_article_selection", "source_title_status", "source_title_evidence", "removed_body_elements", "related_links"))
+    fields = dict.fromkeys(("canonical_url", "title", "summary", "main_text", "authors", "date", "date_published", "date_modified", "topic", "section", "language", "publication_date_source", "publication_date_evidence", "date_conflict", "author_source", "body_selector", "source_specific_error", "media_embeds", "article_kind", "media_evidence", "classification_rule_version", "jsonld_article_selection", "source_title_status", "source_title_evidence", "removed_body_elements", "related_links"))
     fields["language"] = soup.html.get("lang") if soup.html else None
     title = _text(article.select_one("h1") if article else soup.select_one("h1"))
     fields["title"] = title
@@ -448,7 +524,12 @@ def tiempo_fields(html: str, *, url: str) -> dict[str, object]:
         for node in content.select("blockquote.twitter-tweet a[href], blockquote.twitter-video a[href]"):
             if re.search(r"/(?:status|statuses)/\d+", node["href"]):
                 embed_urls.append(node["href"])
+    media_evidence, native_urls = _video_evidence(content, url=url)
+    embed_urls.extend(native_urls)
     fields["media_embeds"] = json.dumps(list(dict.fromkeys(embed_urls)), ensure_ascii=False)
+    fields["media_evidence"] = json.dumps(media_evidence, ensure_ascii=False)
+    fields["classification_rule_version"] = MEDIA_CLASSIFICATION_VERSION
+    fields["article_kind"] = ("article_with_video" if fields["main_text"] else "video_only") if media_evidence else "article"
     fields["topic"] = fields["section"] = _text(article.select_one("header .breadcrumb li.active a"))
     _source_title_audit(soup, article, article_json, jsonld_errors, fields, content, body_text, canonical)
     return fields

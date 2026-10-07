@@ -560,7 +560,7 @@ def _risk(row,B,registry,seen,plan):
     if kind=='article_response':
         record,flags=_article_risk(row,B,registry,seen,plan)
         judgment={'article_vs_discovery_day_difference','suspicious_very_short_body_review_only'}
-        record['source_judgment_flags']=sorted(set(record['unexplained_flags'])&judgment)
+        record['source_judgment_flags']=sorted((set(record['unexplained_flags'])&judgment) | set(record.get('source_markup_warnings',[])) | set(record.get('source_content_warnings',[])))
         record['unexplained_flags']=[f for f in record['unexplained_flags'] if f not in judgment]
         families=set()
         for reason in record['unexplained_flags']:

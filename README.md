@@ -79,3 +79,10 @@ The approval data workflow is documented in
 [`code/06-outcomes/approval_tracking/README.md`](code/06-outcomes/approval_tracking/README.md).
 Its code is tracked here; frozen inputs, evidence images, and generated output
 are in `MEDIA_ROOT/data/06-outcomes/approval_tracking/`.
+
+## Tiempo quality follow-up
+
+[Priority 2 rules](code/01-crawlers/TIEMPO_PRIORITY2.md) document source-empty
+titles, publication evidence, duplicate relations, media retention and offline
+validation. The quality-repair branch does not automatically resume the halted
+collection campaign.

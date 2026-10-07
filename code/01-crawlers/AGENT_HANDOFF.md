@@ -2016,3 +2016,37 @@ GDELT gap command:
 ```powershell
 python .\code\01-crawlers\scripts\discover_gdelt_urls.py --source-id reforma --source-id elnorte --from-date 2023-05-27 --to-date 2026-06-27 --state-db .\tmp\gdelt_grupo_reforma\gdelt.sqlite --output-dir .\tmp\gdelt_grupo_reforma\discovery --reports-dir .\tmp\gdelt_grupo_reforma\reports --window-days 7 --request-interval-seconds 6 --request-retries 3 --retry-backoff-seconds 10 --timeout 90 --resume
 ```
+
+## 2026-10-06/07 Kevin: Priority 2 quality follow-up
+
+See `TIEMPO_PRIORITY2.md` for the rules responding to Eduardo's feedback.
+This is an isolated repair branch, not a deployment into the halted September
+campaign. Keep the old runtime, 44,146 saved request rows and child23 safety halt
+unchanged. The hourly automation remains paused. A future collection stage must
+freeze and validate a successor campaign and offline reuse before resuming.
+
+The fixed 2,670-request package remains immutable. An independent archived-source
+scan found all592 missing-title records have empty current page title channels;
+no recoverable current title was omitted by the parser in this set. All592
+sourced directory-title candidates remain separate. The AI assistant fully read
+24 representative sources across23 months/five groups; this is not human PASS
+or full reading of the other568. Do not add24 to historical reading totals
+without checking overlap. No original titles or news facts were filled/changed.
+
+The branch narrows known false source-check alarms (body-contained article
+wrappers, isolated terminal recommendations, compatible date precision/offsets,
+plain bylines and valid media forms) while preserving real-loss guards. Source
+markup and independently confirmed zero-prose video remain source warnings;
+video-only error/null text is retained and no transcript is invented. Native
+video references and derived media classification have explicit evidence.
+Pilot `retained_results.csv`/`.parquet` expose all committed request rows,
+including errors, separately from the existing core-complete canonical view.
+No article-unit rule is inferred by dropping duplicate-relation pairs.
+
+Reusable offline scripts: `scripts/audit_tiempo_missing_titles.py` and
+`scripts/review_tiempo_frozen_package.py`, both with `--package` and a new
+`--output` directory outside the frozen package. The latter fails if runtime
+code changes during replay. Final evidence and English-only follow-up delivery
+are in `crawler/pilots/Kevin/Priority2_Quality_Followup_2026-10-06` under Media.
+Read its final validation/independent-review receipts; do not infer full Task3,
+full Tiempo coverage or research acceptance from code tests or these sidecars.
