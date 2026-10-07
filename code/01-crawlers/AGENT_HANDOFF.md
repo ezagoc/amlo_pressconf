@@ -2105,3 +2105,25 @@ reactivate automation, or create duplicate delivery packages. Keep all earlier
 worker/parser/recovery/successor files unchanged so their original bindings
 remain valid. Source gaps and researcher decisions remain separate from
 technical blocks, and no automatic check is a human approval.
+
+## Kevin — October 7, 2026: separately authorized frozen remainder
+
+The user subsequently authorized all 84,531 remaining URLs in the original
+frozen queue, plans 24–66, after successor validation. See `TIEMPO_REMAINING.md`
+and `scripts/run_tiempo_remaining.py`. This authorization applies to the new
+`Continuations/Remaining_Frozen_20261007` runtime, not a widened old capsule.
+The reconciled baseline remains 46,000 saved request URLs and 46,038 charged
+calls. The final original plan has 531 URLs. Preserve all older raw/native
+files, halts, capsules, review obligations and deliverables.
+
+One supervisor/writer carries identities, the last 79 source-risk records and
+charged calls across children, saves/checks every 80, and waits for actual AI
+source-reading receipts at every 400/final boundary. No generated receipt or
+automatic check constitutes a source reading, human PASS or acceptance. Normal
+`paused_safe` has durable balanced evidence and requires explicit `--resume`;
+technical halts remain immutable. Pause intent alone is not confirmation that
+the laptop can be closed. The 10 GiB floor and remaining-growth forecast remain
+active. Real sleep/wake and physical network loss are untested. The existing
+automation stays paused; this workflow does not create another scheduler or
+duplicate report/delivery package. Frozen-queue completion still leaves full
+Tiempo/year coverage and researcher acceptance unresolved.
