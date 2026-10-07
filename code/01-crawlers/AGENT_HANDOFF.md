@@ -2062,3 +2062,32 @@ calls. Preparation and tests are offline; a pushed branch is not merged or
 deployed. Do not invoke the real trial without separate user authorization.
 Use the latest Priority 3 readiness evidence for the exact capsule/release
 binding. Preserve Priority 1/2 editorial revisions and their historical receipts.
+
+
+## Kevin — October 7, 2026: next original batch successor
+
+See `TIEMPO_SUCCESSOR.md` and `scripts/run_tiempo_successor.py` for a new,
+explicitly bounded successor of a closed recovery capsule. The earlier ready_v1
+contains160 real rows after its14-request trial; its authorization is exhausted.
+Keep that capsule, original campaign halt, old pointer and prior deliverables
+immutable. Do not broaden the old capsule or carry its188-call child ceiling
+into the next stage.
+
+The separate next80 plan preserves the full original2,000-row child topology,
+imports160 native results and charged calls, and targets only original child23
+batch3 (queue positions161–240). The new limit is240 additional calls including
+retries,400 total current-child calls, with44,038 prior-child calls still charged.
+Preparation and inspection are offline; trial requires explicit authorization.
+The original seed and replayed160 preserve historical identities and the source
+risk window without double counting. Existing source checks and timing remain.
+The new adapter and CLI are separately frozen; older worker/recovery modules
+stay unchanged. A completed successor with inconsistent halt evidence fails
+closed rather than reporting successful completion.
+
+Keep genuine source-empty titles null, short/video pages and original social
+quotations. Facebook video links may be captured without a video classification;
+that known labeling limitation must be reported rather than interpreted as no
+video. New automatic checks, actual AI source readings and human approval are
+separate. These bounded stages do not certify unique article counts, full-year
+coverage, a completed newspaper or researcher acceptance. The runtime may stop
+early for safety and must never advance to batch4 under the next80 authorization.
