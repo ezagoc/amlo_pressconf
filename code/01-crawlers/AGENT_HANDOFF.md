@@ -2091,3 +2091,17 @@ video. New automatic checks, actual AI source readings and human approval are
 separate. These bounded stages do not certify unique article counts, full-year
 coverage, a completed newspaper or researcher acceptance. The runtime may stop
 early for safety and must never advance to batch4 under the next80 authorization.
+
+## Kevin — October 7, 2026: bounded child23 remainder
+
+`TIEMPO_BOUNDED_STAGE.md` and `scripts/run_tiempo_bounded_stage.py` define a
+separate, explicitly frozen remainder stage. Import the reviewed240 saved
+current-child rows; collect only original positions241-2000 (batches4-25),
+with at most5,280 new calls. Each explicit invocation stops at the next
+cumulative400-row checkpoint; save/check every80 and keep the10GiB disk floor.
+Light checks permit continuing within this authorized child after each stop.
+Do not advance to child24, clear a halt, mutate the exhausted next80 capsule,
+reactivate automation, or create duplicate delivery packages. Keep all earlier
+worker/parser/recovery/successor files unchanged so their original bindings
+remain valid. Source gaps and researcher decisions remain separate from
+technical blocks, and no automatic check is a human approval.
