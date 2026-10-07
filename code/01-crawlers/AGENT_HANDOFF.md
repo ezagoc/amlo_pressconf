@@ -2050,3 +2050,15 @@ code changes during replay. Final evidence and English-only follow-up delivery
 are in `crawler/pilots/Kevin/Priority2_Quality_Followup_2026-10-06` under Media.
 Read its final validation/independent-review receipts; do not infer full Task3,
 full Tiempo coverage or research acceptance from code tests or these sidecars.
+
+## Kevin — October 7, 2026: Priority 3 offline recovery bridge
+
+See `TIEMPO_RECOVERY.md` and `scripts/run_tiempo_recovery.py`. This branch extends
+Priority 2 with source-bound historical identities and an explicit recovery
+capsule. The original campaign, raw evidence, halt and current run pointer stay
+unchanged. The capsule carries the full queue mapping but permits only the
+original partial 80-row batch boundary: 14 new URLs, at most 42 extra transport
+calls. Preparation and tests are offline; a pushed branch is not merged or
+deployed. Do not invoke the real trial without separate user authorization.
+Use the latest Priority 3 readiness evidence for the exact capsule/release
+binding. Preserve Priority 1/2 editorial revisions and their historical receipts.

@@ -19,6 +19,7 @@ ALLOWED_CLASSES={'new_urls','old_error_review','old_short_review','old_missing_f
 QUARANTINE='quarantined_pending_source_review'
 PENDING='automatic_checked_pending_stage_review'
 MAX_PLAN_ROWS=2000
+HISTORY_SCHEMA='tiempo-history-identity-index-v1'
 REQUIRED_EXCLUSIONS={'validation400':400,'production808':808,'may27':62,'historical20190304':1000}
 FROZEN_MODULES=('capabilities.py','sitemap_articles.py','tiempo_html.py','tiempo_pilot.py','tiempo_review.py','tiempo_batches.py','tiempo_queue.py','tiempo_continuous_source.py','tiempo_continuous.py')
 
@@ -39,6 +40,63 @@ def program_hashes():
     if not cli.exists():cli=base.parent/'scripts/run_tiempo_scheduler_v5.py'
     result['v5_cli']=sha_file(cli)
     return result
+
+def _identity_record(row,record):
+    canonical=None
+    if row.get('canonical_url'):
+        try:canonical=normalize_url(row['canonical_url'])
+        except ValueError:pass  # Invalid source identity remains a critical risk.
+    return {'sample_id':row['sample_id'],'url':normalize_url(row['url']),'canonical_url':canonical,
+            'body_compact_sha256':record.get('body_compact_sha256'),
+            'snapshot_sha256':row['snapshot_sha256'],'fields_sha256':fields_digest(row)}
+
+def load_history_index(binding):
+    """Validate immutable identity evidence without parsing historical news.
+
+    Each index may refer to its predecessor, so continuation writes only this
+    child's identities. Identical sample records may recur during self replay;
+    changed source/field evidence under the same sample ID is rejected.
+    """
+    if binding is None:return []
+    chain=[];paths=set()
+    while binding is not None:
+        require(isinstance(binding,dict) and set(binding)=={'path','sha256'},'Invalid history index binding')
+        require(isinstance(binding['path'],str) and Path(binding['path']).is_absolute(),'History index path must be absolute')
+        require(isinstance(binding['sha256'],str) and re.fullmatch('[0-9a-f]{64}',binding['sha256']),'Invalid history index hash')
+        path=Path(binding['path']).resolve();require(path not in paths and len(paths)<1000,'History index cycle or excessive depth');paths.add(path)
+        raw=path.read_bytes();require(hashlib.sha256(raw).hexdigest()==binding['sha256'],'History index hash changed')
+        doc=json.loads(raw)
+        require(isinstance(doc,dict) and set(doc)=={'schema','records','parent'} and doc['schema']==HISTORY_SCHEMA and isinstance(doc['records'],list),'Invalid history index schema')
+        rows=[]
+        for record in doc['records']:
+            require(isinstance(record,dict) and set(record)=={'sample_id','url','canonical_url','body_compact_sha256','snapshot_sha256','fields_sha256'},'Invalid history identity record')
+            require(isinstance(record['sample_id'],str) and bool(record['sample_id'].strip()) and not any(ord(c)<32 for c in record['sample_id']),'Invalid history sample identity')
+            normalized=dict(record)
+            for key in ('url','canonical_url'):
+                value=record[key]
+                require((key=='canonical_url' and value is None) or isinstance(value,str),'Invalid history URL')
+                normalized[key]=normalize_url(value) if value is not None else None
+            for key in ('snapshot_sha256','fields_sha256','body_compact_sha256'):
+                value=record[key]
+                require((key=='body_compact_sha256' and value is None) or (isinstance(value,str) and re.fullmatch('[0-9a-f]{64}',value)),'Invalid history evidence hash')
+            rows.append(normalized)
+        chain.append(rows);binding=doc['parent']
+    by_sample={}
+    for rows in reversed(chain):
+        for record in rows:
+            old=by_sample.get(record['sample_id'])
+            require(old is None or old==record,'Conflicting history evidence for sample identity')
+            by_sample[record['sample_id']]=record
+    return list(by_sample.values())
+
+def seed_history_identities(binding):
+    """Return the worker's duplicate-detection state from a validated index."""
+    seen={}
+    for record in load_history_index(binding):
+        seen[('sample',record['sample_id'])]=record
+        for kind,key in [('canonical',record['canonical_url']),('body',record['body_compact_sha256'])]:
+            if key:seen.setdefault((kind,key),set()).add(record['sample_id'])
+    return seen
 
 def namespace(root,media):
     root,base=Path(root).resolve(),(Path(media)/'data/00-newspaper_data/crawler/pilots/Kevin/tiempo_continuous_v5').resolve()
@@ -78,6 +136,7 @@ def _queue_binding(rows,path,expected_sha256):
 def freeze(input_path,root,media_root,registry_path,registry_sha256,exclusions,*,start,end,max_fetch_calls,queue_db_path,queue_db_sha256,pause_seconds=1.0,timeout=45.0,min_free_bytes=10*1024**3,seed_context=None):
     """Offline new plan only. exclusions are caller-bound {role,path,sha256} entries."""
     root=namespace(root,media_root);require(not root.exists(),'Never adopt or overwrite an existing plan')
+    load_history_index((seed_context or {}).get('history_index'))
     rows=readcsv(input_path);keys=_validate_rows(rows,start,end)
     queue_binding=_queue_binding(rows,queue_db_path,queue_db_sha256)
     require(type(max_fetch_calls) is int and 1<=max_fetch_calls<=len(rows)*POLICY['attempts_per_url'],'Explicit fetch budget must be 1..3 times input count')
@@ -114,6 +173,7 @@ def load_plan(root,media_root):
     require(plan.get('schema')==MODE and signature==digest(unsigned),'Continuous plan hash/schema mismatch')
     require(plan.get('continuation_policy')==POLICY,'Unsupported frozen continuation policy')
     require(plan['program_sha256']==program_hashes(),'Frozen code changed; use a new plan after review')
+    load_history_index(plan['seed_context'].get('history_index'))
     require(sha_file(root/'queue.csv')==plan['queue_sha256'],'Queue changed')
     rows=readcsv(root/'queue.csv');keys=_validate_rows(rows,plan['date_start'],plan['date_end_exclusive'])
     require(len(rows)==plan['row_count'],'Queue count changed')
@@ -198,8 +258,15 @@ def _article_risk(row,B,registry,seen,plan):
     if row.get('canonical_url'):
         try:canonical_key=normalize_url(row['canonical_url'])
         except ValueError:reasons.append('canonical_identity_invalid')
+    relations=[]
     for key,value in [('canonical',canonical_key),('body',record['body_compact_sha256'])]:
-        if value and (key,value) in seen and seen[(key,value)]!=row['sample_id']:reasons.append('duplicate_'+key+'_requires_review')
+        prior=seen.get((key,value),set()) if value else set()
+        prior={prior} if isinstance(prior,str) else set(prior)
+        peers=sorted(prior-{row['sample_id']})
+        if peers:
+            reasons.append('duplicate_'+key+'_requires_review')
+            relations.append({'identity_type':key,'identity_value':value,'prior_sample_ids':peers})
+    record['duplicate_relations']=relations
     critical=set()
     for reason in reasons:
         if reason in {'http_or_transport_status','non_200_response','non_html_response','url_outside_tiempo_scope','final_url_outside_tiempo_scope','canonical_identity_invalid','invalid_canonical_source_identity','ambiguous_canonical_source_identity','invalid_canonical_output_identity'}:critical.add(reason)
@@ -224,10 +291,14 @@ def _article_risk(row,B,registry,seen,plan):
     return record,record['automatic_flags']
 
 def _remember(row,rec,seen):
-    if row.get('canonical_url'):
-        try:seen[('canonical',normalize_url(row['canonical_url']))]=row['sample_id']
-        except ValueError:pass
-    if rec.get('body_compact_sha256'):seen[('body',rec['body_compact_sha256'])]=row['sample_id']
+    record=_identity_record(row,rec);old=seen.get(('sample',row['sample_id']))
+    require(old is None or old==record,'Saved row differs from frozen history identity evidence')
+    seen[('sample',row['sample_id'])]=record
+    for kind,key in [('canonical',record['canonical_url']),('body',record['body_compact_sha256'])]:
+        if key:
+            prior=seen.setdefault((kind,key),set())
+            if isinstance(prior,str):prior=seen[(kind,key)]={prior}
+            prior.add(row['sample_id'])
 
 def _window_trigger(history):
     current=history[-1]
@@ -384,7 +455,7 @@ def run(root,media_root,*,max_batches,fetcher=None,parser=None,allow_network=Fal
             return _state(root,plan,'halted_no_automatic_resume',halt_sha256=sha_file(root/'safety_halt.json'))
         try:entries=_ledger(root,plan);_snapshot_reconciliation(root,plan,entries)
         except Exception as exc:return _halt(root,plan,'transport_state_requires_reconciliation',detail=type(exc).__name__+': '+str(exc))
-        seen={};history=list(plan['seed_context']['source_history']);summaries=[];executed=0
+        seen=seed_history_identities(plan['seed_context'].get('history_index'));history=list(plan['seed_context']['source_history']);summaries=[];executed=0
         for batch in plan['batches']:
             B=root/'batches'/batch['batch_id'];saved=_rows(root,batch);records=[]
             # Replay durable rows before a new request, including commit-before-callback crashes.
@@ -423,7 +494,13 @@ def run(root,media_root,*,max_batches,fetcher=None,parser=None,allow_network=Fal
             except Exception as exc:return _halt(root,plan,'batch_readback_failed',batch_id=batch['batch_id'],detail=type(exc).__name__+': '+str(exc))
             if sum(s['rows'] for s in summaries)%400==0:_checkpoint(root,plan,summaries)
         _checkpoint(root,plan,summaries)
-        context={'source_history':history[-79:],'service_history':[],'last_transport_finish':(_ledger(root,plan)[-1]['epoch'] if _ledger(root,plan) else plan['seed_context'].get('last_transport_finish')),'prior_plan_receipts':plan['seed_context'].get('prior_plan_receipts',[])}
+        identity_doc={'schema':HISTORY_SCHEMA,'records':[seen[('sample',sid)] for batch in plan['batches'] for sid in batch['sample_ids']],
+                      'parent':plan['seed_context'].get('history_index')}
+        identity_path=root/'identity_index.json'
+        if identity_path.exists():require(load(identity_path)==identity_doc,'Completed identity index changed')
+        else:write(root,'identity_index.json',identity_doc)
+        context={'source_history':history[-79:],'service_history':[],'last_transport_finish':(_ledger(root,plan)[-1]['epoch'] if _ledger(root,plan) else plan['seed_context'].get('last_transport_finish')),'prior_plan_receipts':plan['seed_context'].get('prior_plan_receipts',[]),
+                 'history_index':{'path':str(identity_path),'sha256':sha_file(identity_path)}}
         write(root,'continuation_context.json',context)
         return _state(root,plan,PENDING,collection_inputs_finished=True,completed_batches=len(summaries),result_rows=plan['row_count'],manual_reviews=0,continuation_context_sha256=sha_file(root/'continuation_context.json'))
 
@@ -559,7 +636,8 @@ def _risk(row,B,registry,seen,plan):
     kind=response_kind({**meta['response'],'text':raw.decode('utf-8')})
     if kind=='article_response':
         record,flags=_article_risk(row,B,registry,seen,plan)
-        judgment={'article_vs_discovery_day_difference','suspicious_very_short_body_review_only'}
+        judgment={'article_vs_discovery_day_difference','suspicious_very_short_body_review_only',
+                  'duplicate_canonical_requires_review','duplicate_body_requires_review'}
         record['source_judgment_flags']=sorted((set(record['unexplained_flags'])&judgment) | set(record.get('source_markup_warnings',[])) | set(record.get('source_content_warnings',[])))
         record['unexplained_flags']=[f for f in record['unexplained_flags'] if f not in judgment]
         families=set()
