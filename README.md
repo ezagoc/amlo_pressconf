@@ -72,3 +72,10 @@ The existing `presentations/` folder contains project PDFs that are small enough
 See [the Tiempo pilot guide](code/01-crawlers/TIEMPO_PILOT.md) for an isolated,
 explicit-input trial with raw webpage snapshots, field evidence, backups and
 per-article resume. This workflow does not write the shared production corpus.
+
+## AMLO Tracking Poll approval series
+
+The approval data workflow is documented in
+[`code/06-outcomes/approval_tracking/README.md`](code/06-outcomes/approval_tracking/README.md).
+Its code is tracked here; frozen inputs, evidence images, and generated output
+are in `MEDIA_ROOT/data/06-outcomes/approval_tracking/`.

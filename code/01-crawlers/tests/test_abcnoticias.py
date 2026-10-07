@@ -78,12 +78,17 @@ class AbcNoticiasTests(unittest.TestCase):
             "text": "Allow: /",
             "error": pd.NA,
         }
-        with patch("crawler_core.abcnoticias.fetch", return_value=failed), patch(
+        with patch("crawler_core.abcnoticias._NODE_TLS_REQUIRED", False), patch(
+            "crawler_core.abcnoticias.fetch", return_value=failed
+        ) as regular, patch(
             "crawler_core.abcnoticias.fetch_abc_with_node", return_value=recovered
         ) as fallback:
             result = fetch_abc("https://abcnoticias.mx/robots.txt", 1)
+            second = fetch_abc("https://abcnoticias.mx/robots.txt", 1)
         self.assertEqual(result["status"], 200)
-        fallback.assert_called_once()
+        self.assertEqual(second["status"], 200)
+        regular.assert_called_once()
+        self.assertEqual(fallback.call_count, 2)
 
     def test_article_json_ld_extracts_required_fields(self) -> None:
         html = """

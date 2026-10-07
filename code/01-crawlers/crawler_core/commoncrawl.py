@@ -15,7 +15,7 @@ import urllib3
 
 from crawler_core.capabilities import BROWSER_USER_AGENT, markdown_table
 from crawler_core.category_pagination import infer_topic_from_url
-from crawler_core.commoncrawl_archive import fetch_sdp_archive_query
+from crawler_core.commoncrawl_archive import fetch_domain_archive_query, fetch_sdp_archive_query
 from crawler_core.sitemaps import likely_article_url
 
 
@@ -117,12 +117,39 @@ def load_commoncrawl_sources(
     capabilities_path: Path,
     *,
     strategies: set[str] | None = None,
+    registry_path: Path | None = None,
+    requested_source_ids: list[str] | None = None,
 ) -> pd.DataFrame:
     """Load sources for Common Crawl discovery."""
     capabilities = pd.read_csv(capabilities_path)
     if strategies:
         capabilities = capabilities[capabilities["recommended_strategy"].isin(strategies)].copy()
-    return capabilities.reset_index(drop=True)
+    return augment_sources_from_registry(
+        capabilities,
+        registry_path=registry_path,
+        requested_source_ids=requested_source_ids,
+    )
+
+
+def augment_sources_from_registry(
+    sources: pd.DataFrame,
+    *,
+    registry_path: Path | None,
+    requested_source_ids: list[str] | None,
+) -> pd.DataFrame:
+    """Add explicitly requested sources omitted from capability probing."""
+    if not requested_source_ids or registry_path is None:
+        return sources.reset_index(drop=True)
+    present = set(sources.get("source_id", pd.Series(dtype=object)).dropna().astype(str))
+    missing = set(requested_source_ids) - present
+    if not missing:
+        return sources.reset_index(drop=True)
+    registry = pd.read_csv(registry_path)
+    additions = registry[registry["source_id"].isin(missing)].copy()
+    if additions.empty:
+        return sources.reset_index(drop=True)
+    combined = pd.concat([sources, additions], ignore_index=True, sort=False)
+    return combined.drop_duplicates("source_id", keep="first").reset_index(drop=True)
 
 
 def load_commoncrawl_indexes(
@@ -291,6 +318,18 @@ def fetch_commoncrawl(url: str, timeout: float, *, body_text_limit: int) -> dict
     parsed_url = urlparse(url)
     sdp_query = parsed_url.path.endswith("-index") and "sdpnoticias.com" in url
     requested_url = parse_qs(parsed_url.query).get("url", [""])[0]
+    requested_host = (urlparse(f"http://{requested_url}").hostname or "").lower()
+    if requested_host in {"reforma.com", "www.reforma.com", "elnorte.com", "www.elnorte.com"}:
+        try:
+            return fetch_domain_archive_query(url, timeout, body_text_limit=body_text_limit)
+        except Exception as exc:
+            return {
+                "status": pd.NA,
+                "final_url": pd.NA,
+                "content_type": pd.NA,
+                "text": "",
+                "error": f"archive_fallback: {type(exc).__name__}: {exc}",
+            }
     broad_sdp_query = requested_url.rstrip("/") in {"sdpnoticias.com", "www.sdpnoticias.com"}
     if sdp_query and (broad_sdp_query or _SDP_INDEX_API_UNAVAILABLE):
         return fetch_sdp_archive_response(url, timeout, body_text_limit=body_text_limit)
@@ -430,7 +469,10 @@ def commoncrawl_url_patterns(
         hosts.append(f"www.{host}")
 
     article_paths = article_path_candidates(source, path_patterns=path_patterns)
-    if include_broad_domain and str(source.get("source_id")) == "sdpnoticias":
+    source_id = str(source.get("source_id"))
+    if include_broad_domain and source_id in {"reforma", "elnorte"}:
+        return [f"{host}/{base_path}*"]
+    if include_broad_domain and source_id == "sdpnoticias":
         return [f"{candidate_host}/{base_path}*" for candidate_host in hosts]
     patterns = []
     for candidate_host in hosts:
@@ -501,6 +543,8 @@ def likely_commoncrawl_article_url(url: object, *, source_id: object = pd.NA) ->
         from crawler_core.eluniversal import is_eluniversal_article_url
 
         return is_eluniversal_article_url(text)
+    if str(source_id) in {"reforma", "elnorte"}:
+        return bool(re.search(r"/(?:ar|op)\d+/?$", parsed.path, flags=re.I))
     if likely_article_url(text):
         return True
     return has_article_date_path(segments) and slug_word_count(segments[-1]) >= 3

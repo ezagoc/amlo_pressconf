@@ -38,6 +38,13 @@ DEFAULT_CAPABILITIES = media_input_path(
     "registry",
     "crawl_capabilities.csv",
 )
+DEFAULT_SOURCES = media_input_path(
+    "data",
+    "00-newspaper_data",
+    "crawler",
+    "registry",
+    "sources.csv",
+)
 DEFAULT_DISCOVERY_PARTS = ("data", "00-newspaper_data", "crawler", "discovery", ".keep")
 DEFAULT_REPORTS_PARTS = ("data", "00-newspaper_data", "crawler", "reports", ".keep")
 
@@ -47,6 +54,7 @@ def parse_args() -> argparse.Namespace:
         description="Discover likely article URLs from Common Crawl CDX indexes."
     )
     parser.add_argument("--capabilities", type=Path, default=DEFAULT_CAPABILITIES)
+    parser.add_argument("--sources", type=Path, default=DEFAULT_SOURCES)
     parser.add_argument("--discovery-dir", type=Path, default=None)
     parser.add_argument("--reports-dir", type=Path, default=None)
     parser.add_argument("--source-id", action="append", default=None)
@@ -112,6 +120,8 @@ def main() -> None:
     sources = load_commoncrawl_sources(
         args.capabilities,
         strategies=set(args.strategy or []) or None,
+        registry_path=args.sources,
+        requested_source_ids=args.source_id,
     )
     index_ids = load_commoncrawl_indexes(
         index_ids=args.index_id,
