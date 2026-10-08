@@ -2127,3 +2127,15 @@ active. Real sleep/wake and physical network loss are untested. The existing
 automation stays paused; this workflow does not create another scheduler or
 duplicate report/delivery package. Frozen-queue completion still leaves full
 Tiempo/year coverage and researcher acceptance unresolved.
+
+## Kevin — October 8, 2026: explicitly investigated connection-stop successor
+
+See TIEMPO_CONNECTION_RECOVERY.md and crawler_core/tiempo_connection_recovery.py.
+Only the exact child36 TC5_495573 terminal failure is acknowledged for inherited
+replay, not retried or made successful. Original code/runtime/halts remain
+immutable. New preparation binds391 saved rows/392 calls and resumes at392,
+TC5_498773;9 new inputs must reach the original400-row actual AI gate before401.
+The successor copies only required current-child recovery material. Earlier
+identities, ledger totals and native review obligations remain referenced.
+Fresh failures, altered evidence and disk protections still stop collection.
+Use the successor's explicitly recorded root, never expand the old halted run.

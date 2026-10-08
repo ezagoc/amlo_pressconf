@@ -9,6 +9,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 from pathlib import Path
 import hashlib
+import json
 import math
 import signal
 import sqlite3
@@ -20,6 +21,150 @@ from . import tiempo_continuous_v5 as w
 
 SCHEMA = 'tiempo-resumable-worker-v1'
 PAUSED = 'paused_safe'
+INHERITED_FAILURE_SCHEMA = 'tiempo-inherited-terminal-failure-v1'
+# Rendering uses the frozen function body independently of a test-injected
+# interruption at the actual export call; all preview writes are suppressed.
+_NATIVE_EXPORT_OUTPUTS = w.pilot.export_outputs
+
+
+def inherited_prefix_evidence(root, plan, prefix_rows):
+    """Read exact native payload/attempt evidence in frozen input order."""
+    root = Path(root).resolve()
+    w.require(type(prefix_rows) is int and 0 < prefix_rows <= plan['row_count'],
+              'Invalid inherited prefix length')
+    payloads, attempts, articles, rows, total = [], [], [], [], 0
+    for batch in plan['batches']:
+        path = root / 'batches' / batch['batch_id'] / 'pilot.sqlite'
+        if not path.exists():
+            continue
+        with sqlite3.connect(path.as_uri() + '?mode=ro&immutable=1', uri=True) as db:
+            db.row_factory = sqlite3.Row
+            saved = db.execute('SELECT * FROM articles ORDER BY ordinal').fetchall()
+            total += len(saved)
+            for saved_row in saved:
+                if len(rows) >= prefix_rows:
+                    break
+                payload = saved_row['payload_json']; row = json.loads(payload)
+                attempt = db.execute('SELECT * FROM fetch_attempts WHERE attempt_id=?',
+                                     (row['attempt_id'],)).fetchone()
+                w.require(attempt is not None and attempt['completed_at'] and
+                          attempt['sample_id'] == row['sample_id'] and attempt['url'] == row['url'] and
+                          attempt['action'] == 'fetch', 'Inherited native attempt is incomplete or changed')
+                payloads.append(payload); attempts.append(dict(attempt)); articles.append(dict(saved_row))
+                rows.append({'batch_id': batch['batch_id'], 'row': row})
+    expected = [sid for batch in plan['batches'] for sid in batch['sample_ids']][:prefix_rows]
+    w.require([item['row']['sample_id'] for item in rows] == expected,
+              'Inherited rows are not the exact frozen input prefix')
+    return {'prefix_payload_sha256': w.digest(payloads),
+            'prefix_attempts_sha256': w.digest(attempts),
+            'prefix_articles_sha256': w.digest(articles), 'rows': rows, 'articles': articles,
+            'payloads': payloads, 'attempts': attempts, 'total_rows': total}
+
+
+def validated_inherited_failure_ack(root, plan, binding=None):
+    """Validate the one imported terminal failure without changing its evidence.
+
+    The signed successor supplies this binding explicitly. Native plan and
+    imported ledger bytes remain identical to the immutable donor. This helper
+    reads small controls/DB prefixes and the failed response; ordinary worker
+    reconciliation verifies all transport snapshots before any new request.
+    """
+    if binding is None:
+        return None
+    root = Path(root).resolve()
+    path = Path(binding['path']).resolve()
+    w.require(w.sha_file(path) == binding['sha256'], 'Inherited acknowledgment changed')
+    ack = w.load(path)
+    w.require(ack.get('schema') == INHERITED_FAILURE_SCHEMA and
+              ack.get('target_root') == str(root) and type(ack.get('synthetic_fixture')) is bool,
+              'Inherited acknowledgment identity changed')
+    donor = Path(ack['donor_root']).resolve()
+    master = Path(ack['donor_campaign_root']).resolve()
+    w.require(donor != root and donor not in root.parents and root not in donor.parents and
+              master != root and master not in root.parents and root not in master.parents,
+              'Recovery namespace must be disjoint from its donor')
+    evidence = ack['donor_bindings']; failure = ack['failure']
+    halt_path = donor / 'safety_halt.json'; halt_sha = w.sha_file(halt_path)
+    required = [donor / name for name in ('continuous_plan.json', 'continuous_state.json',
+                'safety_halt.json', 'transport_calls.jsonl', 'transport_state.json')]
+    required += [donor / 'halt_receipts' / (halt_sha + '.json'),
+                 donor / 'row_checks' / (failure['sample_id'] + '.json'), master / 'technical_stop.json']
+    w.require(all(str(p) in evidence for p in required), 'Missing immutable donor control binding')
+    for filename, sha in evidence.items():
+        w.require(w.sha_file(filename) == sha, 'Inherited donor evidence changed: ' + filename)
+    donor_plan = w.load(donor / 'continuous_plan.json')
+    w.require(donor_plan == plan and w.sha_file(root / 'continuous_plan.json') ==
+              evidence[str(donor / 'continuous_plan.json')], 'Imported native plan changed')
+    halt = w.load(halt_path); state = w.load(donor / 'continuous_state.json')
+    master_halt = w.load(master / 'technical_stop.json')
+    w.require(halt.get('plan_sha256') == plan['plan_sha256'] and
+              halt.get('reason') == 'critical_source_or_access_failure' and
+              halt.get('sample_id') == failure['sample_id'] and
+              state.get('status') == 'halted_no_automatic_resume' and state.get('halt_sha256') == halt_sha and
+              w.load(donor / 'halt_receipts' / (halt_sha + '.json')) == halt and
+              master_halt.get('reason') == 'native_worker_stopped' and
+              master_halt.get('native_result', {}).get('halt_sha256') == halt_sha,
+              'Donor terminal halt does not authorize this retained failure')
+    if not ack['synthetic_fixture']:
+        w.require(failure['sample_id'] == 'TC5_495573' and
+                  failure['attempt_id'] == '87f7b4ae3fe74d38ba1835a56baa61b9' and
+                  failure['url'] == 'https://www.tiempo.com.mx/noticia/posverdad_columna_politica_1_julio_2025/' and
+                  plan['plan_sha256'] == 'bad8e8eec1eaff8a3b818587764959ef8a327f3442530eea52827a8fdc766728' and
+                  halt_sha == '6a4df85fbcba652c27188de7a78c8828ee501972bd3459749d4745e3f998823f' and
+                  evidence[str(master / 'technical_stop.json')] ==
+                  '122848c71868449625b2752cb1a0854985d6a2813d16a1402d0aeae09cb5c2e1' and
+                  ack['prefix_rows'] == 391 and ack['prefix_calls'] == 392,
+                  'Only the frozen October 8 connection failure may be acknowledged')
+    old = inherited_prefix_evidence(donor, plan, ack['prefix_rows'])
+    current = inherited_prefix_evidence(root, plan, ack['prefix_rows'])
+    w.require(old['total_rows'] == ack['prefix_rows'] and
+              state.get('result_rows') == ack['prefix_rows'] and
+              master_halt['native_result'].get('result_rows') == ack['prefix_rows'],
+              'Donor retained prefix count changed')
+    for key in ('prefix_payload_sha256', 'prefix_attempts_sha256', 'prefix_articles_sha256'):
+        w.require(old[key] == current[key] == ack[key], 'Inherited native prefix changed: ' + key)
+    entries = w._ledger(root, plan); donor_entries = w._ledger(donor, plan)
+    w.require(type(ack['prefix_calls']) is int and ack['prefix_calls'] > 0 and
+              len(donor_entries) == 2 * ack['prefix_calls'] and
+              entries[:len(donor_entries)] == donor_entries and
+              b''.join((root / 'transport_calls.jsonl').read_bytes().splitlines(keepends=True)[:len(donor_entries)]) ==
+              (donor / 'transport_calls.jsonl').read_bytes(), 'Inherited transport prefix changed')
+    item = current['rows'][-1]; row = item['row']; attempt = current['attempts'][-1]
+    w.require(item['batch_id'] == failure['batch_id'] and
+              all(row.get(k) == failure[k] for k in ('sample_id', 'url', 'attempt_id', 'snapshot_sha256')) and
+              hashlib.sha256(current['payloads'][-1].encode()).hexdigest() == failure['payload_sha256'] and
+              row.get('qa_status') == 'error' and attempt.get('qa_status') == 'error',
+              'Acknowledged failure is not the exact final inherited record')
+    for base in (donor, root):
+        check = w.load(base / 'row_checks' / (failure['sample_id'] + '.json'))
+        record = check['record']
+        raw = base / 'batches' / failure['batch_id'] / row['snapshot_path']
+        w.require(check['plan_sha256'] == plan['plan_sha256'] and
+                  w.digest(record) == failure['row_check_record_sha256'] and
+                  record.get('critical_flags') == ['critical_transport'] and
+                  record.get('collection_outcome') == 'critical_failure' and
+                  record.get('collection_quality_status') == w.QUARANTINE and
+                  record.get('manual_review_status') == 'not_reviewed' and
+                  w.sha_file(raw) == failure['snapshot_sha256'], 'Inherited failure/check/raw evidence changed')
+    calls = [e for e in donor_entries if e['event'] == 'start' and e['attempt_id'] == failure['attempt_id']]
+    w.require(len(calls) == 2 and calls[-1]['sequence'] == ack['prefix_calls'],
+              'Acknowledged connection failure has a different retry chain')
+    for index, event in enumerate(calls):
+        old_receipt, _ = w._transport_receipt(donor, event)
+        receipt, response = w._transport_receipt(root, event)
+        w.require(receipt == old_receipt and receipt['retry_index'] == index and
+                  receipt['terminal'] is bool(index) and
+                  receipt['response_kind'] == ('critical_transport' if index else 'retryable_service') and
+                  response.get('curl_exit_code') == (7 if index else 28) and
+                  response.get('status') == 0 and response.get('text') == '',
+                  'Inherited connection failure terminal response changed')
+    return ack
+
+
+def _acknowledged_replay(ack, row, record):
+    return bool(ack and row['sample_id'] == ack['failure']['sample_id'] and
+                row['attempt_id'] == ack['failure']['attempt_id'] and
+                w.digest(record) == ack['failure']['row_check_record_sha256'])
 
 
 class StopController:
@@ -89,9 +234,14 @@ def _native_check(root, media, plan, batch, rows, records):
     return w._batch_check(root, batch, rows, records)
 
 
-def _export_preview(B, items, manifest_hash):
-    """Render current native export hashes without changing any on-disk byte."""
-    original = w.pilot.export_outputs
+def _export_preview(B, items, manifest_hash, *, prefix_rows=None):
+    """Render a native generation without changing any on-disk byte.
+
+    A certified older prefix is rendered from an in-memory SQLite copy retaining
+    its article rows and completed logical attempts. This proves the manifest's
+    accounting as well as its native file hashes after a later commit.
+    """
+    original = _NATIVE_EXPORT_OUTPUTS
     namespace = dict(original.__globals__, atomic_bytes=lambda *a, **k: None,
                      review_context=lambda directory, **kw: w.pilot.review_context(directory, persist=False))
     call = types.FunctionType(original.__code__, namespace, original.__name__,
@@ -102,20 +252,42 @@ def _export_preview(B, items, manifest_hash):
             pass
     with sqlite3.connect((B / 'pilot.sqlite').as_uri() + '?mode=ro&immutable=1', uri=True) as db:
         db.row_factory = sqlite3.Row
-        return call(db, B, manifest_hash, NoBackups(), items)
+        if prefix_rows is None:
+            return call(db, B, manifest_hash, NoBackups(), items)
+        with sqlite3.connect(':memory:') as prior:
+            db.backup(prior)
+            prior.row_factory = sqlite3.Row
+            kept = prior.execute('SELECT url,payload_json FROM articles ORDER BY ordinal LIMIT ?',
+                                 (prefix_rows,)).fetchall()
+            w.require(len(kept) == prefix_rows and prefix_rows > 0, 'Certified SQL prefix is missing')
+            marks = ','.join('?' for _ in kept)
+            prior.execute('DELETE FROM articles WHERE url NOT IN (' + marks + ')',
+                          [row['url'] for row in kept])
+            prior.execute('DELETE FROM fetch_attempts WHERE attempt_id NOT IN (' + marks + ')',
+                          [json.loads(row['payload_json'])['attempt_id'] for row in kept])
+            w.require(prior.execute('SELECT count(*) FROM fetch_attempts WHERE completed_at IS NOT NULL').fetchone()[0]
+                      == prefix_rows, 'Certified native attempts changed')
+            return call(prior, B, manifest_hash, NoBackups(), items)
 
 
 def _export_preflight(root, media, batch, rows):
     """Verify prior certified bytes before a pilot can replace native exports.
 
-    More committed DB rows prove an interrupted export is possible, but are not
-    permission to erase arbitrary bytes. Each extant native file must match
+    More committed DB rows or a reconciled terminal pending attempt prove an
+    interrupted export is possible, but are not permission to erase arbitrary
+    bytes. Each extant native file must match
     either its certified old version or a read-only render of the current DB.
     A manifest already present at certification may never disappear.
     """
     B = root / 'batches' / batch['batch_id']
     if not (B / 'pilot.sqlite').exists():
         return
+    # The caller has already reconciled every pending attempt with its durable
+    # terminal transport response. No uncertain or interrupted retry chain can
+    # reach this branch. Pilot's finally block may export that pending attempt
+    # without increasing the number of committed article rows.
+    with sqlite3.connect((B / 'pilot.sqlite').as_uri() + '?mode=ro&immutable=1', uri=True) as db:
+        pending = db.execute('SELECT count(*) FROM fetch_attempts WHERE completed_at IS NULL').fetchone()[0]
     certificates = []
     for path in (root / 'automatic_checks' / batch['batch_id']).glob('*/check.json'):
         check = w.load(path)
@@ -158,22 +330,27 @@ def _export_preflight(root, media, batch, rows):
                   'Native export accounting changed; preserve before any rewrite')
     if certified:
         w.require(old is not None, 'Previously certified export manifest is missing')
-    if certified and certified['rows'] == len(rows):
-        w.require(old['result_rows'] == len(rows) and old['files'] == certified['native_files'],
-                  'Certified export manifest accounting changed')
-        for name, meta in certified['native_files'].items():
-            w.require(w.sha_file(B / name) == meta['sha256'], 'Certified native export changed')
-        w._batch_check(root, batch, rows, certified['records'])
-        return
     # A pristine initialized pilot has no exported data to restore. Pending
     # snapshots are reconciled separately and will be exported on adoption.
     if not rows and old is None and not any((B / n).exists() for n in w.pilot.OUTPUT_NAMES):
         return
     items, manifest_hash = w.pilot.load_input(root / batch['input_path'])
     expected = _export_preview(B, items, manifest_hash)
+    prior = None
+    if certified:
+        prior = (expected if certified['rows'] == len(rows) and not pending else
+                 _export_preview(B, items, manifest_hash, prefix_rows=certified['rows']))
+        w.require(prior['files'] == certified['native_files'],
+                  'Certified native generation differs from its exact SQL/attempt prefix')
     if old:
-        old_is_current = old.get('result_rows') == len(rows) and old.get('files') == expected['files']
-        old_is_certified = certified is not None and old.get('result_rows') == certified['rows'] and old.get('files') == certified['native_files']
+        def stable(manifest):
+            # A separately imported namespace preserves the old descriptive
+            # annotation path. No annotation exists (strictly checked above).
+            return {**{k: v for k, v in manifest.items() if k != 'exported_at'},
+                    'manual_review': {k: v for k, v in manifest['manual_review'].items()
+                                      if k != 'annotation_path'}}
+        old_is_current = stable(old) == stable(expected)
+        old_is_certified = prior is not None and stable(old) == stable(prior)
         w.require(old_is_current or old_is_certified, 'Export manifest is not a proven old/current generation')
     else:
         old_is_current = False
@@ -191,7 +368,8 @@ def _export_preflight(root, media, batch, rows):
         w.require(sha in permitted, 'Native export differs from both proven old/current generations')
         repair_needed = repair_needed or sha != current['sha256']
     if repair_needed:
-        w.require(not certified or len(rows) > certified['rows'], 'No new committed rows prove an export-recovery window')
+        w.require(not certified or len(rows) > certified['rows'] or pending,
+                  'No committed rows or reconciled pending attempt prove an export-recovery window')
         w.pilot.run_pilot(root / batch['input_path'], B, media, export_only=True)
 
 
@@ -253,7 +431,7 @@ def _finish_boundary(root, plan, summaries, result_rows, *, paused):
 def run(root, media_root, *, max_batches, fetcher=None, parser=None,
         allow_network=False, clock=time.time, sleep=time.sleep, disk_free=None,
         stop_requested=None, install_signal_handlers=True, stop_at_saved_rows=None,
-        checkpoint_callback=None):
+        checkpoint_callback=None, inherited_failure_acknowledgment=None):
     """Finish an active logical URL, then pause before starting another one.
 
     stop_at_saved_rows is a hard count of retained input URLs in this child,
@@ -269,7 +447,8 @@ def run(root, media_root, *, max_batches, fetcher=None, parser=None,
                   allow_network=allow_network, clock=clock, sleep=sleep,
                   disk_free=disk_free, stop_requested=requested,
                   stop_at_saved_rows=stop_at_saved_rows,
-                  checkpoint_callback=checkpoint_callback)
+                  checkpoint_callback=checkpoint_callback,
+                  inherited_failure_acknowledgment=inherited_failure_acknowledgment)
     if install_signal_handlers:
         with graceful_signals(controller):
             return _run(root, media_root, **kwargs)
@@ -277,7 +456,8 @@ def run(root, media_root, *, max_batches, fetcher=None, parser=None,
 
 
 def _run(root, media_root, *, max_batches, fetcher, parser, allow_network,
-         clock, sleep, disk_free, stop_requested, stop_at_saved_rows, checkpoint_callback):
+         clock, sleep, disk_free, stop_requested, stop_at_saved_rows, checkpoint_callback,
+         inherited_failure_acknowledgment):
     w.require(fetcher is not None or allow_network, 'Explicit network execution flag required')
     root = w.namespace(root, media_root)
     media = Path(media_root)
@@ -312,6 +492,13 @@ def _run(root, media_root, *, max_batches, fetcher, parser, allow_network,
             w.require(w.load(root / 'safety_halt.json')['plan_sha256'] == plan['plan_sha256'], 'Halt belongs to another plan')
             return w._state(root, plan, 'halted_no_automatic_resume', halt_sha256=w.sha_file(root / 'safety_halt.json'))
         try:
+            inherited_ack = validated_inherited_failure_ack(root, plan, inherited_failure_acknowledgment)
+            w.require(not inherited_ack or not inherited_ack['synthetic_fixture'] or fetcher is not None,
+                      'Synthetic inherited acknowledgment cannot enable live transport')
+        except Exception as exc:
+            return w._halt(root, plan, 'inherited_failure_acknowledgment_invalid',
+                           detail=type(exc).__name__ + ': ' + str(exc))
+        try:
             w._snapshot_reconciliation(root, plan, w._ledger(root, plan))
         except Exception as exc:
             return w._halt(root, plan, 'transport_state_requires_reconciliation', detail=type(exc).__name__ + ': ' + str(exc))
@@ -328,7 +515,8 @@ def _run(root, media_root, *, max_batches, fetcher, parser, allow_network,
                 for row in saved:
                     record, trigger = w._assess_row(root, plan, row, B, registry, seen, history)
                     records.append(record)
-                    if trigger:
+                    if trigger and not (trigger == 'critical_source_or_access_failure' and
+                                        _acknowledged_replay(inherited_ack, row, record)):
                         return w._halt(root, plan, trigger, sample_id=row['sample_id'], risks=record['automatic_flags'])
             except Exception as exc:
                 return w._halt(root, plan, 'source_check_exception', detail=type(exc).__name__ + ': ' + str(exc))
@@ -431,6 +619,21 @@ def _run(root, media_root, *, max_batches, fetcher, parser, allow_network,
                    'last_transport_finish': entries[-1]['epoch'] if entries else plan['seed_context'].get('last_transport_finish'),
                    'prior_plan_receipts': plan['seed_context'].get('prior_plan_receipts', []),
                    'history_index': {'path': str(identity_path), 'sha256': w.sha_file(identity_path)}}
+        inherited_failures = list(plan['seed_context'].get('inherited_terminal_failures', []))
+        if inherited_ack:
+            failure = {
+                **inherited_ack['failure'], 'acknowledgment': inherited_failure_acknowledgment,
+                'collection_outcome': 'critical_failure', 'manual_review_status': 'not_reviewed',
+                'resolution_status': 'unresolved_transport_failure', 'retry_authorized': False,
+                'article_acceptance': False}
+            matches = [prior for prior in inherited_failures if
+                       (prior.get('sample_id'), prior.get('attempt_id')) ==
+                       (failure['sample_id'], failure['attempt_id'])]
+            w.require(not matches or matches == [failure], 'Inherited failure context changed or duplicated')
+            if not matches:
+                inherited_failures.append(failure)
+        if inherited_failures:
+            context['inherited_terminal_failures'] = inherited_failures
         w.write(root, 'continuation_context.json', context)
         return w._state(root, plan, w.PENDING, collection_inputs_finished=True,
                         completed_batches=len(summaries), result_rows=plan['row_count'],

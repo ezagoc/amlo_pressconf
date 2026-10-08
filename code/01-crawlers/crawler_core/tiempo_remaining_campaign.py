@@ -36,7 +36,8 @@ load, write, sha, require = w.load, w.write, w.sha_file, w.require
 def code_binding():
     base = Path(__file__).parent
     return {**w.program_hashes(), **{n: sha(base / n) for n in (
-        'tiempo_remaining_campaign.py', 'tiempo_resumable_worker.py', 'tiempo_stage_review.py')},
+        'tiempo_remaining_campaign.py', 'tiempo_resumable_worker.py', 'tiempo_stage_review.py',
+        'tiempo_connection_recovery.py')},
         'remaining_cli': sha(base.parent / 'scripts/run_tiempo_remaining.py')}
 
 
@@ -195,8 +196,9 @@ def prepare(config_path):
            'min_free_bytes': source_plan['min_free_bytes'],
            'initial_allocated_bytes_per_url': pre['storage_projection']['observed_allocated_bytes_per_URL'],
            'forecast_growth_multiplier': cfg.get('forecast_growth_multiplier', 1.1),
-           'historical_ai_receipts': [{**item, 'sha256': sha(item['receipt'])}
+           'historical_ai_receipts': [{**item, 'sha256': sha(item.get('coverage') or item['receipt'])}
                                      for item in cfg.get('historical_ai_receipts', [])],
+           'connection_recovery_pending': bool(cfg.get('connection_recovery_preparation')),
            'obligations': _bound(root / 'Inherited_Review_Obligations.json'),
            'synthetic_fixture': bool(cfg.get('synthetic_fixture')),
            'program_sha256': code_binding(), 'manual_review_status': 'not_reviewed',
@@ -211,12 +213,16 @@ def read_bound(root, *, full=False):
     root = Path(root).resolve(); m = _signed(root / 'campaign.json', 'campaign_sha256')
     require(m['schema'] == SCHEMA and m['root'] == str(root), 'Wrong campaign namespace')
     require(m['program_sha256'] == code_binding(), 'Frozen code changed; pause and validate a successor version')
+    require(not m.get('connection_recovery_pending'), 'Recovery preparation incomplete; no run is permitted')
+    if m.get('connection_recovery'):
+        from . import tiempo_connection_recovery
+        tiempo_connection_recovery.verify(m, full=full)
     for key in ('config_source', 'preflight', 'prepared_manifest', 'source_context', 'source_ledger', 'registry', 'obligations'):
         _verify(m[key])
     for p in m['parts']:
         _verify(p)
     for item in m['historical_ai_receipts']:
-        _verify({'path': item['receipt'], 'sha256': item['sha256']})
+        _verify({'path': item.get('coverage') or item['receipt'], 'sha256': item['sha256']})
     if full:
         _verify(m['queue']); _verify_old(load(m['preflight']['path']))
         w.load_history_index(load(m['source_context']['path'])['history_index'])
@@ -467,6 +473,8 @@ def run(root, *, allow_network=False, resume=False, fetcher=None, clock=time.tim
                         context=load(child/'continuation_context.json')
                         continue
                     before_saved,before_calls=saved,calls
+                    recovery=m.get('connection_recovery',{})
+                    inherited_ack=(recovery['acknowledgment'] if recovery.get('child_index')==index else None)
                     def checkpoint_callback(current_child,current_plan,summaries):
                         require(code_binding()==m['program_sha256'],'Frozen running code changed')
                         n=sum(s['rows'] for s in summaries);counts=_counts(current_child,current_plan)
@@ -475,7 +483,8 @@ def run(root, *, allow_network=False, resume=False, fetcher=None, clock=time.tim
                         selection_path=folder/f'selection_{n:08d}.json'
                         if not selection_path.exists():
                             selection=review.select_checkpoint(current_child,folder,checkpoint_rows=n,
-                                      inherited_obligations=m['obligations']['path'],history_receipts=history)
+                                      inherited_obligations=m['obligations']['path'],history_receipts=history,
+                                      inherited_failure_acknowledgment=inherited_ack)
                             selection_path=Path(selection['selection_path'])
                         previous_events=events(root)
                         prior=[e for e in previous_events if e['kind']=='checkpoint_gate_satisfied' and e['index']==index and e['rows']==n]
@@ -505,9 +514,12 @@ def run(root, *, allow_network=False, resume=False, fetcher=None, clock=time.tim
                                     raise ValueError('Required AI/source gate has technical blockers: '+str(gate['technical_blockers']))
                             if not wait_for_review:return False
                             sleep(review_wait_seconds)
-                    _state(root,'collecting',active_child=index,new_saved=saved,new_calls=calls)
+                    active_counts=_counts(child,plan)
+                    _state(root,'collecting',active_child=index,new_saved=saved+active_counts['saved'],
+                           new_calls=calls+active_counts['calls'])
                     result=worker.run(child,m['media'],max_batches=len(plan['batches']),stop_at_saved_rows=plan['row_count'],
                                       checkpoint_callback=checkpoint_callback,stop_requested=requested,install_signal_handlers=False,
+                                      inherited_failure_acknowledgment=inherited_ack,
                                       allow_network=allow_network,fetcher=fetcher,clock=clock,sleep=sleep,disk_free=disk_free)
                     counts=_counts(child,plan);total_saved=before_saved+counts['saved'];total_calls=before_calls+counts['calls']
                     if result['status']==worker.PAUSED:

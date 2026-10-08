@@ -150,6 +150,7 @@ def _batch_rows(child, batch, origins, bindings):
                     'snapshot_path': raw['path'], 'snapshot_sha256': raw['sha256'],
                     'payload_sha256': _sha(payload.encode()), 'row_check': check_binding,
                     'row_check_sha256': check_binding['sha256'], 'strata': strata(row, check, origin),
+                    'row_check_record_sha256': w.digest(check),
                     'origin': origin, 'automatic_flags': flags,
                     'critical_flags': check.get('critical_flags', []),
                     'publication_date': row.get('date_published'),
@@ -157,7 +158,29 @@ def _batch_rows(child, batch, origins, bindings):
     return out
 
 
-def _closed(child, checkpoint_rows, previous_checkpoint_rows=None):
+def _inherited_failure(child, plan, binding):
+    """Use the same exact, investigated terminal-failure proof as the worker."""
+    if binding is None:
+        return None
+    from . import tiempo_resumable_worker as worker
+    acknowledgment = worker.validated_inherited_failure_ack(child, plan, binding)
+    w.require(acknowledgment is not None, 'Missing validated inherited-failure acknowledgment')
+    return {'binding': dict(binding), 'validator': _bound(worker.__file__), 'failure': acknowledgment['failure'],
+            'status': 'investigated_terminal_failure_retained_unresolved',
+            'collection_outcome': 'critical_failure', 'manual_review_status': 'not_reviewed',
+            'article_acceptance': False, 'human_approval': False}
+
+
+def _is_inherited_failure(row, acknowledgment):
+    if acknowledgment is None:
+        return False
+    failure = acknowledgment['failure']
+    return row['critical_flags'] == ['critical_transport'] and all(
+        row.get(key) == failure.get(key) for key in
+        ('sample_id', 'url', 'batch_id', 'snapshot_sha256', 'payload_sha256', 'row_check_record_sha256'))
+
+
+def _closed(child, checkpoint_rows, previous_checkpoint_rows=None, inherited_failure_acknowledgment=None):
     child = Path(child).resolve()
     plan, queue = _plan(child)
     w.require(plan.get('program_sha256') == w.program_hashes(), 'Frozen worker program changed')
@@ -180,6 +203,9 @@ def _closed(child, checkpoint_rows, previous_checkpoint_rows=None):
               'Native pending review duties changed')
     bindings = [_bound(child / 'continuous_plan.json'), _bound(child / 'queue.csv'), _bound(summary_path),
                 _bound(native_pending)]
+    inherited_failure = _inherited_failure(child, plan, inherited_failure_acknowledgment)
+    if inherited_failure:
+        bindings.extend([inherited_failure['binding'], inherited_failure['validator']])
     origins = {r['sample_id']: r for r in queue}
     summaries = {s['batch_id']: s for s in summary['batch_checks']}
     all_rows, offset = [], 0
@@ -205,6 +231,7 @@ def _closed(child, checkpoint_rows, previous_checkpoint_rows=None):
               'Checkpoint is not a complete saved prefix')
     return {'child': str(child), 'plan_sha256': plan['plan_sha256'], 'checkpoint_rows': checkpoint_rows,
             'previous_checkpoint_rows': start, 'bindings': bindings, 'rows': all_rows,
+            'investigated_inherited_failure': inherited_failure,
             'native_pending_obligation': {'binding': _bound(native_pending), 'record_count': len(pending),
               'status': 'unresolved_native_pending_source_review',
               'rule': 'Preserved original semantics and not_reviewed state; this focused gate does not discharge these duties.'}}
@@ -346,7 +373,7 @@ def _obligations(path):
 
 
 def select_checkpoint(child, output_dir, *, checkpoint_rows, inherited_obligations,
-                      history_receipts=(), previous_checkpoint_rows=None):
+                      history_receipts=(), previous_checkpoint_rows=None, inherited_failure_acknowledgment=None):
     """Freeze selection once; a restart verifies and returns the exact same IDs.
 
     Legacy history items are {receipt, child}; new ones are {receipt, selection}.
@@ -356,12 +383,13 @@ def select_checkpoint(child, output_dir, *, checkpoint_rows, inherited_obligatio
     request = {'child': str(Path(child).resolve()), 'checkpoint_rows': checkpoint_rows,
                'inherited_obligations': str(Path(inherited_obligations).resolve()),
                'history_receipts': [dict(i) for i in history_receipts],
-               'previous_checkpoint_rows': previous_checkpoint_rows}
+               'previous_checkpoint_rows': previous_checkpoint_rows,
+               'inherited_failure_acknowledgment': inherited_failure_acknowledgment}
     if output.exists():
         existing = _validate_selection(output)
         w.require(existing['request'] == request, 'Restart inputs differ from frozen review selection')
         return {**existing, 'selection_path': str(output)}
-    snapshot = _closed(child, checkpoint_rows, previous_checkpoint_rows)
+    snapshot = _closed(child, checkpoint_rows, previous_checkpoint_rows, inherited_failure_acknowledgment)
     history = _history(history_receipts)
     historic = {r['sample_id']: r for r in history['records']}
     covered_strata = {s for r in historic.values() for s in r['strata']}
@@ -426,6 +454,11 @@ def _validate_selection(path):
     for binding in doc['snapshot']['bindings'] + doc['history']['bindings']:
         _verify(binding)
     _verify(doc['inherited_obligations']['binding'])
+    inherited_failure = doc['snapshot'].get('investigated_inherited_failure')
+    if inherited_failure:
+        child = Path(doc['snapshot']['child'])
+        verified = _inherited_failure(child, w.load(child / 'continuous_plan.json'), inherited_failure['binding'])
+        w.require(verified == inherited_failure, 'Investigated inherited failure differs from frozen selection')
     # Closed current DBs and automatic summaries bind every current row. Only
     # required selected raw/check sources are reread when a receipt arrives.
     # Prior validated coverage is reused via seals/receipt hashes, not by
@@ -477,9 +510,13 @@ def validate_gate(selection_path, receipt_paths=()):
                 blockers.extend(record['technical_blockers'])
                 if not record['technical_blockers']:
                     covered.add(sid)
-        # Source/transport critical flags cannot be waived by merely writing a
-        # narrative. A halted child still requires the separate repair process.
-        critical = [r['sample_id'] for r in doc['snapshot']['rows'] if r['critical_flags']]
+        # A receipt narrative cannot waive a critical flag. Only the separate
+        # recovery process's exact, hash-bound inherited terminal failure may
+        # remain unresolved while collection continues. Its source stays in
+        # the required reading selection and is never an accepted article.
+        acknowledged = doc['snapshot'].get('investigated_inherited_failure')
+        critical = [r['sample_id'] for r in doc['snapshot']['rows']
+                    if r['critical_flags'] and not _is_inherited_failure(r, acknowledged)]
         if critical:
             blockers.append('native_critical_source_flags:' + ','.join(critical))
         if (Path(doc['snapshot']['child']) / 'safety_halt.json').exists():
@@ -494,6 +531,7 @@ def validate_gate(selection_path, receipt_paths=()):
                   'new_actual_ai_read_count': len(seen - historical_ids),
                   'reread_historical_ids': sorted(seen & historical_ids), 'technical_blockers': blockers,
                   'native_pending_obligation': doc['snapshot']['native_pending_obligation'],
+                  'investigated_inherited_failure': acknowledged,
                   'human_approval': False, 'article_acceptance': False}
         return result
     except (OSError, ValueError, KeyError, TypeError, sqlite3.Error) as exc:
