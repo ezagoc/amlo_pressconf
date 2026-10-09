@@ -44,7 +44,8 @@ def _donor_code_binding(repo, wanted):
     aliases={'v5_worker':'crawler_core/tiempo_continuous_v5.py',
              'v5_scheduler':'crawler_core/tiempo_scheduler_v5.py',
              'v5_cli':'scripts/run_tiempo_scheduler_v5.py',
-             'remaining_cli':'scripts/run_tiempo_remaining.py'}
+             'remaining_cli':'scripts/run_tiempo_remaining.py',
+             'review_publish_cli':'scripts/publish_tiempo_review_receipt.py'}
     actual={key:w.sha_file(base/aliases.get(key, 'crawler_core/'+key)) for key in wanted}
     w.require(actual==wanted, 'Original frozen code binding changed')
     return [c._bound(base/aliases.get(key, 'crawler_core/'+key)) for key in wanted]

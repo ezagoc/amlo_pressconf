@@ -2162,3 +2162,7 @@ leaving46,941 new inputs. Never add the donor copy or fixed2670 package again.
 Keep one collector,80-row saves,400/final actual AI gates,original pacing and
 10GiB reserve plus forecasts. The hourly automations remain paused. Rebind the
 per-process low-battery safe-pause guard when battery operation is used.
+
+## Kevin — October 9, 2026 exact child47 review-format successor
+
+The independent `tiempo_review_recovery.py` adapter is restricted to the investigated child47/400 serialization stop. See `TIEMPO_REVIEW_RECOVERY.md`. It keeps original sources, old technical stop, unaccepted receipt and corrected receipt; validates original exports before copying only the400-row current working prefix; retains prior connection-failure lineage and pending research/native review obligations. The successor first formally seals the four preexisting actual readings with zero additional source rereads, then the regular gate allows request401. Original `not_reviewed` and human approval statuses remain unchanged. Any future technical stop still blocks automatic restart. Prepare/inspect offline before network launch. New receipts must use the bound atomic publishing helper with drafts outside the watched receipt directory.

@@ -37,8 +37,9 @@ def code_binding():
     base = Path(__file__).parent
     return {**w.program_hashes(), **{n: sha(base / n) for n in (
         'tiempo_remaining_campaign.py', 'tiempo_resumable_worker.py', 'tiempo_stage_review.py',
-        'tiempo_connection_recovery.py')},
-        'remaining_cli': sha(base.parent / 'scripts/run_tiempo_remaining.py')}
+        'tiempo_connection_recovery.py', 'tiempo_review_recovery.py', 'tiempo_review_publish.py')},
+        'remaining_cli': sha(base.parent / 'scripts/run_tiempo_remaining.py'),
+        'review_publish_cli': sha(base.parent / 'scripts/publish_tiempo_review_receipt.py')}
 
 
 def _bound(path):
@@ -235,6 +236,7 @@ def prepare(config_path):
            'historical_ai_receipts': [{**item, 'sha256': sha(item.get('coverage') or item['receipt'])}
                                      for item in cfg.get('historical_ai_receipts', [])],
            'connection_recovery_pending': bool(cfg.get('connection_recovery_preparation')),
+           'review_recovery_pending': bool(cfg.get('review_recovery_preparation')),
            'obligations': _bound(root / 'Inherited_Review_Obligations.json'),
            'synthetic_fixture': bool(cfg.get('synthetic_fixture')),
            'program_sha256': code_binding(), 'manual_review_status': 'not_reviewed',
@@ -249,7 +251,11 @@ def read_bound(root, *, full=False):
     root = Path(root).resolve(); m = _signed(root / 'campaign.json', 'campaign_sha256')
     require(m['schema'] == SCHEMA and m['root'] == str(root), 'Wrong campaign namespace')
     require(m['program_sha256'] == code_binding(), 'Frozen code changed; pause and validate a successor version')
-    require(not m.get('connection_recovery_pending'), 'Recovery preparation incomplete; no run is permitted')
+    require(not m.get('connection_recovery_pending') and not m.get('review_recovery_pending'),
+            'Recovery preparation incomplete; no run is permitted')
+    if m.get('review_recovery'):
+        from . import tiempo_review_recovery
+        tiempo_review_recovery.verify(m, full=full)
     if m.get('connection_recovery'):
         from . import tiempo_connection_recovery
         tiempo_connection_recovery.verify(m, full=full)
