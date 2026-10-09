@@ -1,4 +1,4 @@
-"""Kevin: evidence-bound successor for the investigated child36 connection halt.
+"""Kevin: evidence-bound successors for the investigated child36 and child42 halts.
 
 Offline preparation only. Old source trees remain immutable. This adapter never
 retries the failed input or relaxes the handling of a new transport failure.
@@ -16,12 +16,17 @@ from . import tiempo_resumable_worker as worker
 from . import tiempo_stage_review as review
 
 SCHEMA = 'tiempo-connection-stop-successor-v1'
-PRODUCTION = {
+PRODUCTION = ({
     'expected_child_index': 36, 'expected_saved': 391, 'expected_calls': 392,
     'failed_sample_id': 'TC5_495573', 'next_sample_id': 'TC5_498773',
     'donor_master_halt_sha256': '122848c71868449625b2752cb1a0854985d6a2813d16a1402d0aeae09cb5c2e1',
     'donor_native_halt_sha256': '6a4df85fbcba652c27188de7a78c8828ee501972bd3459749d4745e3f998823f',
-}
+}, {
+    'expected_child_index': 42, 'expected_saved': 1590, 'expected_calls': 1591,
+    'failed_sample_id': 'TC5_13912', 'next_sample_id': 'TC5_14168',
+    'donor_master_halt_sha256': '4e4dc96a3b01dfe5dcb803c2bb7da593534c124a194bee8270d13ad4c9126029',
+    'donor_native_halt_sha256': 'ebcd7f9f26bf7466be2095134f769ab4c750de92eda6afcd118a0cd9409e6d4f',
+})
 
 
 def _files(root):
@@ -53,12 +58,15 @@ def _read_donor(cfg):
     synthetic=bool(cfg.get('synthetic_fixture'))
     w.require(synthetic==bool(old['synthetic_fixture']), 'Synthetic/live donor mismatch')
     if not synthetic:
-        w.require(all(cfg.get(k)==v for k,v in PRODUCTION.items()), 'Only the specifically investigated production halt is authorized')
+        w.require(any(all(cfg.get(k)==v for k,v in case.items()) for case in PRODUCTION),
+                  'Only the specifically investigated production halts are authorized')
     code=_donor_code_binding(cfg['donor_code_root'],old['program_sha256'])
     for key in ('config_source','preflight','prepared_manifest','source_context','source_ledger','registry','obligations','queue'):
         c._verify(old[key])
     for p in old['parts']: c._verify(p)
     c._verify_old(w.load(old['preflight']['path']))
+    if old.get('connection_recovery'):
+        verify(old)
     events=c.events(donor)
     stops=[e for e in events if e['kind']=='technical_stop']
     w.require(len(stops)==1 and stops[0]['evidence']==c._bound(donor/'technical_stop.json'), 'Donor stop event mismatch')
@@ -95,8 +103,27 @@ def _read_donor(cfg):
     w.require([r['sample_id'] for r in rows]==[q['sample_id'] for q in queue[:counts['saved']]], 'Donor rows are not exact input prefix')
     gates=[e for e in events if e['kind']=='checkpoint_gate_satisfied']
     for gate in gates: c._verify_gate_event(gate)
-    w.require(not any(e['index']==part['plan_index'] for e in gates), 'This adapter expects no prior gate in the halted child')
+    _verified_inherited_gates(old, events, cfg['expected_child_index'], cfg['expected_saved'])
     return old,events,done,context,closed_saved,closed_calls,child,plan,rows,code
+
+
+def _verified_inherited_gates(donor, events, index, saved):
+    """Reuse only signed, sealed gates strictly inside this saved child prefix."""
+    gates = [e for e in events if e['kind'] == 'checkpoint_gate_satisfied' and e['index'] == index]
+    required = list(range(400, saved + 1, 400))
+    w.require([e['rows'] for e in gates] == required,
+              'Inherited child is missing or has unexpected prior review gates')
+    child = c.child_path(donor, index)
+    native_plan = w.load(child / 'continuous_plan.json')
+    for gate in gates:
+        c._verify_gate_event(gate)
+        selection = w.load(gate['selection']['path'])
+        snap = selection['snapshot']
+        w.require(snap['child'] == str(child) and
+                  snap['plan_sha256'] == native_plan['plan_sha256'] and
+                  snap['checkpoint_rows'] == gate['rows'],
+                  'Inherited source-reading gate belongs to another child or boundary')
+    return gates
 
 
 def prepare(config_path):
@@ -112,14 +139,34 @@ def prepare(config_path):
     inventory={str(p):w.sha_file(p) for p in _files(source)}
     controls=[donor/'campaign.json', donor/'status.json', donor/'technical_stop.json', donor/'Inherited_Review_Obligations.json']
     controls+=sorted((donor/'events').glob('*.json'))
+    if old.get('connection_recovery'):
+        controls += [Path(old['connection_recovery'][key]['path']) for key in ('provenance','acknowledgment')]
+    inherited_gates=_verified_inherited_gates(old,events,index,cfg['expected_saved'])
     donor_controls=[c._bound(p) for p in controls]+code
     oldpre=w.load(old['preflight']['path'])
     obligations=dict(oldpre['review_obligations'])
+    pending=list(obligations['native_pending_file_bindings'])
+    known_pending={entry['path'] for entry in pending}
+    for summary_path in sorted(source.glob('checkpoint_*/summary.json')):
+        summary=w.load(summary_path); pending_path=summary_path.parent/'pending_source_review_samples.csv'
+        w.require(w.sha_file(pending_path)==summary['pending_samples_sha256'] and
+                  len(w.readcsv(pending_path))==summary['pending_source_review_sample_count'],
+                  'Inherited native review obligation changed')
+        if str(pending_path) not in known_pending:
+            pending.append({**c._bound(pending_path),'rows':summary['pending_source_review_sample_count'],
+                            'summary':c._bound(summary_path)})
+            known_pending.add(str(pending_path))
+    obligations['native_pending_file_bindings']=pending
     obligations['investigated_donor_obligations']=c._bound(donor/'Inherited_Review_Obligations.json')
     obligations['prior_checkpoint_gates']=[{'selection':e['selection'],'coverage':e['coverage']} for e in events if e['kind']=='checkpoint_gate_satisfied']
     obligations['prior_completed_children']=[e['receipt'] for e in done]
+    obligations['inherited_recovery_lineage']=old.get('connection_recovery')
+    prior_failures=list(obligations.get('unresolved_failures',[]))
+    if obligations.get('unresolved_failure') and obligations['unresolved_failure'] not in prior_failures:
+        prior_failures.append(obligations['unresolved_failure'])
     obligations['unresolved_failure']={'sample_id':cfg['failed_sample_id'],'status':'critical_failure_unresolved',
         'native_manual_review_status':'not_reviewed','retry_authorized':False,'donor_native_halt':c._bound(source/'safety_halt.json')}
+    obligations['unresolved_failures']=[*prior_failures,obligations['unresolved_failure']]
     pre={**oldpre,'source_runtime':str(predecessor), 'review_obligations':obligations,
          'source_bindings':{**oldpre['source_bindings'],'completed_predecessor_context':c._bound(predecessor/'continuation_context.json'),
              'completed_predecessor_receipt':c._bound(predecessor/'remaining_completion_receipt.json') if (predecessor/'remaining_completion_receipt.json').exists() else c._bound(predecessor/'continuous_state.json')},
@@ -194,11 +241,15 @@ def prepare(config_path):
            'native_plan_binding':c._bound(target/'continuous_plan.json'),'acknowledgment':binding,
            'child_index':index,'inherited_rows':cfg['expected_saved'],'inherited_calls':cfg['expected_calls'],
            'baseline_saved':m['baseline_saved'],'baseline_calls':m['baseline_calls'],
+           'inherited_checkpoint_gates':inherited_gates,
+           'inherited_recovery_lineage':({'campaign':c._bound(donor/'campaign.json'),
+               'connection_recovery':old['connection_recovery']} if old.get('connection_recovery') else None),
            'first_new_sample_id':cfg['next_sample_id'],'offline_prefix_closed':True,'human_approval':False,
            'article_acceptance':False,'remaining_original_calls_ceiling':old['max_new_calls']-closed_calls}
     w.write(root,'Recovery_Provenance.json',proof)
     m.pop('campaign_sha256'); m.pop('connection_recovery_pending')
-    m['connection_recovery']={'provenance':c._bound(root/'Recovery_Provenance.json'),'acknowledgment':binding,'child_index':index}
+    m['connection_recovery']={'provenance':c._bound(root/'Recovery_Provenance.json'),'acknowledgment':binding,
+                              'child_index':index,'inherited_checkpoint_gates':inherited_gates}
     m['campaign_sha256']=w.digest(m); w.write(root,'campaign.json',m)
     # Initial prepared event cannot certify another manifest; preserve it as
     # preparation history and bind the final manifest explicitly in a new event.
@@ -210,13 +261,32 @@ def prepare(config_path):
                     original_plan_saved=m['baseline_saved']+cfg['expected_saved'],remaining=m['remaining_rows']-cfg['expected_saved'])
 
 
-def verify(m, *, full=False):
+def verify(m, *, full=False, _ancestors=()):
+    w.require(m['root'] not in _ancestors, 'Cyclic recovery provenance')
+    ancestors=(*_ancestors,m['root'])
     bound=m['connection_recovery']; c._verify(bound['provenance']); c._verify(bound['acknowledgment'])
     doc=w.load(bound['provenance']['path']); c._verify(doc['config'])
     w.require(doc['schema']==SCHEMA and doc['acknowledgment']==bound['acknowledgment'] and
               doc['child_index']==bound['child_index'] and doc['baseline_saved']==m['baseline_saved'] and
               doc['baseline_calls']==m['baseline_calls'],'Recovery provenance differs from campaign')
     for b in doc['donor_controls']: c._verify(b)
+    cfg=w.load(doc['config']['path'])
+    donor=c._signed(Path(cfg['donor_root'])/'campaign.json','campaign_sha256')
+    w.require(doc.get('inherited_checkpoint_gates',[])==bound.get('inherited_checkpoint_gates',[]),
+              'Inherited checkpoint gates differ from recovery provenance')
+    donor_events=c.events(cfg['donor_root'])
+    inherited=_verified_inherited_gates(donor,donor_events,doc['child_index'],doc['inherited_rows'])
+    w.require(inherited==doc.get('inherited_checkpoint_gates',[]),
+              'Inherited gates differ from original signed donor events')
+    lineage=doc.get('inherited_recovery_lineage')
+    w.require(bool(lineage)==bool(donor.get('connection_recovery')), 'Recovery lineage is missing or spurious')
+    if lineage:
+        c._verify(lineage['campaign'])
+        w.require(lineage['campaign']==c._bound(Path(cfg['donor_root'])/'campaign.json') and
+                  lineage['connection_recovery']==donor['connection_recovery'] and
+                  donor['connection_recovery']['child_index']<doc['child_index'],
+                  'Inherited prior recovery binding differs')
+        verify(donor,full=False,_ancestors=ancestors)
     c._verify(doc['native_plan_binding'])
     plan=w.load(doc['native_plan_binding']['path'])
     worker.validated_inherited_failure_ack(Path(doc['target_child']),plan,bound['acknowledgment'])

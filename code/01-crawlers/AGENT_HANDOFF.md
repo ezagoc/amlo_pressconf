@@ -2139,3 +2139,26 @@ The successor copies only required current-child recovery material. Earlier
 identities, ledger totals and native review obligations remain referenced.
 Fresh failures, altered evidence and disk protections still stop collection.
 Use the successor's explicitly recorded root, never expand the old halted run.
+
+## Kevin — October 8, 2026: child42 connection-stop continuation
+
+The user explicitly authorized a second isolated, evidence-bound recovery for
+TC5_13912 at child42:1,590 retained outcomes and1,591 charged calls. Preserve the
+first successor, both earlier halts, original pages and all native review states.
+The new code permits only the exact investigated child42 identity/plan/halt
+bindings, retaining the timeout and terminal DNS failure without another retry.
+Earlier unresolved child36 failure lineage also remains bound and carried.
+
+Reuse original400/800/1200 actual AI coverage through signed inherited-gate
+markers with zero new readings. The first new URL is position1591 TC5_14168;
+ten new inputs complete the old80-row boundary at1600. That fresh AI gate must
+pass before1601. No marker or auto check is human approval. New faults still
+halt and ordinary --resume never clears a technical stop.
+
+Use the new runtime recorded by the local project locator after preparation:
+Remaining_Child42_Recovery_20261008. Counts start with82,000 completed outcomes
+and82,053 calls; its48,531-input partition includes the imported1,590 outcomes,
+leaving46,941 new inputs. Never add the donor copy or fixed2670 package again.
+Keep one collector,80-row saves,400/final actual AI gates,original pacing and
+10GiB reserve plus forecasts. The hourly automations remain paused. Rebind the
+per-process low-battery safe-pause guard when battery operation is used.

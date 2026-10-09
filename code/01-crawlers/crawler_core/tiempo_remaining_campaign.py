@@ -132,6 +132,42 @@ def _verify_gate_event(entry):
     return coverage
 
 
+def _inherited_gate(m, index, rows):
+    """Return only an explicitly bound prior reading, never an inferred approval."""
+    recovery = m.get('connection_recovery', {})
+    matches = [e for e in recovery.get('inherited_checkpoint_gates', [])
+               if e['index'] == index and e['rows'] == rows]
+    require(len(matches) <= 1, 'Duplicate inherited checkpoint gate')
+    if not matches:
+        return None
+    gate = matches[0]
+    require(index == recovery['child_index'] and gate['kind'] == 'checkpoint_gate_satisfied' and
+            gate.get('human_approval') is False and gate.get('article_acceptance') is False,
+            'Wrong inherited checkpoint identity or approval scope')
+    _verify_gate_event(gate)
+    return gate
+
+
+def _verify_inherited_gate_event(m, entry):
+    original = _inherited_gate(m, entry['index'], entry['rows'])
+    require(original is not None and entry.get('inherited_event_sha256') == original['event_sha256'] and
+            entry.get('recovery_provenance') == m['connection_recovery']['provenance'] and
+            entry['selection'] == original['selection'] and entry['coverage'] == original['coverage'] and
+            entry.get('new_actual_ai_read_count') == 0 and entry.get('human_approval') is False,
+            'Inherited checkpoint marker differs from bound historical reading')
+
+
+def _checkpoint_gate_events(m, ev, index=None):
+    gates = [e for e in ev if e['kind'] in ('checkpoint_gate_satisfied', 'checkpoint_gate_inherited')
+             and (index is None or e['index'] == index)]
+    keys = [(e['index'], e['rows']) for e in gates]
+    require(len(keys) == len(set(keys)), 'Duplicate checkpoint approval event')
+    for e in gates:
+        if e['kind'] == 'checkpoint_gate_inherited':
+            _verify_inherited_gate_event(m, e)
+    return gates
+
+
 def _outstanding_safe_pause(ev):
     paused = max((e['sequence'] for e in ev if e['kind'] == 'safe_pause'), default=0)
     resumed = max((e['sequence'] for e in ev if e['kind'] == 'resume_acknowledgment'), default=0)
@@ -231,7 +267,7 @@ def read_bound(root, *, full=False):
     if stops:
         require((root / 'technical_stop.json').exists(), 'A technical stop was removed; refusing resume')
         _verify(stops[-1]['evidence'])
-    gates = [e for e in ev if e['kind'] == 'checkpoint_gate_satisfied']
+    gates = _checkpoint_gate_events(m, ev)
     for e in gates:
         _verify(e['selection']); _verify(e['coverage'])
     if gates:
@@ -369,7 +405,7 @@ def _adopt_closed_child(m,part,child):
             'Unaccounted completion receipt has incomplete native evidence')
     targets=list(range(400,part['rows']+1,400))
     if not targets or targets[-1]!=part['rows']:targets.append(part['rows'])
-    approved=[e for e in events(m['root']) if e['kind']=='checkpoint_gate_satisfied' and e['index']==part['plan_index']]
+    approved=_checkpoint_gate_events(m, events(m['root']), part['plan_index'])
     require([e['rows'] for e in approved]==targets,'Unaccounted child has missing checkpoint review gates')
     for e in approved:_verify_gate_event(e)
     return doc,path
@@ -380,6 +416,11 @@ def _complete_child(m, part, child, result):
     plan = load(child/'continuous_plan.json'); counts=_counts(child,plan)
     require(counts['saved']==part['rows'] and not counts['open_transport'] and not counts['pending_native_attempts'],
             'Child has incomplete results or requests')
+    targets=list(range(400,part['rows']+1,400))
+    if not targets or targets[-1]!=part['rows']:targets.append(part['rows'])
+    approved=_checkpoint_gate_events(m,events(m['root']),part['plan_index'])
+    require([e['rows'] for e in approved]==targets,'Child has missing checkpoint review gates')
+    for e in approved:_verify_gate_event(e)
     context=load(child/'continuation_context.json')
     require(result['continuation_context_sha256']==sha(child/'continuation_context.json'), 'Child context mismatch')
     w.load_history_index(context['history_index'])
@@ -479,6 +520,33 @@ def run(root, *, allow_network=False, resume=False, fetcher=None, clock=time.tim
                         require(code_binding()==m['program_sha256'],'Frozen running code changed')
                         n=sum(s['rows'] for s in summaries);counts=_counts(current_child,current_plan)
                         require(counts['saved']>=n and before_calls+counts['calls']<=m['max_new_calls'], 'Checkpoint count/budget mismatch')
+                        previous_events=events(root)
+                        prior=[e for e in _checkpoint_gate_events(m,previous_events,index) if e['rows']==n]
+                        inherited=_inherited_gate(m,index,n)
+                        if inherited:
+                            # read_bound has verified the immutable donor and imported
+                            # SQL/attempt/ledger prefix. The worker replays that prefix
+                            # before this callback. Keep the old selection and receipts
+                            # in their original namespace; no re-selection or new read.
+                            selected=_signed(inherited['selection']['path'],'selection_sha256')
+                            require(selected['snapshot']['plan_sha256']==current_plan['plan_sha256'] and
+                                    selected['snapshot']['checkpoint_rows']==n,
+                                    'Inherited checkpoint belongs to another native plan or boundary')
+                            if prior:
+                                require(prior[0]['kind']=='checkpoint_gate_inherited',
+                                        'Inherited checkpoint was incorrectly counted as a new reading')
+                            else:
+                                event(root,'checkpoint_gate_inherited',index=index,rows=n,
+                                      selection=inherited['selection'],coverage=inherited['coverage'],
+                                      inherited_event_sha256=inherited['event_sha256'],
+                                      recovery_provenance=recovery['provenance'],new_actual_ai_read_count=0,
+                                      new_saved=before_saved+counts['saved'],new_calls=before_calls+counts['calls'])
+                            # Do not roll latest inherited (or newly sealed) history
+                            # backwards while replaying earlier 400/800 checkpoints.
+                            return not requested()
+                        if prior:
+                            _verify_gate_event(prior[0])
+                            return not requested()
                         folder=root/'reviews'/f'plan_{index:06d}'/f'checkpoint_{n:08d}'
                         selection_path=folder/f'selection_{n:08d}.json'
                         if not selection_path.exists():
@@ -486,11 +554,6 @@ def run(root, *, allow_network=False, resume=False, fetcher=None, clock=time.tim
                                       inherited_obligations=m['obligations']['path'],history_receipts=history,
                                       inherited_failure_acknowledgment=inherited_ack)
                             selection_path=Path(selection['selection_path'])
-                        previous_events=events(root)
-                        prior=[e for e in previous_events if e['kind']=='checkpoint_gate_satisfied' and e['index']==index and e['rows']==n]
-                        if prior:
-                            require(len(prior)==1,'Duplicate checkpoint approval event');_verify_gate_event(prior[0])
-                            return not requested()
                         _state(root,'waiting_for_required_AI_review',active_child=index,child_saved=counts['saved'],
                                new_saved=before_saved+counts['saved'],new_calls=before_calls+counts['calls'],
                                selection=str(selection_path),required_review='Frozen selection must have actual AI receipts; no automatic approval.')

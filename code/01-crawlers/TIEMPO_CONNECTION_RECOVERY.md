@@ -37,3 +37,26 @@ Keep original timing, retry categories, single writer, safe pause, source checks
 400-row gates, forecasts and10GiB floor. New technical stops remain terminal for
 this successor; do not remove halt evidence. No automatic restart after laptop
 sleep is promised. No shared tracker or fixed2,670-row package is modified.
+
+## Kevin: child42 successor, October 8
+
+The second explicitly authorized case is the child42 halt at TC5_13912:
+1,590 retained outcomes and 1,591 charged calls, including timeout followed by
+DNS failure. The first successor and its old child36 failure lineage remain
+unchanged. The child42 successor does not authorize another TC5_13912 request.
+Its first new input is TC5_14168; ten new inputs reach the original 1,600-row
+checkpoint and finish the existing 80-row batch.
+
+The new namespace imports only child42 working state. The completed predecessor,
+old results, source history and earlier recovery controls remain hash-bound
+references. Preparation first verifies existing export bytes and readback,
+then closes the copied partial prefix offline. Code, configuration, halt
+identity, ledger and both failure lineages are bound before network is allowed.
+
+The sealed 400/800/1,200 AI reading gates are reused only through their exact
+original signed events, selections and coverage seals. They are not new
+readings or human approvals. A missing, altered or out-of-order inherited gate
+blocks recovery. The 1,600-row gate remains pending and requires actual AI
+reading of its selected saved sources; collection cannot pass input1,600 until
+that gate is satisfied. Pending research obligations and original not_reviewed
+values remain unchanged. Fresh connection faults still stop collection.

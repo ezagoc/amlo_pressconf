@@ -22,6 +22,22 @@ from . import tiempo_continuous_v5 as w
 SCHEMA = 'tiempo-resumable-worker-v1'
 PAUSED = 'paused_safe'
 INHERITED_FAILURE_SCHEMA = 'tiempo-inherited-terminal-failure-v1'
+# Exact investigated production failures only. No future transport error is
+# covered by these acknowledgments, and neither entry authorizes another GET.
+PRODUCTION_FAILURES = (
+    {'sample_id': 'TC5_495573', 'attempt_id': '87f7b4ae3fe74d38ba1835a56baa61b9',
+     'url': 'https://www.tiempo.com.mx/noticia/posverdad_columna_politica_1_julio_2025/',
+     'plan_sha256': 'bad8e8eec1eaff8a3b818587764959ef8a327f3442530eea52827a8fdc766728',
+     'native_halt_sha256': '6a4df85fbcba652c27188de7a78c8828ee501972bd3459749d4745e3f998823f',
+     'master_halt_sha256': '122848c71868449625b2752cb1a0854985d6a2813d16a1402d0aeae09cb5c2e1',
+     'prefix_rows': 391, 'prefix_calls': 392, 'terminal_curl_exit_code': 7},
+    {'sample_id': 'TC5_13912', 'attempt_id': '8fbc4e4893744172818df325b242962b',
+     'url': 'https://www.tiempo.com.mx/noticia/acribillaron-a-3-en-el-marmol-uno-murio-ciudad-juarez-11-septiembre-2025/',
+     'plan_sha256': '5c16211800d15402548871b483676b2d213e9bfd3856e25d371294b809e9fa3b',
+     'native_halt_sha256': 'ebcd7f9f26bf7466be2095134f769ab4c750de92eda6afcd118a0cd9409e6d4f',
+     'master_halt_sha256': '4e4dc96a3b01dfe5dcb803c2bb7da593534c124a194bee8270d13ad4c9126029',
+     'prefix_rows': 1590, 'prefix_calls': 1591, 'terminal_curl_exit_code': 6},
+)
 # Rendering uses the frozen function body independently of a test-injected
 # interruption at the actual export call; all preview writes are suppressed.
 _NATIVE_EXPORT_OUTPUTS = w.pilot.export_outputs
@@ -105,16 +121,18 @@ def validated_inherited_failure_ack(root, plan, binding=None):
               master_halt.get('reason') == 'native_worker_stopped' and
               master_halt.get('native_result', {}).get('halt_sha256') == halt_sha,
               'Donor terminal halt does not authorize this retained failure')
+    terminal_exit_codes = {6, 7}  # Explicit offline fixtures; production is exact below.
     if not ack['synthetic_fixture']:
-        w.require(failure['sample_id'] == 'TC5_495573' and
-                  failure['attempt_id'] == '87f7b4ae3fe74d38ba1835a56baa61b9' and
-                  failure['url'] == 'https://www.tiempo.com.mx/noticia/posverdad_columna_politica_1_julio_2025/' and
-                  plan['plan_sha256'] == 'bad8e8eec1eaff8a3b818587764959ef8a327f3442530eea52827a8fdc766728' and
-                  halt_sha == '6a4df85fbcba652c27188de7a78c8828ee501972bd3459749d4745e3f998823f' and
-                  evidence[str(master / 'technical_stop.json')] ==
-                  '122848c71868449625b2752cb1a0854985d6a2813d16a1402d0aeae09cb5c2e1' and
-                  ack['prefix_rows'] == 391 and ack['prefix_calls'] == 392,
-                  'Only the frozen October 8 connection failure may be acknowledged')
+        observed = {key: failure[key] for key in ('sample_id', 'attempt_id', 'url')}
+        observed.update(plan_sha256=plan['plan_sha256'], native_halt_sha256=halt_sha,
+                        master_halt_sha256=evidence[str(master / 'technical_stop.json')],
+                        prefix_rows=ack['prefix_rows'], prefix_calls=ack['prefix_calls'])
+        matched = [case for case in PRODUCTION_FAILURES
+                   if all(observed[key] == value for key, value in case.items()
+                          if key != 'terminal_curl_exit_code')]
+        w.require(len(matched) == 1,
+                  'Only an exactly bound investigated October 8 failure may be acknowledged')
+        terminal_exit_codes = {matched[0]['terminal_curl_exit_code']}
     old = inherited_prefix_evidence(donor, plan, ack['prefix_rows'])
     current = inherited_prefix_evidence(root, plan, ack['prefix_rows'])
     w.require(old['total_rows'] == ack['prefix_rows'] and
@@ -155,7 +173,7 @@ def validated_inherited_failure_ack(root, plan, binding=None):
         w.require(receipt == old_receipt and receipt['retry_index'] == index and
                   receipt['terminal'] is bool(index) and
                   receipt['response_kind'] == ('critical_transport' if index else 'retryable_service') and
-                  response.get('curl_exit_code') == (7 if index else 28) and
+                  response.get('curl_exit_code') in (terminal_exit_codes if index else {28}) and
                   response.get('status') == 0 and response.get('text') == '',
                   'Inherited connection failure terminal response changed')
     return ack
