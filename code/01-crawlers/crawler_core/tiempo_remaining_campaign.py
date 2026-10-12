@@ -37,9 +37,11 @@ def code_binding():
     base = Path(__file__).parent
     return {**w.program_hashes(), **{n: sha(base / n) for n in (
         'tiempo_remaining_campaign.py', 'tiempo_resumable_worker.py', 'tiempo_stage_review.py',
-        'tiempo_connection_recovery.py', 'tiempo_review_recovery.py', 'tiempo_review_publish.py')},
+        'tiempo_connection_recovery.py', 'tiempo_review_recovery.py', 'tiempo_review_publish.py',
+        'tiempo_source_gap_recovery.py')},
         'remaining_cli': sha(base.parent / 'scripts/run_tiempo_remaining.py'),
-        'review_publish_cli': sha(base.parent / 'scripts/publish_tiempo_review_receipt.py')}
+        'review_publish_cli': sha(base.parent / 'scripts/publish_tiempo_review_receipt.py'),
+        'source_gap_cli': sha(base.parent / 'scripts/prepare_tiempo_source_gap_recovery.py')}
 
 
 def _bound(path):
@@ -237,6 +239,7 @@ def prepare(config_path):
                                      for item in cfg.get('historical_ai_receipts', [])],
            'connection_recovery_pending': bool(cfg.get('connection_recovery_preparation')),
            'review_recovery_pending': bool(cfg.get('review_recovery_preparation')),
+           'source_gap_recovery_pending': bool(cfg.get('source_gap_recovery_preparation')),
            'obligations': _bound(root / 'Inherited_Review_Obligations.json'),
            'synthetic_fixture': bool(cfg.get('synthetic_fixture')),
            'program_sha256': code_binding(), 'manual_review_status': 'not_reviewed',
@@ -251,8 +254,11 @@ def read_bound(root, *, full=False):
     root = Path(root).resolve(); m = _signed(root / 'campaign.json', 'campaign_sha256')
     require(m['schema'] == SCHEMA and m['root'] == str(root), 'Wrong campaign namespace')
     require(m['program_sha256'] == code_binding(), 'Frozen code changed; pause and validate a successor version')
-    require(not m.get('connection_recovery_pending') and not m.get('review_recovery_pending'),
+    require(not m.get('connection_recovery_pending') and not m.get('review_recovery_pending') and not m.get('source_gap_recovery_pending'),
             'Recovery preparation incomplete; no run is permitted')
+    if m.get('source_gap_recovery'):
+        from . import tiempo_source_gap_recovery
+        tiempo_source_gap_recovery.verify(m, full=full)
     if m.get('review_recovery'):
         from . import tiempo_review_recovery
         tiempo_review_recovery.verify(m, full=full)
@@ -522,6 +528,8 @@ def run(root, *, allow_network=False, resume=False, fetcher=None, clock=time.tim
                     before_saved,before_calls=saved,calls
                     recovery=m.get('connection_recovery',{})
                     inherited_ack=(recovery['acknowledgment'] if recovery.get('child_index')==index else None)
+                    source_gap = m.get('source_gap_recovery', {})
+                    source_gap_ack = source_gap['acknowledgment'] if source_gap.get('child_index') == index else None
                     def checkpoint_callback(current_child,current_plan,summaries):
                         require(code_binding()==m['program_sha256'],'Frozen running code changed')
                         n=sum(s['rows'] for s in summaries);counts=_counts(current_child,current_plan)
@@ -589,6 +597,7 @@ def run(root, *, allow_network=False, resume=False, fetcher=None, clock=time.tim
                     result=worker.run(child,m['media'],max_batches=len(plan['batches']),stop_at_saved_rows=plan['row_count'],
                                       checkpoint_callback=checkpoint_callback,stop_requested=requested,install_signal_handlers=False,
                                       inherited_failure_acknowledgment=inherited_ack,
+                                      inherited_source_gap_acknowledgment=source_gap_ack,
                                       allow_network=allow_network,fetcher=fetcher,clock=clock,sleep=sleep,disk_free=disk_free)
                     counts=_counts(child,plan);total_saved=before_saved+counts['saved'];total_calls=before_calls+counts['calls']
                     if result['status']==worker.PAUSED:

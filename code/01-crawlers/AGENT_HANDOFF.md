@@ -2166,3 +2166,21 @@ per-process low-battery safe-pause guard when battery operation is used.
 ## Kevin — October 9, 2026 exact child47 review-format successor
 
 The independent `tiempo_review_recovery.py` adapter is restricted to the investigated child47/400 serialization stop. See `TIEMPO_REVIEW_RECOVERY.md`. It keeps original sources, old technical stop, unaccepted receipt and corrected receipt; validates original exports before copying only the400-row current working prefix; retains prior connection-failure lineage and pending research/native review obligations. The successor first formally seals the four preexisting actual readings with zero additional source rereads, then the regular gate allows request401. Original `not_reviewed` and human approval statuses remain unchanged. Any future technical stop still blocks automatic restart. Prepare/inspect offline before network launch. New receipts must use the bound atomic publishing helper with drafts outside the watched receipt directory.
+
+## Kevin — October 12, 2026: exact child65 source-gap successor
+
+See `TIEMPO_SOURCE_GAP_RECOVERY.md` and the dedicated preparation CLI.
+The two saved responses TC5_476522 and TC5_501081 contain matching titles and
+publication evidence but no article prose or article-specific media destination.
+Neither a transcript nor a video classification is supported. The parser and
+source checker remain unchanged; original missing-body errors and source gaps
+remain available for research review.
+
+The separate successor acknowledges only replay of the exact investigated
+333-row stop, preserving original row checks and the complete rolling risk
+history. It cannot waive a newly collected anomaly. It inherits the original
+333 requests once and starts at position334, TC5_552341. The first67 new inputs
+reach the original400 boundary and require a separate actual-AI gate before401.
+No old halt is deleted and diagnostic reading is not a collection-gate approval.
+Code or prepared state alone does not prove launch: use the live locator,
+process, request ledger and review receipts to verify operating status.

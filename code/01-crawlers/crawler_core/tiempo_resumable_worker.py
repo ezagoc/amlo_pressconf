@@ -449,7 +449,8 @@ def _finish_boundary(root, plan, summaries, result_rows, *, paused):
 def run(root, media_root, *, max_batches, fetcher=None, parser=None,
         allow_network=False, clock=time.time, sleep=time.sleep, disk_free=None,
         stop_requested=None, install_signal_handlers=True, stop_at_saved_rows=None,
-        checkpoint_callback=None, inherited_failure_acknowledgment=None):
+        checkpoint_callback=None, inherited_failure_acknowledgment=None,
+        inherited_source_gap_acknowledgment=None):
     """Finish an active logical URL, then pause before starting another one.
 
     stop_at_saved_rows is a hard count of retained input URLs in this child,
@@ -466,7 +467,8 @@ def run(root, media_root, *, max_batches, fetcher=None, parser=None,
                   disk_free=disk_free, stop_requested=requested,
                   stop_at_saved_rows=stop_at_saved_rows,
                   checkpoint_callback=checkpoint_callback,
-                  inherited_failure_acknowledgment=inherited_failure_acknowledgment)
+                  inherited_failure_acknowledgment=inherited_failure_acknowledgment,
+                  inherited_source_gap_acknowledgment=inherited_source_gap_acknowledgment)
     if install_signal_handlers:
         with graceful_signals(controller):
             return _run(root, media_root, **kwargs)
@@ -475,7 +477,7 @@ def run(root, media_root, *, max_batches, fetcher=None, parser=None,
 
 def _run(root, media_root, *, max_batches, fetcher, parser, allow_network,
          clock, sleep, disk_free, stop_requested, stop_at_saved_rows, checkpoint_callback,
-         inherited_failure_acknowledgment):
+         inherited_failure_acknowledgment, inherited_source_gap_acknowledgment):
     w.require(fetcher is not None or allow_network, 'Explicit network execution flag required')
     root = w.namespace(root, media_root)
     media = Path(media_root)
@@ -511,6 +513,10 @@ def _run(root, media_root, *, max_batches, fetcher, parser, allow_network,
             return w._state(root, plan, 'halted_no_automatic_resume', halt_sha256=w.sha_file(root / 'safety_halt.json'))
         try:
             inherited_ack = validated_inherited_failure_ack(root, plan, inherited_failure_acknowledgment)
+            from . import tiempo_source_gap_recovery as source_gap
+            source_gap_ack = source_gap.validate_ack(root, plan, inherited_source_gap_acknowledgment)
+            w.require(not source_gap_ack or not source_gap_ack['synthetic_fixture'] or fetcher is not None,
+                      'Synthetic source-gap acknowledgment cannot enable live transport')
             w.require(not inherited_ack or not inherited_ack['synthetic_fixture'] or fetcher is not None,
                       'Synthetic inherited acknowledgment cannot enable live transport')
         except Exception as exc:
@@ -534,7 +540,8 @@ def _run(root, media_root, *, max_batches, fetcher, parser, allow_network,
                     record, trigger = w._assess_row(root, plan, row, B, registry, seen, history)
                     records.append(record)
                     if trigger and not (trigger == 'critical_source_or_access_failure' and
-                                        _acknowledged_replay(inherited_ack, row, record)):
+                                        _acknowledged_replay(inherited_ack, row, record)) and not source_gap.acknowledged_replay(
+                                            source_gap_ack, row, record, trigger, history):
                         return w._halt(root, plan, trigger, sample_id=row['sample_id'], risks=record['automatic_flags'])
             except Exception as exc:
                 return w._halt(root, plan, 'source_check_exception', detail=type(exc).__name__ + ': ' + str(exc))
@@ -652,6 +659,15 @@ def _run(root, media_root, *, max_batches, fetcher, parser, allow_network,
                 inherited_failures.append(failure)
         if inherited_failures:
             context['inherited_terminal_failures'] = inherited_failures
+        source_gaps = list(plan['seed_context'].get('inherited_source_gaps', []))
+        if source_gap_ack:
+            item = {'acknowledgment': inherited_source_gap_acknowledgment,
+                    'sources': source_gap_ack['sources'], 'research_status': 'NEEDS_JOAQUIN_REVIEW',
+                    'manual_review_status': 'not_reviewed', 'article_acceptance': False}
+            if item not in source_gaps:
+                source_gaps.append(item)
+        if source_gaps:
+            context['inherited_source_gaps'] = source_gaps
         w.write(root, 'continuation_context.json', context)
         return w._state(root, plan, w.PENDING, collection_inputs_finished=True,
                         completed_batches=len(summaries), result_rows=plan['row_count'],
