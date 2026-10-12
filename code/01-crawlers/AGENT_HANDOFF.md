@@ -2355,3 +2355,24 @@ RUN_LOCATION before use. Do not run this version against the old N9 namespace.
 Strict main quota below5percent remains the safety threshold; unknown twice is
 not sufficient quota. No hourly tasks, automatic resume, human approval, or
 newspaper-complete claim. No source request or real800 seal is implied here.
+
+## 2026-10-12: stopped1517 metadata-comment whitespace recovery (Kevin)
+
+The frozen N11 run stopped at child65/1517 TC5_130743, with1517 saved outcomes,
+1519 closed calls and pending1600 gate. Actual full-source readings and independent
+save/readback proof are in N11/diagnostics. Its original77-row tail exports exist;
+no native partial77 closure certificate was produced before the stop.
+
+Static source-gap rule v8 adds only boundary whitespace in the exact metadata
+footer comment's author slot, in article#article-post p.lead blockquote. Visible
+byline and JSON-LD still must corroborate the native author; exact markup, date,
+time, case/order, unknown content, source identity and transport guards remain.
+No sample/URL/person whitelist, invented content, or native success conversion.
+Other native parser/checker/effective-media code remains unchanged. Original stop,
+1517 records and request history must remain immutable; a separately bound formal
+successor is required. Preserve actual400/800/1200 gates and require actual1600
+before1601. Exact next1518 TC5_207226;3 new requests reach1520, then80 reach1600.
+Remaining original scope1014 URLs; baseline128000; copied prefix counts once.
+Strict main quota below5percent requires safe pause (or continued technical stop),
+verified saving/exit, and explicit new user instruction before any quota resume.
+No hourly automation, human approval, scope expansion, or automatic merge.

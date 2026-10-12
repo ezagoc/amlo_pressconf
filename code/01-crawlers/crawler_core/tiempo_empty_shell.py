@@ -17,7 +17,7 @@ from urllib.parse import urlsplit
 
 from bs4 import BeautifulSoup, Comment
 
-RULE_VERSION = 'tiempo-verified-static-source-gap-v7'
+RULE_VERSION = 'tiempo-verified-static-source-gap-v8'
 FEATURE_PATH = Path(__file__).with_name('tiempo_empty_shell_features.json')
 _FEATURE_BYTES = FEATURE_PATH.read_bytes()
 FEATURES = json.loads(_FEATURE_BYTES)
@@ -189,7 +189,19 @@ def _known_comment(text, author, published, comment=None):
         f'{date}<br/></footer> '
         '<footer style="background-color: transparent;"><i class="fa fa-clock-o text-muted" style="color: #444"></i> '
         f'{d.hour:02d} {d.minute:02d}<br/></footer>')
-    return text == expected
+    if text == expected:
+        return True
+    # Only boundary whitespace inside the corroborated author slot may vary.
+    # Preserve the exact footer markup/date/time and require the actual byline
+    # context; this does not allow arbitrary prose or metadata comments.
+    if (comment is None or comment.parent.name != 'blockquote'
+            or comment.find_parent('p', class_='lead') is None
+            or comment.find_parent('article', id='article-post') is None):
+        return False
+    before, after = expected.split(f'<strong>{author}</strong>', 1)
+    return re.fullmatch(re.escape(before + '<strong>') + r'\s*'
+                        + re.escape(author) + r'\s*'
+                        + re.escape('</strong>' + after), text) is not None
 
 
 def _header_image_reference(soup, article):

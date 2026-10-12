@@ -40,12 +40,13 @@ def code_binding():
         'tiempo_connection_recovery.py', 'tiempo_review_recovery.py', 'tiempo_review_publish.py',
         'tiempo_source_gap_recovery.py', 'tiempo_empty_shell.py', 'tiempo_empty_shell_features.json', 'tiempo_source_encoding.py',
         'tiempo_source_classification_policy.py', 'tiempo_source_classification_recovery.py',
-        'tiempo_lead_media.py', 'tiempo_lead_media_recovery.py', 'tiempo_effective_media_html.py', 'tiempo_effective_media_source.py')},
+        'tiempo_lead_media.py', 'tiempo_lead_media_recovery.py', 'tiempo_comment_space_recovery.py', 'tiempo_effective_media_html.py', 'tiempo_effective_media_source.py')},
         'remaining_cli': sha(base.parent / 'scripts/run_tiempo_remaining.py'),
         'review_publish_cli': sha(base.parent / 'scripts/publish_tiempo_review_receipt.py'),
         'source_gap_cli': sha(base.parent / 'scripts/prepare_tiempo_source_gap_recovery.py'),
         'source_classification_cli': sha(base.parent / 'scripts/prepare_tiempo_source_classification.py'),
-        'lead_media_recovery_cli': sha(base.parent / 'scripts/prepare_tiempo_lead_media_recovery.py')}
+        'lead_media_recovery_cli': sha(base.parent / 'scripts/prepare_tiempo_lead_media_recovery.py'),
+        'comment_space_recovery_cli': sha(base.parent / 'scripts/prepare_tiempo_comment_space_recovery.py')}
 
 
 def _bound(path):
@@ -142,7 +143,7 @@ def _verify_gate_event(entry):
 def _inherited_gate_binding(m, index, rows):
     """Only one explicitly bound recovery may supply this old reading."""
     matches=[]
-    for name in ('connection_recovery','source_classification_recovery','lead_media_recovery'):
+    for name in ('connection_recovery','source_classification_recovery','lead_media_recovery','comment_space_recovery'):
         recovery=m.get(name,{})
         matches.extend((recovery,e) for e in recovery.get('inherited_checkpoint_gates',[])
                        if e['index']==index and e['rows']==rows)
@@ -253,6 +254,7 @@ def prepare(config_path):
            'review_recovery_pending': bool(cfg.get('review_recovery_preparation')),
            'source_gap_recovery_pending': bool(cfg.get('source_gap_recovery_preparation')),
            'lead_media_recovery_pending': bool(cfg.get('lead_media_recovery_preparation')),
+           'comment_space_recovery_pending': bool(cfg.get('comment_space_recovery_preparation')),
            'source_classification_pending': bool(cfg.get('source_classification_preparation')),
            'obligations': _bound(root / 'Inherited_Review_Obligations.json'),
            'synthetic_fixture': bool(cfg.get('synthetic_fixture')),
@@ -268,8 +270,11 @@ def read_bound(root, *, full=False):
     root = Path(root).resolve(); m = _signed(root / 'campaign.json', 'campaign_sha256')
     require(m['schema'] == SCHEMA and m['root'] == str(root), 'Wrong campaign namespace')
     require(m['program_sha256'] == code_binding(), 'Frozen code changed; pause and validate a successor version')
-    require(not m.get('connection_recovery_pending') and not m.get('review_recovery_pending') and not m.get('source_gap_recovery_pending') and not m.get('source_classification_pending') and not m.get('lead_media_recovery_pending'),
+    require(not m.get('connection_recovery_pending') and not m.get('review_recovery_pending') and not m.get('source_gap_recovery_pending') and not m.get('source_classification_pending') and not m.get('lead_media_recovery_pending') and not m.get('comment_space_recovery_pending'),
             'Recovery preparation incomplete; no run is permitted')
+    if m.get('comment_space_recovery'):
+        from . import tiempo_comment_space_recovery
+        tiempo_comment_space_recovery.verify(m,full=full)
     if m.get('lead_media_recovery'):
         from . import tiempo_lead_media_recovery
         tiempo_lead_media_recovery.verify(m,full=full)
@@ -514,7 +519,7 @@ def run(root, *, allow_network=False, resume=False, fetcher=None, clock=time.tim
             previous_gates=_checkpoint_gate_events(m,ev)
             # An interruption after the first inherited marker must not regress
             # history below a later gate already bound in recovery provenance.
-            for recovery_name in ('connection_recovery','source_classification_recovery','lead_media_recovery'):
+            for recovery_name in ('connection_recovery','source_classification_recovery','lead_media_recovery','comment_space_recovery'):
                 for inherited in m.get(recovery_name,{}).get('inherited_checkpoint_gates',[]):
                     gate=_inherited_gate(m,inherited['index'],inherited['rows'])
                     if not any((e['index'],e['rows'])==(gate['index'],gate['rows']) for e in previous_gates):
@@ -598,7 +603,7 @@ def run(root, *, allow_network=False, resume=False, fetcher=None, clock=time.tim
                             selection=review.select_checkpoint(current_child,folder,checkpoint_rows=n,
                                       inherited_obligations=m['obligations']['path'],history_receipts=history,
                                       inherited_failure_acknowledgment=inherited_ack,
-                                      source_classification_policy=m.get('lead_media_recovery',m.get('source_classification_recovery',{})).get('policy'))
+                                      source_classification_policy=m.get('comment_space_recovery',m.get('lead_media_recovery',m.get('source_classification_recovery',{}))).get('policy'))
                             selection_path=Path(selection['selection_path'])
                         _state(root,'waiting_for_required_AI_review',active_child=index,child_saved=counts['saved'],
                                new_saved=before_saved+counts['saved'],new_calls=before_calls+counts['calls'],
@@ -630,7 +635,7 @@ def run(root, *, allow_network=False, resume=False, fetcher=None, clock=time.tim
                                       checkpoint_callback=checkpoint_callback,stop_requested=requested,install_signal_handlers=False,
                                       inherited_failure_acknowledgment=inherited_ack,
                                       inherited_source_gap_acknowledgment=source_gap_ack,
-                                      source_classification_policy=m.get('lead_media_recovery',m.get('source_classification_recovery',{})).get('policy'),
+                                      source_classification_policy=m.get('comment_space_recovery',m.get('lead_media_recovery',m.get('source_classification_recovery',{}))).get('policy'),
                                       allow_network=allow_network,fetcher=fetcher,clock=clock,sleep=sleep,disk_free=disk_free)
                     counts=_counts(child,plan);total_saved=before_saved+counts['saved'];total_calls=before_calls+counts['calls']
                     if result['status']==worker.PAUSED:

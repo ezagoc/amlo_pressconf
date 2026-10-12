@@ -48,7 +48,8 @@ def encoding_response(url,timeout,**kwargs):
 class EncodingCorrectionTests(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
-        self.root=Path(self.temp.name);self.batch=self.root/'batch';self.batch.mkdir()
+        self.root=Path(self.temp.name)
+        self.batch=self.root/'batches'/'batch_000001';self.batch.mkdir(parents=True)
         self.row,self.raw,self.response,self.original_check,_=saved_case()
 
     def materialize(self,raw=None,row=None,response=None):
