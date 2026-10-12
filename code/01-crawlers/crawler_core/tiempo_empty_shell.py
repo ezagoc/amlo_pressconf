@@ -17,12 +17,13 @@ from urllib.parse import urlsplit
 
 from bs4 import BeautifulSoup, Comment
 
-RULE_VERSION = 'tiempo-verified-static-empty-shell-v6'
+RULE_VERSION = 'tiempo-verified-static-source-gap-v7'
 FEATURE_PATH = Path(__file__).with_name('tiempo_empty_shell_features.json')
 _FEATURE_BYTES = FEATURE_PATH.read_bytes()
 FEATURES = json.loads(_FEATURE_BYTES)
 FEATURE_SHA256 = hashlib.sha256(_FEATURE_BYTES).hexdigest()
 CLASSIFICATION = 'source_unavailable_body_in_saved_response'
+HEADER_IMAGE_CLASSIFICATION = 'source_missing_body_with_static_header_image_reference'
 _ALLOWED_FLAGS = {'missing_body', 'unexplained_result_error', 'suspicious_very_short_body_review_only'}
 _REPRESENTATION_FLAGS = {'visible_title_difference','source_title_metadata_disagreement'}
 _EXTERNAL = {'https://static.tiempo.com.mx/assets/htmx.min-1.js',
@@ -191,6 +192,65 @@ def _known_comment(text, author, published, comment=None):
     return text == expected
 
 
+def _header_image_reference(soup, article):
+    """Bind the one observed static header-image shape, never its pixels.
+
+    Return no exemption for any other image placement, attributes or channel.
+    The remaining whole-page/template checks still run on every candidate.
+    """
+    boxes = article.select(':scope > div.complemento-item.m-t-md')
+    if not boxes or not any(box.find('img') for box in boxes):
+        return None, None
+    if len(boxes) != 1:
+        raise ValueError('ambiguous_header_image_container')
+    box = boxes[0]
+    children = box.find_all(True, recursive=False)
+    if (box.attrs != {'class':['complemento-item','m-t-md']}
+            or [x.name for x in children] != ['img','p']
+            or box.find_previous_sibling().name != 'header'
+            or box.find_next_sibling().name != 'p'
+            or box.find_next_sibling().get('class') != ['lead']
+            or any(isinstance(x, Comment) or _norm(x) for x in box.find_all(string=True, recursive=False))):
+        raise ValueError('unrecognized_header_image_placement')
+    image, caption = children
+    src = image.get('src','')
+    if (not re.fullmatch(r'https://static\.tiempo\.com\.mx/uploads/imagen/imagen/[1-9][0-9]*/principal_[A-Za-z0-9_-]+\.jpg',src)
+            or image.attrs != {'class':['img-responsive','complemento-img'],'src':src,'style':'width: 100%','alt':''}
+            or caption.attrs != {'class':['text-center']} or caption.find(True)
+            or caption.find(string=lambda x:isinstance(x,Comment)) is not None
+            or _norm(caption.get_text())):
+        raise ValueError('unrecognized_static_header_image_reference')
+    ld = soup.select('script[type="application/ld+json"]')
+    if len(ld) != 1:
+        raise ValueError('ambiguous_header_image_jsonld')
+    image_ld = json.loads(ld[0].get_text(),strict=False).get('image')
+    if (not isinstance(image_ld,dict) or set(image_ld) != {'@type','url','width','height'}
+            or image_ld.get('@type') != 'ImageObject' or image_ld.get('url') != src
+            or any(type(image_ld.get(key)) is not int or image_ld[key] <= 0 for key in ('width','height'))):
+        raise ValueError('header_image_jsonld_mismatch')
+    image_meta = []
+    for key, count in [('og:image',3),('twitter:image',1),('twitter:card',1)]:
+        channels = [t for t in soup.find_all('meta')
+                    if str(t.get('property') or t.get('name') or t.get('itemprop') or '').lower() == key]
+        if len(channels) != count or any(t.get('content') != src for t in channels):
+            raise ValueError('header_image_metadata_mismatch')
+        for channel in channels:
+            expected_attrs = {'property':key,'content':src} if key == 'og:image' else {'name':key,'content':src}
+            if key == 'og:image' and channel.get('data-page-subject') == 'true':
+                expected_attrs['data-page-subject'] = 'true'
+            if channel.attrs != expected_attrs:
+                raise ValueError('unknown_header_image_metadata_attributes')
+        image_meta.extend({'channel':key,'attributes':dict(t.attrs)} for t in channels)
+    evidence = {'url':src,'container_attributes':dict(box.attrs),'image_attributes':dict(image.attrs),
+        'caption_attributes':dict(caption.attrs),'alt':'','caption':'',
+        'placement':'article#article-post > header + div.complemento-item.m-t-md + p.lead',
+        'jsonld_image':image_ld,'metadata_channels':image_meta,
+        'image_bytes_fetched':False,'visual_content_reviewed':False,
+        'binary_dimensions_verified':False,'article_body_recovered':False,
+        'scope':'Exact image reference in saved HTML only; pixels and any text in them remain unreviewed.'}
+    return box, evidence
+
+
 def classify_empty_article_shell(row, html_bytes, response_metadata, source_check):
     """Return derived evidence only. Missing/malformed inputs fail closed.
 
@@ -237,6 +297,14 @@ def classify_empty_article_shell(row, html_bytes, response_metadata, source_chec
         need(row.get('publication_date_source') in {'jsonld.datePublished', 'visible_byline', 'og:article:published_time', 'article:published_time', 'datePublished'}, 'unverified_publication_source')
         s = BeautifulSoup(html, 'html.parser')
         need(not s.select('meta[http-equiv],base'), 'unknown_http_equiv_instruction')
+        articles = s.select('article#article-post')
+        need(len(articles) == 1 and len(s.find_all('article')) == 1, 'ambiguous_article_structure')
+        if len(articles) != 1:
+            raise ValueError('missing_unique_article')
+        a = articles[0]
+        image_box, header_image = _header_image_reference(s,a)
+        if header_image is not None:
+            evidence['header_image_reference'] = header_image
         # Metadata can contain otherwise omitted prose/media, so it is evidence,
         # not merely presentation. Only inspected empty/headline/site slots fit.
         placeholder_image = 'https://static.tiempo.com.mx/uploads/imagen/imagen/0/principal_'
@@ -251,7 +319,8 @@ def classify_empty_article_shell(row, html_bytes, response_metadata, source_chec
                     allowed.add('Tiempo - La Noticia Digital.')
                 need(value in allowed, 'metadata_contains_unexplained_prose')
             if key in {'og:image','twitter:image','twitter:card','image','image_src','thumbnail','thumbnailurl'}:
-                need(value == placeholder_image, 'metadata_contains_article_media')
+                expected_image = header_image['url'] if header_image and key in {'og:image','twitter:image','twitter:card'} else placeholder_image
+                need(value == expected_image, 'metadata_contains_article_media')
             elif key.startswith(('og:image:', 'twitter:image:')):
                 need((key, value) in {('og:image:width','1200'),('og:image:width','770'),
                     ('og:image:height','675'),('og:image:height','443')}, 'unknown_image_metadata')
@@ -260,11 +329,6 @@ def classify_empty_article_shell(row, html_bytes, response_metadata, source_chec
             if key in {'articlebody','text','transcript'}:
                 need(not value, 'metadata_contains_unexplained_prose')
         need(not s.select('link[rel="image_src"],link[as="image"],link[as="video"],link[as="audio"]'), 'unknown_link_media')
-        articles = s.select('article#article-post')
-        need(len(articles) == 1 and len(s.find_all('article')) == 1, 'ambiguous_article_structure')
-        if len(articles) != 1:
-            raise ValueError('missing_unique_article')
-        a = articles[0]
         route = urlsplit(row['canonical_url']).path.strip('/').split('/')[0]
         official_section = FEATURES['official_sections'].get(route)
         legacy_section = FEATURES['legacy_sections'].get(route)
@@ -286,8 +350,18 @@ def classify_empty_article_shell(row, html_bytes, response_metadata, source_chec
             'category_is_playable_video_evidence':False}
         for alternate in s.select('[itemprop~="articleBody"],.article-content,.article-body,#article-body,#article-content'):
             need(alternate is a or any(parent is a for parent in alternate.parents), 'alternate_article_body_outside_primary_scope')
-        need(','.join(x.name for x in a.find_all(True)) == FEATURES['article_tag_shape'], 'unknown_article_tag_structure')
-        structure = article_structure(a, row)
+        # Remove only the fully bound image and empty caption from a private
+        # comparison copy, retaining the original empty div. Native source and
+        # body remain untouched; every other node must
+        # retain the existing known empty-shell hierarchy and attributes.
+        shape_article = a
+        if header_image is not None:
+            shape_article = BeautifulSoup(str(a),'html.parser').select_one('article#article-post')
+            shape_box = shape_article.select_one(':scope > div.complemento-item.m-t-md')
+            shape_box.img.decompose()
+            shape_box.p.decompose()
+        need(','.join(x.name for x in shape_article.find_all(True)) == FEATURES['article_tag_shape'], 'unknown_article_tag_structure')
+        structure = article_structure(shape_article, row)
         need(structure == FEATURES.get('article_structure'), 'unknown_article_attributes_or_hierarchy')
         headers, leads, bodies = a.select('header h1'), a.select('blockquote'), a.select('.complementos-container')
         need(len(headers) == len(leads) == len(bodies) == 1, 'unknown_lead_or_body_structure')
@@ -358,7 +432,10 @@ def classify_empty_article_shell(row, html_bytes, response_metadata, source_chec
             'logo':{'@type':'ImageObject','url':'https://static.tiempo.com.mx/uploads/configuracion_periodico/imagen/1/logo-tiempo.png','height':110,'width':330}}
         need(publisher == expected_publisher and j.get('@context') == 'https://schema.org' and not _norm(j.get('keywords')) and not _norm(j.get('articleSection')), 'unknown_publisher_or_extra_jsonld_content')
         image = j.get('image')
-        need(isinstance(image, dict) and image.get('url') == 'https://static.tiempo.com.mx/uploads/imagen/imagen/0/principal_' and set(image) <= {'@type', 'url', 'width', 'height'}, 'article_image_or_unknown_jsonld_media')
+        if header_image is not None:
+            need(image == header_image['jsonld_image'], 'header_image_jsonld_mismatch')
+        else:
+            need(isinstance(image, dict) and image.get('url') == 'https://static.tiempo.com.mx/uploads/imagen/imagen/0/principal_' and set(image) <= {'@type', 'url', 'width', 'height'}, 'article_image_or_unknown_jsonld_media')
         need(','.join(x.name for x in body.find_all(True)) == FEATURES['body_tag_shape'], 'unknown_empty_body_structure')
         styles = body.find_all('style')
         need(len(styles) == 1 and _norm(styles[0].get_text()) == _CSS, 'unknown_body_style')
@@ -375,6 +452,7 @@ def classify_empty_article_shell(row, html_bytes, response_metadata, source_chec
             src = img.get('src', '')
             known = bool(share and src.startswith('https://static.tiempo.com.mx/assets/periodico/') and img.get('alt') in {'Facebook', 'Twitter', 'Email'})
             known |= bool(anchor and re.fullmatch(r'/hits/\d+', anchor.get('href', '')) and src.startswith('https://ads.tiempo.com.mx/uploads/banners/') and img.get('alt', '') == '')
+            known |= bool(header_image is not None and img.parent is image_box and src == header_image['url'])
             need(known, 'article_image_outside_known_ui')
         # Removing these independently validated channels must leave no prose.
         outside = BeautifulSoup(str(a), 'html.parser')
@@ -451,10 +529,13 @@ def classify_empty_article_shell(row, html_bytes, response_metadata, source_chec
         evidence.update(title_identity_verified=not any('identity' in r for r in reasons),
                         publication_evidence=published, source_body_prose_chars=len(_norm(body_copy.get_text(' ', strip=True))),
                         article_media_confirmed=False, generic_video_initializer_is_not_video=True,
+                        article_media_confirmation_scope='No playable-media or pixel confirmation; a separately bound image reference may be present.',
                         external_scripts_executed=False, known_script_features=scripts_seen,
+                        article_image_reference_present=header_image is not None,
                         article_structure=FEATURES['article_tag_shape'])
     except (ValueError, TypeError, KeyError, AttributeError, UnicodeError, OSError) as exc:
         reasons.append('classification_input_rejected:' + str(exc))
     reasons = sorted(set(reasons))
-    return {'matched': not reasons, 'classification': CLASSIFICATION if not reasons else None,
+    classification = HEADER_IMAGE_CLASSIFICATION if evidence.get('header_image_reference') else CLASSIFICATION
+    return {'matched': not reasons, 'classification': classification if not reasons else None,
             'rule_version': RULE_VERSION, 'rejection_reasons': reasons, 'evidence': evidence}

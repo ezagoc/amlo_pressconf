@@ -1,4 +1,4 @@
-"""Kevin: preserve the exact stopped347 prefix and version the feature policy.
+"""Kevin: preserve the exact stopped375 prefix and version the feature policy.
 
 The donor and all native records/plans/checks stay unchanged. The separately
 bound classifier explains source gaps by evidence, never by sample-ID whitelist.
@@ -17,12 +17,12 @@ from . import tiempo_connection_recovery as connection
 from . import tiempo_source_gap_recovery as previous
 from . import tiempo_source_classification_policy as policy
 
-SCHEMA='tiempo-source-classification-successor-v6'
-PRODUCTION={'expected_child_index':65,'expected_saved':347,'expected_calls':347,
-    'next_sample_id':'TC5_603121',
-    'donor_campaign_sha256':'1fbd315ec1296aca589dc00a0b3efd91294fcb90d9c33ec42958d0b5e5e25c65',
-    'donor_master_halt_sha256':'17401ab311ad670b107c12c0cdef3776a680a6277087a89869650bd8401841eb',
-    'donor_native_halt_sha256':'6a3ffeabea1f39de7cbd4abc863caaa55961a06cdd3dc36a7b69087e54bae202'}
+SCHEMA='tiempo-source-classification-successor-v7'
+PRODUCTION={'expected_child_index':65,'expected_saved':375,'expected_calls':375,
+    'next_sample_id':'TC5_638335',
+    'donor_campaign_sha256':'80b8677b52bc0aa7701a8f741fc4c3566c7c02840b66dca634a2f3ef4fd8bb09',
+    'donor_master_halt_sha256':'607421f6a0b893dd5cfcf02deca94f3188a0df7479a486a429d9e0f40d6515c4',
+    'donor_native_halt_sha256':'c01d3c60465d52d9b33dff634fce5a27ca5110ba9597b240d24aad1d0c87288b'}
 PREFIX_KEYS=('prefix_payload_sha256','prefix_attempts_sha256','prefix_articles_sha256')
 
 # A changed helper cannot validate an old versioned policy in-process. The
@@ -63,7 +63,7 @@ def _read_donor(cfg):
               bool(cfg.get('synthetic_fixture'))==old['synthetic_fixture'],'Wrong donor identity/type')
     if not old['synthetic_fixture']:
         w.require(all(cfg.get(k)==v for k,v in PRODUCTION.items()) and old.get('source_classification_recovery'),
-                  'Only the authorized347 source-classification recovery is supported')
+                  'Only the authorized375 source-classification recovery is supported')
     code=connection._donor_code_binding(cfg['donor_code_root'],old['program_sha256'])
     for key in ('config_source','preflight','prepared_manifest','source_context','source_ledger','registry','obligations','queue'):
         c._verify(old[key])
@@ -215,7 +215,7 @@ def verify(m,*,full=False):
         w.require(all(cfg.get(k)==v for k,v in PRODUCTION.items()) and m['baseline_saved']==128000 and
                   m['baseline_calls']==128061 and m['remaining_rows']==2531 and
                   [p['plan_index'] for p in m['parts']]==[65,66] and doc['prior_source_classification_recovery'],
-                  'Production347 recovery scope differs')
+                  'Production375 recovery scope differs')
     for binding in doc['donor_controls']:c._verify(binding)
     c._verify(doc['donor_campaign']);donor=c._signed(doc['donor_campaign']['path'],'campaign_sha256')
     w.require(donor.get('source_gap_recovery')==doc['prior_source_gap_recovery'],'Previous recovery lineage changed')

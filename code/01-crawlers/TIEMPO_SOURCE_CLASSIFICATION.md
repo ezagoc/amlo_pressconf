@@ -37,9 +37,9 @@ stop. Existing verified short/video retention, service limits, spacing, retries,
 disk reserve and actual AI gates remain in force.
 
 Offline recovery must verify existing donor files before creating any recovery
-export. Use a disjoint successor, preserving the donor's 347 saved results and
+export. Use a disjoint successor, preserving the donor's 375 saved results and
 closed calls exactly once, its halt, prior recovery lineage and pending duties.
-Original child65 position348 is the first new request. Another53 requests reach
+Original child65 position376 is the first new request. Another25 requests reach
 400 and complete the existing 80-row batch. Save/readback verification and the
 real 400-row AI gate must precede position401. No investigation note substitutes
 for this gate.
@@ -109,3 +109,15 @@ change, extra query/text, generic attribute waiver or content change is allowed.
 The original failure, raw source and rejected decision remain; only a separate
 versioned source-unavailable finding changes. Formal successor verification binds
 347 saved requests,694 ledger events,next348 TC5_603121 and the pending400 gate.
+
+A later375 source contains one real static header-image reference with empty
+caption, lead and HTML/JSON-LD body. This requires a distinct derived category,
+not the media-free empty-shell category. The image URL, DOM placement/attributes
+and agreeing metadata must be preserved; original missing_body/null/review state
+remains. Only the exact known single header-image structure may qualify.
+Uninterpreted image pixels are explicitly outside the automatic HTML finding.
+A representative diagnostic image was viewed separately; it does not certify
+the availability or visual content of future images or complete article coverage.
+Unknown/multiple/body/lazy images, captions, mismatched metadata, dynamic media,
+omitted prose and identity errors remain blocking. Require targeted and independent
+validation plus the real400 gate before continuing beyond that checkpoint.

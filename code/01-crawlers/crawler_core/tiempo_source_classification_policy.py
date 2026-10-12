@@ -11,10 +11,18 @@ import sqlite3
 from . import tiempo_continuous_v5 as w
 from . import tiempo_empty_shell as classifier
 
-SCHEMA = 'tiempo-source-classification-policy-v2'
-DECISION_SCHEMA = 'tiempo-bound-source-classification-v2'
+SCHEMA = 'tiempo-source-classification-policy-v3'
+DECISION_SCHEMA = 'tiempo-bound-source-classification-v3'
 EXPLAINED_FLAGS = {'missing_body', 'unexplained_result_error'}
 REPRESENTATION_FLAGS = {'source_title_metadata_disagreement', 'visible_title_difference'}
+
+
+def _source_gap_kind(decision):
+    kind=decision.get('classification')
+    w.require(decision.get('matched') is True and kind in {
+        classifier.CLASSIFICATION, classifier.HEADER_IMAGE_CLASSIFICATION},
+        'Matched source classification has an unknown outcome kind')
+    return kind
 
 
 def _explained_flags(decision,record):
@@ -53,7 +61,7 @@ def create_policy(root, indices, synthetic):
          'synthetic_fixture':synthetic,'rule_version':classifier.RULE_VERSION,
          'classifier':_binding(classifier.__file__),'features':_binding(classifier.FEATURE_PATH),'overlay':_binding(__file__),
          'native_program_sha256':w.program_hashes(),'human_approval':False,'article_acceptance':False,
-         'semantics':'Native errors, null body, row checks and full risk history are preserved. Only feature-verified empty article shells receive a separate source_unavailable classification. The two missing-body flags and only title-representation flags explicitly proven for that record by the recomputed source classifier do not count as unexplained extraction anomalies. No global title-flag waiver exists. Unclassified missing-body pages stop immediately unless already recognized by the native video-only rule.'}
+         'semantics':'Native errors, null body, row checks and full risk history are preserved. Feature-verified missing HTML body receives a separate source_unavailable classification whose exact kind distinguishes no-media shells from preserved static header-image references; image bytes and visual content are not thereby reviewed. The two missing-body flags and only title-representation flags explicitly proven for that record by the recomputed source classifier do not count as unexplained extraction anomalies. No global title-flag waiver exists. Unclassified missing-body pages stop immediately unless already recognized by the native video-only rule.'}
     path=root/'Source_Classification_Policy.json';_once(path,doc)
     return _binding(path)
 
@@ -105,7 +113,7 @@ def assess(root,plan,batch,row,record,policy_binding):
          'fields_sha256':w.fields_digest(row),'response_metadata_sha256':w.digest(response),
          'decision':decision,'effective_explained_flags':sorted(explained),
          'effective_outcome':'source_unavailable' if matched else record.get('collection_outcome'),
-         'source_gap_kind':'source_unavailable_body_in_saved_response' if matched else None,
+         'source_gap_kind':_source_gap_kind(decision) if matched else None,
          'article_candidate':False if matched else record.get('collection_outcome')=='article_candidate',
          'native_qa_status':row['qa_status'],'native_error':row.get('error'),
          'manual_review_status':'not_reviewed','research_status':'NEEDS_JOAQUIN_REVIEW' if matched else None,
@@ -139,6 +147,7 @@ def verify_decision(binding,record,policy_binding,cache=None):
     w.require(actual==doc['decision'],'Inherited classification cannot be an unverified Boolean approval')
     matched=actual.get('matched') is True
     w.require(doc['effective_outcome']==('source_unavailable' if matched else record.get('collection_outcome')) and
+              doc['source_gap_kind']==(_source_gap_kind(actual) if matched else None) and
               doc['article_candidate']==(False if matched else record.get('collection_outcome')=='article_candidate') and
               doc['research_status']==('NEEDS_JOAQUIN_REVIEW' if matched else None), 'Classification outcome/status changed')
     explained=_explained_flags(actual,record) if matched else set()

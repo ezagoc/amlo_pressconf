@@ -72,6 +72,23 @@ def rebind(case, raw):
     return row, raw, response, check
 
 
+def header_image_case(image_id='123456', image_name='principal_fixture.jpg', **kwargs):
+    """Unseen source-bound static image reference, without image retrieval."""
+    case=qualifying_case(**kwargs)
+    soup=BeautifulSoup(case[1].decode(),'html.parser')
+    url=f'https://static.tiempo.com.mx/uploads/imagen/imagen/{image_id}/{image_name}'
+    box=BeautifulSoup('<div class="complemento-item m-t-md"><img class="img-responsive complemento-img" src="'+url+'" style="width: 100%" alt=""><p class="text-center"></p></div>','html.parser').div
+    soup.select_one('article#article-post > div.complemento-item.m-t-md').replace_with(box)
+    ld=soup.select_one('script[type="application/ld+json"]');data=json.loads(ld.string)
+    data['image']['url']=url;ld.string=json.dumps(data,ensure_ascii=False)
+    for key,count in [('og:image',3),('twitter:image',1),('twitter:card',1)]:
+        for i in range(count):
+            meta=soup.new_tag('meta');meta['property' if key=='og:image' else 'name']=key;meta['content']=url
+            if key=='og:image' and i==1:meta['data-page-subject']='true'
+            soup.head.append(meta)
+    return rebind(case,str(soup).encode())
+
+
 def sidebar_poll(value='55.8', poll_id='12345'):
     """Minimal source-derived sidebar UI; no article text or original tokens."""
     return (f'<div id="sidebar"><div id="aplicacion-encuesta{poll_id}-container" class="encuesta">'
@@ -138,6 +155,92 @@ class EmptyShellTests(unittest.TestCase):
             self.assertEqual(case,before)
             self.assertIsNone(case[0]['main_text']);self.assertEqual(case[0]['error'],'missing_body')
             self.assertFalse(result['evidence']['article_acceptance'])
+
+    def test_static_header_image_reference_is_separate_not_article_or_pixels(self):
+        for image_id in ['123456','7654321']:
+            case=header_image_case(slug='unseen-image-reference-'+image_id,image_id=image_id);before=copy.deepcopy(case)
+            result=rule.classify_empty_article_shell(*case)
+            with self.subTest(image_id=image_id):
+                self.assertTrue(result['matched'],result);self.assertEqual(case,before)
+                self.assertEqual(result['classification'],rule.HEADER_IMAGE_CLASSIFICATION)
+                self.assertNotEqual(result['classification'],rule.CLASSIFICATION)
+                evidence=result['evidence']['header_image_reference']
+                self.assertEqual(len(evidence['metadata_channels']),5)
+                self.assertFalse(evidence['image_bytes_fetched']);self.assertFalse(evidence['visual_content_reviewed'])
+                self.assertFalse(result['evidence']['article_media_confirmed']);self.assertFalse(result['evidence']['article_acceptance'])
+                self.assertEqual(case[0]['error'],'missing_body');self.assertIsNone(case[0]['main_text'])
+                self.assertEqual(case[0]['media_embeds'],'[]')
+
+    def test_header_image_static_url_and_metadata_binding_are_strict(self):
+        case=header_image_case();raw=case[1].decode();url='https://static.tiempo.com.mx/uploads/imagen/imagen/123456/principal_fixture.jpg'
+        for replacement in [url+'?download=1',url+'#other',url.replace('static.tiempo.com.mx','other.example'),
+                url.replace('/123456/','/unbound/'),url.replace('/123456/','/0/'),url.replace('.jpg','.svg'),
+                url.replace('/principal_','/different_'),url.replace('https://','http://'),url.replace('.jpg','.jpg/other')]:
+            with self.subTest(url=replacement):
+                self.assertFalse(rule.classify_empty_article_shell(*rebind(case,raw.replace(url,replacement).encode()))['matched'])
+        for selector in ['img.complemento-img','meta[property="og:image"]','meta[name="twitter:image"]','meta[name="twitter:card"]']:
+            soup=BeautifulSoup(raw,'html.parser');tag=soup.select_one(selector);tag['src' if tag.name=='img' else 'content']=url.replace('123456','123457')
+            with self.subTest(selector=selector):
+                self.assertFalse(rule.classify_empty_article_shell(*rebind(case,str(soup).encode()))['matched'])
+        for mutation in ['delete','duplicate','alternate_channel_attribute','extra_attribute']:
+            soup=BeautifulSoup(raw,'html.parser');tag=soup.select_one('meta[name="twitter:image"]')
+            if mutation=='delete':tag.decompose()
+            elif mutation=='duplicate':soup.head.append(copy.copy(tag))
+            elif mutation=='alternate_channel_attribute':tag['property']=tag['name'];del tag['name']
+            else:tag['title']='Unexplained image annotation'
+            with self.subTest(mutation=mutation):
+                self.assertFalse(rule.classify_empty_article_shell(*rebind(case,str(soup).encode()))['matched'])
+        for key,value in [('url',url.replace('123456','123457')),('@type','VideoObject'),('width',0),
+                ('width',-1),('width',True),('height','423'),('height',None),('caption','Omitted caption')]:
+            soup=BeautifulSoup(raw,'html.parser');tag=soup.select_one('script[type="application/ld+json"]');data=json.loads(tag.string);data['image'][key]=value;tag.string=json.dumps(data)
+            with self.subTest(key=key):
+                self.assertFalse(rule.classify_empty_article_shell(*rebind(case,str(soup).encode()))['matched'])
+        soup=BeautifulSoup(raw,'html.parser');tag=soup.select_one('script[type="application/ld+json"]');data=json.loads(tag.string)
+        data['image']['width']=1234;data['image']['height']=567;tag.string=json.dumps(data)
+        result=rule.classify_empty_article_shell(*rebind(case,str(soup).encode()))
+        self.assertTrue(result['matched'],result)
+        self.assertEqual(result['evidence']['header_image_reference']['jsonld_image']['width'],1234)
+        self.assertFalse(result['evidence']['header_image_reference']['binary_dimensions_verified'])
+
+    def test_header_image_rejects_hidden_attributes_caption_alt_and_wrappers(self):
+        case=header_image_case()
+        for key,value in [('alt','Actual image caption'),('title','Actual image text'),('srcset','/second.jpg 2x'),
+                ('data-src','/lazy.jpg'),('loading','lazy'),('style','width: 100%; display:none'),('onload','fetch("/body")')]:
+            soup=BeautifulSoup(case[1].decode(),'html.parser');soup.select_one('article img.complemento-img')[key]=value
+            with self.subTest(key=key):self.assertFalse(rule.classify_empty_article_shell(*rebind(case,str(soup).encode()))['matched'])
+        for markup in ['Actual caption','<span>Actual caption</span>','<!-- Hidden caption -->','<img src="/another.jpg">']:
+            soup=BeautifulSoup(case[1].decode(),'html.parser');soup.select_one('p.text-center').append(BeautifulSoup(markup,'html.parser'))
+            with self.subTest(markup=markup):self.assertFalse(rule.classify_empty_article_shell(*rebind(case,str(soup).encode()))['matched'])
+        soup=BeautifulSoup(case[1].decode(),'html.parser');soup.select_one('article img.complemento-img').wrap(soup.new_tag('a',href='/unseen-destination'))
+        self.assertFalse(rule.classify_empty_article_shell(*rebind(case,str(soup).encode()))['matched'])
+
+    def test_header_image_rejects_multiple_gallery_and_nonheader_placement(self):
+        case=header_image_case()
+        for mutation in ['duplicate_box','duplicate_image','move_body','move_before_header','gallery_class','extra_box_attribute']:
+            soup=BeautifulSoup(case[1].decode(),'html.parser');box=soup.select_one('article > div.complemento-item.m-t-md')
+            if mutation=='duplicate_box':box.insert_after(copy.copy(box))
+            elif mutation=='duplicate_image':box.append(copy.copy(box.img))
+            elif mutation=='move_body':soup.select_one('.complementos-container').append(box.extract())
+            elif mutation=='move_before_header':soup.select_one('article > header').insert_before(box.extract())
+            elif mutation=='gallery_class':box['class'].append('gallery')
+            else:box['id']='source-gallery'
+            with self.subTest(mutation=mutation):self.assertFalse(rule.classify_empty_article_shell(*rebind(case,str(soup).encode()))['matched'])
+
+    def test_header_image_never_hides_body_media_or_identity_failure(self):
+        case=header_image_case()
+        for markup in ['<p>Actual omitted prose.</p>','<iframe src="/clip"></iframe>',
+                '<video src="/clip"></video>','<source src="/clip">','<div data-loader="/body"></div>',
+                '<script>fetch("/article-body")</script>']:
+            raw=case[1].decode().replace('</article>',markup+'</article>').encode()
+            with self.subTest(markup=markup):self.assertFalse(rule.classify_empty_article_shell(*rebind(case,raw))['matched'])
+        for old,new in [('"articleBody": " "','"articleBody": "Hidden source prose"'),
+                ('"@id": "synthetic-empty-shell"','"@id": "other-story"'),
+                ('content="2021-05-06T11:12:13"','content="2021-05-07T11:12:13"'),
+                ('<title>A synthetic headline','<title>Different headline')]:
+            with self.subTest(new=new):self.assertFalse(rule.classify_empty_article_shell(*rebind(case,case[1].decode().replace(old,new).encode()))['matched'])
+        for key,value in [('error',None),('qa_status','success'),('date_conflict','conflict'),('status',500),('main_text','Actual body')]:
+            bad=copy.deepcopy(case);bad[0][key]=value
+            with self.subTest(key=key):self.assertFalse(rule.classify_empty_article_shell(*bad)['matched'])
 
     def test_actual_body_or_lead_prose(self):
         for transform in [lambda s:s.replace('<p> </p>','<p>Actual omitted article prose.</p>'),
@@ -373,10 +476,10 @@ class EmptyShellTests(unittest.TestCase):
 
 @unittest.skipUnless(os.environ.get('TIEMPO_EMPTY_SHELL_REAL_BATCH'), 'Set the bound local batch explicitly; no online fixture retrieval.')
 class SavedSourceTests(unittest.TestCase):
-    def test_ten_actual_saved_responses(self):
+    def test_eleven_actual_saved_responses(self):
         batch=Path(os.environ['TIEMPO_EMPTY_SHELL_REAL_BATCH']);child=batch.parent.parent
         with sqlite3.connect((batch/'pilot.sqlite').as_uri()+'?mode=ro&immutable=1',uri=True) as db:
-            for sid in ['TC5_476522','TC5_501081','TC5_552341','TC5_560498','TC5_514287','TC5_438720','TC5_557844','TC5_623467','TC5_603201','TC5_466643']:
+            for sid in ['TC5_476522','TC5_501081','TC5_552341','TC5_560498','TC5_514287','TC5_438720','TC5_557844','TC5_623467','TC5_603201','TC5_466643','TC5_463560']:
                 row=json.loads(db.execute('SELECT payload_json FROM articles WHERE sample_id=?',(sid,)).fetchone()[0])
                 response=json.loads(db.execute('SELECT response_json FROM fetch_attempts WHERE sample_id=?',(sid,)).fetchone()[0])
                 raw=(batch/row['snapshot_path']).read_bytes();check=json.loads((child/'row_checks'/f'{sid}.json').read_text())['record']
@@ -384,6 +487,8 @@ class SavedSourceTests(unittest.TestCase):
                     self.assertEqual(hashlib.sha256(raw).hexdigest(),row['snapshot_sha256'])
                     result=rule.classify_empty_article_shell(row,raw,response,check)
                     self.assertTrue(result['matched'],result)
+                    expected=rule.HEADER_IMAGE_CLASSIFICATION if sid=='TC5_463560' else rule.CLASSIFICATION
+                    self.assertEqual(result['classification'],expected)
 
     def test_representation_flags_require_actual_encoding_evidence(self):
         from crawler_core.tiempo_continuous_source import fields_digest
