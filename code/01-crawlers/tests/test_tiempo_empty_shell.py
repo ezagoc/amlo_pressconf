@@ -211,6 +211,26 @@ class EmptyShellTests(unittest.TestCase):
             case=copy.deepcopy(self.case);case[0][key]=value
             with self.subTest(key=key):self.assertFalse(rule.classify_empty_article_shell(*case)['matched'])
 
+    def test_author_only_whitespace_equivalence_and_immutable_inputs(self):
+        for name in ['Test  Author',' Test\tAuthor ','Test\nAuthor','Test\u00a0Author']:
+            raw=self.case[1].decode().replace('"name": "Test Author"','"name": '+json.dumps(name)).encode()
+            case=rebind(self.case,raw); before=copy.deepcopy(case)
+            with self.subTest(name=name):
+                result=rule.classify_empty_article_shell(*case)
+                self.assertTrue(result['matched'],result)
+                self.assertEqual(case,before)
+                self.assertEqual(case[0]['authors'],'Test Author')
+
+    def test_author_identity_object_and_entity_are_not_relaxed(self):
+        for old,new in [('"name": "Test Author"','"name": "Other Author"'),
+                ('"name": "Test Author"','"name": "test Author"'),
+                ('"name": "Test Author"','"name": "Author Test"'),
+                ('"name": "Test Author"','"name": ["Test Author"]'),
+                ('"name": "Test Author"','"name": "Test Author", "extra": "hidden source content"'),
+                ('"@type": "Person"','"@type": "Organization"'),
+                ('"@id": "synthetic-empty-shell"','"@id": "different-article"')]:
+            with self.subTest(new=new):self.reject_html(lambda s:s.replace(old,new))
+
     def test_unhandled_research_or_technical_flag_is_not_waived(self):
         for flag in ['article_vs_discovery_day_difference','raw_visible_body_difference_requires_reading','non_html_response']:
             case=copy.deepcopy(self.case);case[3]['automatic_flags'].append(flag)
@@ -227,10 +247,10 @@ class EmptyShellTests(unittest.TestCase):
 
 @unittest.skipUnless(os.environ.get('TIEMPO_EMPTY_SHELL_REAL_BATCH'), 'Set the bound local batch explicitly; no online fixture retrieval.')
 class SavedSourceTests(unittest.TestCase):
-    def test_four_actual_saved_responses(self):
+    def test_five_actual_saved_responses(self):
         batch=Path(os.environ['TIEMPO_EMPTY_SHELL_REAL_BATCH']);child=batch.parent.parent
         with sqlite3.connect((batch/'pilot.sqlite').as_uri()+'?mode=ro&immutable=1',uri=True) as db:
-            for sid in ['TC5_476522','TC5_501081','TC5_552341','TC5_560498']:
+            for sid in ['TC5_476522','TC5_501081','TC5_552341','TC5_560498','TC5_514287']:
                 row=json.loads(db.execute('SELECT payload_json FROM articles WHERE sample_id=?',(sid,)).fetchone()[0])
                 response=json.loads(db.execute('SELECT response_json FROM fetch_attempts WHERE sample_id=?',(sid,)).fetchone()[0])
                 raw=(batch/row['snapshot_path']).read_bytes();check=json.loads((child/'row_checks'/f'{sid}.json').read_text())['record']

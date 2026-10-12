@@ -37,9 +37,9 @@ stop. Existing verified short/video retention, service limits, spacing, retries,
 disk reserve and actual AI gates remain in force.
 
 Offline recovery must verify existing donor files before creating any recovery
-export. Use a disjoint successor, preserving the donor's 335 saved results and
+export. Use a disjoint successor, preserving the donor's 336 saved results and
 closed calls exactly once, its halt, prior recovery lineage and pending duties.
-Original child65 position336 is the first new request. Another65 requests reach
+Original child65 position337 is the first new request. Another64 requests reach
 400 and complete the existing 80-row batch. Save/readback verification and the
 real 400-row AI gate must precede position401. No investigation note substitutes
 for this gate.
@@ -64,3 +64,13 @@ At closeout, reconcile the original queue without adding inherited copies or the
 fixed 2670 package. Separate successful candidates, usable source-field gaps,
 source-unavailable responses and failures. Queue completion is not newspaper
 coverage completion, unique-article counting or Joaquin's acceptance.
+
+The next preserved stop at position336 was caused solely by repeated whitespace
+in an otherwise identical JSON-LD author name. The classifier now compares that
+name with the native normalized name using whitespace collapse only. It still
+requires the exact author object keys/type, identical name tokens and case, and
+all entity, article, transport and content checks. Original names and failed
+results are unchanged. This is not author inference, a person whitelist or
+permission to ignore different names. The successor preserves the336-result
+donor and its original rejected decision, verifies it under its own frozen code,
+and starts at337 only after formal offline preparation and independent review.

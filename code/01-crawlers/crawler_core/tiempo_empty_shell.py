@@ -16,7 +16,7 @@ from urllib.parse import urlsplit
 
 from bs4 import BeautifulSoup, Comment
 
-RULE_VERSION = 'tiempo-verified-static-empty-shell-v2'
+RULE_VERSION = 'tiempo-verified-static-empty-shell-v3'
 FEATURE_PATH = Path(__file__).with_name('tiempo_empty_shell_features.json')
 _FEATURE_BYTES = FEATURE_PATH.read_bytes()
 FEATURES = json.loads(_FEATURE_BYTES)
@@ -269,7 +269,11 @@ def classify_empty_article_shell(row, html_bytes, response_metadata, source_chec
         need(isinstance(j, dict) and set(j) <= allowed_ld and j.get('@type') == 'NewsArticle', 'unknown_jsonld_structure')
         need(isinstance(j.get('articleBody'), str) and not _norm(j['articleBody']) and not _norm(j.get('description')), 'jsonld_contains_prose')
         need(_norm(j.get('headline')) == _norm(row['title']) and j.get('datePublished') == published and j.get('dateModified') == row.get('date_modified'), 'jsonld_identity_or_date_mismatch')
-        need(j.get('mainEntityOfPage') == {'@type': 'WebPage', '@id': slug} and j.get('author') == {'@type': 'Person', 'name': row['authors']}, 'jsonld_entity_or_author_mismatch')
+        author = j.get('author')
+        need(j.get('mainEntityOfPage') == {'@type': 'WebPage', '@id': slug}
+             and isinstance(author, dict) and set(author) == {'@type','name'}
+             and author.get('@type') == 'Person' and isinstance(author.get('name'), str)
+             and _norm(author['name']) == _norm(row['authors']), 'jsonld_entity_or_author_mismatch')
         need(j.get('isAccessibleForFree') is True, 'unconfirmed_access')
         publisher = j.get('publisher')
         expected_publisher = {'@type':'NewsMediaOrganization','name':'Tiempo La Noticia Digital',

@@ -2221,3 +2221,18 @@ results/calls and all original derived decisions. Verify its old policy under
 the old frozen code, not the revised classifier. The current recovery binding
 starts at position336 TC5_514287; 65 new requests reach the still-pending400 gate.
 The local locator remains authoritative for the prepared/launched runtime.
+
+
+## 2026-10-12 Author whitespace source-classification successor
+
+Author: Kevin. The poll-classification run preserved child65/336 then stopped
+on a raw author comparison. Saved source has the same author with repeated
+whitespace; no omitted article prose or media was found. The isolated successor
+normalizes only author-name whitespace for comparison, retains exact keys/type
+and all other checks, and preserves the old source, nulls, missing_body failure,
+rejected decision and stop. Native article acceptance and human approval remain
+false. Formal preparation must bind336 saved/closed calls and next337
+TC5_438720, with64 new URLs to the pending400 gate. Earlier source reads do not
+replace that gate. Consult the authoritative locator and actual process evidence
+before asserting this successor is prepared or running. Previous worktrees and
+technical stops remain protected; never use an old halt as a normal pause.
