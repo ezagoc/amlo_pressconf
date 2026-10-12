@@ -32,7 +32,7 @@ class Priority2MediaTests(unittest.TestCase):
         self.assertEqual(json.loads(result["media_evidence"]), [
             {"source": "native_video.src", "raw_url": "/assets/clip.mp4", "url": "https://www.tiempo.com.mx/assets/clip.mp4", "media_kind": "video"},
             {"source": "native_video.source.src", "raw_url": "../alt.webm", "url": "https://www.tiempo.com.mx/local/alt.webm", "media_kind": "video"}])
-        self.assertEqual(result["classification_rule_version"], "tiempo_media_v1")
+        self.assertEqual(result["classification_rule_version"], "tiempo_media_v2_lead_and_body")
 
     def test_request_url_is_resolution_base_not_a_different_canonical(self):
         result = fields('<video src="clip.mp4"></video>', canonical="https://tiempo.com.mx/otra/nota/")

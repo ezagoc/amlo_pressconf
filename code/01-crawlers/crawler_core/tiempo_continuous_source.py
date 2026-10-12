@@ -112,6 +112,76 @@ def recognized_source_videos(body,base_url):
   elif parsed.hostname in {'twitter.com','www.twitter.com','x.com','www.x.com'} and re.fullmatch(r'/[^/]+/(?:status|statuses)/\d+/?',parsed.path):kind='twitter_video'
   if kind:evidence.append({'kind':kind,'tag':node.name,'raw_url':raw,'url':resolved})
  return evidence
+
+def independent_lead_media_scope(article,lead):
+ """Read the actual lead before attribution, independently of parser output."""
+ if article is None or lead is None:return None,['unrecognized_article_media_lead']
+ if not (lead.parent is article or (lead.parent.name=='p' and set(lead.parent.get('class',[]))=={'lead'} and lead.parent.parent is article)):
+  return None,['unrecognized_article_media_lead']
+ if not lead.select('iframe,video,source,object,embed,audio,canvas,template,script,blockquote[cite],blockquote.twitter-tweet,blockquote.twitter-video,blockquote.instagram-media'):
+  return None,[]
+ clone=BeautifulSoup(str(lead),'html.parser').select_one('blockquote')
+ strings=list(clone.strings);boundaries=[]
+ months='enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|setiembre|octubre|noviembre|diciembre'
+ byline=re.compile(r'Por:\s*.+?\s+\d{1,2}\s+(?:'+months+r')\s+20\d{2}(?:\s+\d{1,2}:\d{2})?',re.I)
+ for index,value in enumerate(strings):
+  if isinstance(value,Comment):continue
+  start=str(value).find('Por:')
+  remainder=norm(str(value)[start:]+' '.join(str(x) for x in strings[index+1:] if not isinstance(x,Comment))) if start>=0 else None
+  if remainder and byline.match(remainder):boundaries.append((value,start))
+ if len(boundaries)!=1:return None,['unrecognized_article_media_byline_boundary']
+ marker,offset=boundaries[0];nodes=list(clone.descendants)
+ for node in reversed(nodes[nodes.index(marker)+1:]):node.extract()
+ marker.replace_with(str(marker)[:offset])
+ for node in list(clone.select('style,noscript,form,button,nav,footer,aside,.share-buttons,.publicidad-content,.ad,#sidebar')):
+  if node.parent:node.decompose()
+ for frame in clone.select('iframe'):frame.clear()
+ flags=[]
+ def usable_resource(value):
+  if not isinstance(value,str) or not value.strip():return False
+  try:
+   parsed=urlsplit(urljoin('https://www.tiempo.com.mx/',value.strip()));parsed.port
+   return parsed.scheme in {'http','https'} and bool(parsed.hostname) and parsed.username is None and parsed.password is None
+  except ValueError:return False
+ for node in [clone]+clone.find_all(True):
+  known_widget=(node.name=='script' and node.get('src')=='https://platform.twitter.com/widgets.js'
+    and set(node.attrs)<={'src','async','charset'} and not node.get_text(strip=True))
+  if (node.name in {'object','embed','audio','canvas','template'} or (node.name=='script' and not known_widget)
+    or any(key.lower().startswith('on') or key.lower()=='srcdoc' or (key.lower().startswith('data-') and not
+      (node.name=='blockquote' and 'instagram-media' in node.get('class',[]) and key.lower() in
+       {'data-instgrm-permalink','data-instgrm-version','data-instgrm-captioned'})) for key in node.attrs)
+    or re.search(r'url\s*\(',node.get('style',''),re.I) or '-' in node.name
+    or (node.name=='a' and re.match(r'\s*(?:javascript|data):',node.get('href',''),re.I))):
+   flags.append('unrecognized_lead_dynamic_media')
+  if node.name=='iframe' and not str(node.get('src','')).strip():flags.append('unrecognized_lead_dynamic_media')
+  if node.name=='video':
+   targets=([node] if node.has_attr('src') else [])+node.select('source')
+   if not targets or any(not usable_resource(target.get('src')) for target in targets):flags.append('unrecognized_lead_dynamic_media')
+  if node.name=='source' and (node.parent.name!='video' or not usable_resource(node.get('src'))):flags.append('unrecognized_lead_dynamic_media')
+ for node in clone.select('script'):node.decompose()
+ return clone,sorted(set(flags))
+
+def independent_lead_references(scope,base_url):
+ """Keep explicit unknown references, but do not declare unknown players video."""
+ if scope is None:return [],[]
+ links=[node.get('src') for node in scope.select('iframe[src]')]
+ links += [node.get('cite') for node in scope.select('blockquote[cite]')]
+ links += [node.get('data-instgrm-permalink') for node in scope.select('blockquote.instagram-media[data-instgrm-permalink]')]
+ links += [node.get('href') for node in scope.select('blockquote.twitter-tweet a[href],blockquote.twitter-video a[href]') if re.search(r'/(?:status|statuses)/\d+',node.get('href',''))]
+ links += native_video_links(scope,base_url)
+ known={item['raw_url'] for item in recognized_source_videos(scope,base_url)}
+ unknown=[]
+ for node in scope.select('iframe[src]'):
+  raw=node.get('src')
+  try:
+   p=urlsplit(urljoin(base_url,raw));p.port
+   safe=p.scheme in {'http','https'} and p.hostname and p.username is None and p.password is None
+   known_social=(safe and p.hostname in {'www.facebook.com','facebook.com'} and p.path in {'/plugins/post.php','/plugins/video.php'})
+   known_tracking=(safe and p.hostname=='analytics.tiempolanoticiadigital.com.mx' and p.path=='/analytics.html' and node.get('height')=='0' and node.get('width')=='0')
+  except (ValueError,TypeError):known_social=known_tracking=False
+  if raw not in known and not known_social and not known_tracking:unknown.append('unrecognized_lead_media_requires_review')
+ return links,sorted(set(unknown))
+
 def confirmed_empty(p):
  try:e=json.loads(p.get('source_title_evidence') or 'null')
  except (ValueError,TypeError):return False
@@ -343,9 +413,13 @@ def diagnose(p,run_dir):
   except ValueError:flags.append('invalid_canonical_output_identity')
  else:flags.append('missing_canonical_output_field')
  bodytext='';leadtext='';known_ui=[]
- media=[]
+ media=[];lead_media=None;lead_media_flags=[]
+ if len(articles)==len(bodies)==len(leads)==1:
+  lead_media,lead_media_flags=independent_lead_media_scope(article,lead)
+  lead_refs,lead_ref_flags=independent_lead_references(lead_media,p.get('final_url') or p.get('url') or '')
+  media.extend(lead_refs);lead_media_flags+=lead_ref_flags;flags.extend(lead_media_flags)
  if body:
-  media=[x.get('src') for x in body.select('iframe[src]')]+[x.get('cite') for x in body.select('blockquote[cite]')]+[x.get('data-instgrm-permalink') for x in body.select('blockquote.instagram-media[data-instgrm-permalink]')]+[x.get('href') for x in body.select('blockquote.twitter-tweet a[href],blockquote.twitter-video a[href]') if re.search(r'/(?:status|statuses)/\d+',x.get('href',''))]
+  media += [x.get('src') for x in body.select('iframe[src]')]+[x.get('cite') for x in body.select('blockquote[cite]')]+[x.get('data-instgrm-permalink') for x in body.select('blockquote.instagram-media[data-instgrm-permalink]')]+[x.get('href') for x in body.select('blockquote.twitter-tweet a[href],blockquote.twitter-video a[href]') if re.search(r'/(?:status|statuses)/\d+',x.get('href',''))]
   media+=native_video_links(body,p.get('final_url') or p.get('url') or '')
   clone=BeautifulSoup(str(body),'html.parser')
   for x in clone(['script','style','iframe']):x.decompose()
@@ -367,7 +441,14 @@ def diagnose(p,run_dir):
  if not p.get('main_text'):flags.append('missing_body')
  if p.get('qa_status')=='success' and not all(p.get(k) for k in ['title','main_text','date_published','canonical_url']):flags.append('success_missing_core_fields')
  route=urlsplit(p.get('canonical_url') or '').path.strip('/').split('/')[0] or None
- hosts=sorted({urlsplit(u).hostname for u in media if isinstance(u,str) and urlsplit(u).hostname})
+ hosts=set()
+ for value in media:
+  if not isinstance(value,str):continue
+  try:
+   host=urlsplit(value).hostname
+   if host:hosts.add(host)
+  except ValueError:flags.append('invalid_source_media_url')
+ hosts=sorted(hosts)
  layout={'article_count':len(articles),'body_count':len(bodies),'lead_count':len(leads),'article_post':bool(article),'lead':bool(lead),'body_container':bool(body),'table':bool(body and body.find('table')),'list':bool(body and body.find(['ul','ol'])),'body_heading':bool(body and body.find(['h1','h2','h3','h4'])),'social_quote':bool(body and body.select('blockquote.twitter-tweet,blockquote.instagram-media')),'body_dom_paths':dom_paths(body),'lead_dom_paths':dom_paths(lead),'header_dom_paths':dom_paths(article.select_one('header') if article else None)}
  types=([f'route:{route}'] if route else [])+['embed_host:'+h for h in hosts]+['layout:'+json.dumps(layout,sort_keys=True,separators=(',',':'))]
  rec={'sample_id':p['sample_id'],'url':p['url'],'article_date':published,'discovery_day':day,'route':route,'chars':chars,'error':p.get('error'),'qa_status':p.get('qa_status'),'confirmed_source_empty':confirmed_empty(p),'automatic_flags':sorted(set(flags)),'observed_types':types,'body_compact_sha256':hashlib.sha256(compact(p.get('main_text')).encode()).hexdigest() if p.get('main_text') else None,'snapshot_sha256':p.get('snapshot_sha256'),'fields_sha256':fields_digest(p),'manual_review_status':'not_reviewed'}
@@ -391,7 +472,8 @@ def diagnose(p,run_dir):
  # A missing text body is a known source content limitation only when source
  # markup independently establishes video and every other contract check holds.
  # Preserve native qa/error/null fields; never use article_kind as an oracle.
- video_evidence=recognized_source_videos(body,p.get('final_url') or p.get('url') or '')
+ video_evidence=(recognized_source_videos(lead_media,p.get('final_url') or p.get('url') or '') if not lead_media_flags else [])
+ video_evidence+=recognized_source_videos(body,p.get('final_url') or p.get('url') or '')
  allowed_video_flags={'missing_body','unexplained_result_error','suspicious_very_short_body_review_only'}
  verified_video_only=(bool(video_evidence) and qa=='error' and p.get('error')=='missing_body'
   and p.get('main_text') is None and not norm(p.get('summary')) and not compact(leadtext+bodytext)

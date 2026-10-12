@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup, Comment
 MONTHS = dict(zip("enero febrero marzo abril mayo junio julio agosto septiembre octubre noviembre diciembre".split(), range(1, 13)))
 MONTHS["setiembre"] = 9
 BYLINE = re.compile(r"Por:\s*(.*?)\s+(\d{1,2})\s+(" + "|".join(MONTHS) + r")\s+(20\d{2})(?:\s+(\d{1,2}):(\d{2}))?", re.I)
-MEDIA_CLASSIFICATION_VERSION = "tiempo_media_v1"
+MEDIA_CLASSIFICATION_VERSION = "tiempo_media_v2_lead_and_body"
 _NON_BODY_MEDIA_SCOPES = "script,style,noscript,iframe,form,button,nav,footer,aside,.share-buttons,.publicidad-content,.ad,#sidebar"
 
 
@@ -419,6 +419,83 @@ def _video_evidence(content, *, url):
     return evidence, native_urls
 
 
+def _lead_media_scope(article):
+    """Private, unique article lead before the proven byline; never page-wide."""
+    candidates = [node for node in article.select('blockquote') if node.parent is article
+                  or (node.parent.name == 'p' and set(node.parent.get('class', [])) == {'lead'}
+                      and node.parent.parent is article)]
+    if len(candidates) != 1:
+        return None, 'ambiguous_article_media_lead'
+    lead = candidates[0]
+    if not (lead.parent is article or (lead.parent.name == 'p'
+            and set(lead.parent.get('class', [])) == {'lead'} and lead.parent.parent is article)):
+        return None, 'unrecognized_article_media_lead'
+    if not lead.select('iframe,video,source,object,embed,audio,canvas,template,script,blockquote[cite],blockquote.twitter-tweet,blockquote.twitter-video,blockquote.instagram-media'):
+        return None, None
+    copy = BeautifulSoup(str(lead), 'lxml').select_one('blockquote')
+    strings = list(copy.strings)
+    markers = []
+    for i, value in enumerate(strings):
+        if isinstance(value, Comment):
+            continue
+        match = re.search(r'Por:', str(value))
+        if match and BYLINE.match(re.sub(r'\s+', ' ', str(value)[match.start():]
+                + ' '.join(str(x) for x in strings[i + 1:] if not isinstance(x, Comment)))):
+            markers.append((value, match.start()))
+    if len(markers) != 1:
+        return None, 'unrecognized_article_media_byline_boundary'
+    marker, offset = markers[0]
+    nodes = list(copy.descendants)
+    for node in reversed(nodes[nodes.index(marker) + 1:]):
+        node.extract()
+    marker.replace_with(str(marker)[:offset])
+    # Exclude known non-news scopes before assessing the remaining lead markup.
+    for node in list(copy.select('style,noscript,form,button,nav,footer,aside,.share-buttons,.publicidad-content,.ad,#sidebar')):
+        if node.parent:
+            node.decompose()
+    for frame in copy.select('iframe'):
+        frame.clear()
+    dynamic = False
+    for node in [copy] + copy.find_all(True):
+        known_twitter_script = (node.name == 'script'
+            and node.get('src') == 'https://platform.twitter.com/widgets.js'
+            and set(node.attrs) <= {'src', 'async', 'charset'} and not node.get_text(strip=True))
+        if (node.name in {'object', 'embed', 'audio', 'canvas', 'template'}
+                or (node.name == 'script' and not known_twitter_script)
+                or any(k.lower().startswith('on') or k.lower() == 'srcdoc'
+                       or (k.lower().startswith('data-') and not (node.name == 'blockquote'
+                           and 'instagram-media' in node.get('class', []) and k.lower() in
+                           {'data-instgrm-permalink', 'data-instgrm-version', 'data-instgrm-captioned'})) for k in node.attrs)
+                or re.search(r'url\s*\(', node.get('style', ''), re.I)
+                or '-' in node.name
+                or (node.name == 'a' and re.match(r'\s*(?:javascript|data):', node.get('href', ''), re.I))):
+            dynamic = True
+        if node.name == 'iframe' and not str(node.get('src', '')).strip():
+            dynamic = True
+        if node.name == 'video':
+            resources = ([node] if node.has_attr('src') else []) + node.select('source')
+            if not resources or any(not _media_http_url(x.get('src'), 'https://www.tiempo.com.mx/') for x in resources):
+                dynamic = True
+        if node.name == 'source' and (node.parent.name != 'video'
+                or not _media_http_url(node.get('src'), 'https://www.tiempo.com.mx/')):
+            dynamic = True
+    for node in copy.select('script'):
+        node.decompose()
+    return copy, 'unrecognized_lead_dynamic_media' if dynamic else None
+
+
+def _embed_references(content):
+    if content is None:
+        return []
+    refs = [n['src'] for n in content.select('iframe[src]')]
+    refs.extend(n['cite'] for n in content.select('blockquote[cite]'))
+    refs.extend(link for n in content.select('blockquote.instagram-media[data-instgrm-permalink]')
+                if (link := _instagram_permalink(n.get('data-instgrm-permalink'))))
+    refs.extend(node['href'] for node in content.select('blockquote.twitter-tweet a[href], blockquote.twitter-video a[href]')
+                if re.search(r'/(?:status|statuses)/\d+', node['href']))
+    return refs
+
+
 def tiempo_fields(html: str, *, url: str) -> dict[str, object]:
     soup = BeautifulSoup(html, "lxml")
     article = soup.select_one("article#article-post")
@@ -515,17 +592,17 @@ def tiempo_fields(html: str, *, url: str) -> dict[str, object]:
     fields['removed_body_elements'] = json.dumps(removed, ensure_ascii=False)
     fields['related_links'] = json.dumps([{'url': item['href'], 'text': item['text']} for item in removed if item['reason'] == 'terminal_related_article_link'], ensure_ascii=False)
     fields["body_selector"] = "article#article-post > blockquote + .complementos-container"
-    embed_urls = []
-    if content:
-        embed_urls.extend(n["src"] for n in content.select("iframe[src]"))
-        embed_urls.extend(n["cite"] for n in content.select("blockquote[cite]"))
-        embed_urls.extend(link for n in content.select('blockquote.instagram-media[data-instgrm-permalink]')
-                          if (link := _instagram_permalink(n.get('data-instgrm-permalink'))))
-        for node in content.select("blockquote.twitter-tweet a[href], blockquote.twitter-video a[href]"):
-            if re.search(r"/(?:status|statuses)/\d+", node["href"]):
-                embed_urls.append(node["href"])
-    media_evidence, native_urls = _video_evidence(content, url=url)
-    embed_urls.extend(native_urls)
+    media_lead, media_scope_error = _lead_media_scope(article)
+    if media_scope_error and not fields['source_specific_error']:
+        fields['source_specific_error'] = media_scope_error
+    embed_urls, media_evidence = [], []
+    for scope in (media_lead, content):
+        embed_urls.extend(_embed_references(scope))
+        evidence, native_urls = _video_evidence(scope, url=url)
+        if scope is media_lead and media_scope_error:
+            evidence = []
+        media_evidence.extend(evidence)
+        embed_urls.extend(native_urls)
     fields["media_embeds"] = json.dumps(list(dict.fromkeys(embed_urls)), ensure_ascii=False)
     fields["media_evidence"] = json.dumps(media_evidence, ensure_ascii=False)
     fields["classification_rule_version"] = MEDIA_CLASSIFICATION_VERSION
