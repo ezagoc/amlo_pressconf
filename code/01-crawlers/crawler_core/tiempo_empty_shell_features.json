@@ -1,0 +1,1086 @@
+{
+  "known_comment_sha256": [
+    "04baf90fa265b0d933f8538e70180fa006f528d16e8c7cb79fee1ca935c6045a",
+    "0922665921e315787b6a001ee298ea55757e990b49a27f010456fdf79c25de39",
+    "094269c464fbf678eebe21bd0f5a6290977c0f5d7648e667536cd9b07641eaa5",
+    "0a27921c8ab805f44f01c86b628a2f53c02cb022b5f437feffe10cbabdd9b3ca",
+    "0ecd9342daa1f42c82fc4505e0f30f92ae1a2a2d33647031ab88baac1fae1f9e",
+    "0fac4f5037a6f420f0cb447641739a951cf962df62d824ac475474dfd1fd2a1a",
+    "1068eb3d5868a7b75e0cb7a2ac0ba4aa0b7a49451688207f961b53d631cf6fbf",
+    "10e56c9fe7aada984d595ea0847b4860a7a7d55ad715875700b1d9395967c3b6",
+    "11cde825a04a47897c52761f78d8f2ffe2134dfafc7fbd1b207d9c42d2f5c13e",
+    "1267457d3f882edcd3f71a436a6b0bd588465277377ef3144d32a46c164da68d",
+    "151c9d46bdb753149e6bd27d0d65318abcc6c752c88d04850a29be09b482d4e7",
+    "163794e5168c2fb12acfd8dd1dfa76a997b060feef19a24b3cf6d842e41e78bf",
+    "172be48344323cb08b12bc19b16b30a74821f05bb24a38b6b8c5692d938acb6d",
+    "17ec813e8e0d8f10bab90fb1a668895df5d47ab4a64c5a3b615acee934989002",
+    "18093cad26441ad13739840b68cb4dc6b379831aa2742a41f054b83091129924",
+    "1943fbe69f5d957c785c69d0fb6a6780a58199173654aa415df8c219a9d1f247",
+    "19475dea88ecf2b4fcd1c70c3dc74079108b8765fd9e04f92e25229f7f4dac86",
+    "1af18c163de7f40ae447816c429d4a5060d42d7df7eedb744dea047e607564f4",
+    "1d00b427b5c32ded68f90307a10043413eb00c8293856dc63c2ea1f883ddc0e2",
+    "1e469a87c919d71aeaed88306c4915e7a5cd002e7f4b10a5b32ddfa377924470",
+    "232fc46b697d654b3f765e18e2085c0e77e83703618fa89511129c9df7106ac7",
+    "23b10b43db4f04f62e9af573b4acdaf23161d47d75614224223773c43e9f2444",
+    "24b3b383ad7f2a49be86e9c1d8de362d5b34fb6936bed4d59c4629778709ceff",
+    "28644c399fff86ec16532c98f39128a9fe7a086e226698108c8e01b37fb2aa61",
+    "2e5c53777c6d74d63f1d799452e452c18088d61e9f4cd302edd7d633f230e813",
+    "31d2e27d5befc5cc25bb3430b74f25d4c2d42b76bf2ac8901c56de44a506b08f",
+    "3246dfe26a2d07991c1379cffcfba08eae59b33fff4fd21bd2219d753183d3fe",
+    "35ce9793ce8200ad070fd83572a211fb07e61008da45e90d1d92817d5d091e35",
+    "364b43306500794b3afe2bae776b34d9d12ac49b7f7934edb771824986e2178f",
+    "3e1a111d1b20d41f3755597025670c9ef6936d8b13afe789d714857afe33f4d1",
+    "440432cd5dc9795e15769dc8dbe139a535168b8a5a15f3223592e417ec45bb26",
+    "4630a93090548680a2715537378ad50759cbab2b87be981423de8e242636ca7c",
+    "487d41950f8a914403c11b122631e0392de631b0aae48db214d0cfef0f426f4f",
+    "495152e1bd5d6ad7d17b442791d6fccfd7e346b1c2fa3f941e016c93212bf8ed",
+    "4e5d725cc957b26d1afee221294e565511d88a1bde7e99950a17f587b93a68a3",
+    "4fe6218a531e8674e562e7a515a98f0979cbb1d3fe11331457eb9cb9dd5c1697",
+    "5005ec46ef71fc8faab35043c133f760001b111e4816a563292d23aa070c18e5",
+    "5670d96fd4f3e3d28c071115e79d5243247bec8d510d57adbe0ce2a6a7bd65a1",
+    "56fcaa552969679000953a88852a5c74ceaa8c99d32cd51a4db51051e1940ae6",
+    "5da45cc38c1a560a148b9bbc5790efbfd6c24154f9b6044b10ab4ae5b1672620",
+    "60699a04c6fdb391facab57c5df25654a8398e016a6dd3f940d45fd0e101214d",
+    "62386ead57d0dfd4f8380044c94cebd7a4758e8db0e20bdab8b2777a433fe096",
+    "623b31a7ddfb17a9a869b43b39b36fa7835c84eb07ede0c2310ee991969cf96a",
+    "6647a3b57c4f978d6e068a9cc5f56afb60cf3630d7a9c263ad9e0d3142847970",
+    "687cfafe0bdfa6afde23b4b11c43a4e826013ae6bcb1974c7b38263a5ccf097d",
+    "6ba8be63abc1182456c01246c8d8f836b6e7066410d2ba9f07c7528e2f0e2ed5",
+    "75b60c94c9b8d9a73ebb66ec371c60dcbaec0ec1ffdfefcf1cd8e2ea50002254",
+    "79dedac4cd49befd562cc6451cd49cf230e8e44c5ff77a597ec15b5cd84a5342",
+    "7a699939e86998380aed0de76e1abaf454d0f5a329c6d87d205ffcf264f93f6c",
+    "7b4ba3e51ab37fcc3727c9fc3006fd030403650d01ce15b3b717db23f8bfb421",
+    "7db84a4ef910e2ff18b24bbb51146703895f2629f68741530bfa941dea734f9c",
+    "804267a6ffb4cb4ae07fbbdb3b10ea0b8e44d99ff58059607eeb4d55ea6fef5e",
+    "8366c1a373bb58023cbed3f8cb81b6963383138f9c2afb4bfdd28a99d0bb62af",
+    "8ae39932451ec92a6a9be929c7de10fef055b685980f112ebc7e8b9aad6ef127",
+    "90ce2fbf283d4bb1c793b102219d612edb9779fb68c69e1ce37e374d27ab1ea0",
+    "9505eaf6485983546b837b082ce1f02f80d2b334ed95edbd24b23c1dbcea61fc",
+    "9b4a3fb0cb9da3065084b54a27427d9fa098880866aaf08f94cd1412c0b0c802",
+    "9baae3cd18b46409eacc8fc8230af6fc420b31ac168d7009dfbc0b30cabd0bca",
+    "9c481267f38247e09d2a1fe69b19939fa2077d7c28a2dbe53ff7b456d76b08c6",
+    "9e9fb09c88f84c49b52425345041af6c2d3142aeadb85327594ad036123785a0",
+    "a04ffe16b1583e20302b8dfc55efcc32d7decfbd60f2d6830997ed1929a366d7",
+    "a12a726f9c4b1ee0262e84f8fd864aa41d1fcf607d147de639b110a63bf26763",
+    "a20c0171a084987eaa9bb84299ac4cd84ed3ee6f4b53315417060959658f561f",
+    "a4ec0bc74aee6c8b9a73eb62e8fbae98305c6b3b7c347cf10432e40785b209c3",
+    "a5c72066d5b7b4e92053c11cb14667dc4468484ce137e9e26b25db3a493e8c07",
+    "a94aae0d5f21e024ba1d0c1469db812688677f134dee7719719c2365e2d44cd5",
+    "afc24aabd1269347d95974701dd190dd0dd3089cc7e9c2c85ac26d975b3b815b",
+    "b1719d0974321d3feefcf880de347d82223b502ebc49d58f346a7e7c5a8b1526",
+    "b644d86c7a2d27fd02eeb918aff31f8f6fcccaf58c8782df1db4a9e2d4fdaa90",
+    "b74b32c60cf2087888cfcd62057a343d6c36affdce9ed6ee0fad56cc90885090",
+    "badf76a72d8959e2b71aa51a4a72856f87e3f7ae94aa5766b19e4883a5f8dfbd",
+    "baed77fc10773f621f48964230a5c94e99c0f384f4e598a8ce7e36bfbf58dc69",
+    "bfcd94dc3e6bae431974c14e59ade847cc62b7782c839dfbae9e06382963fe90",
+    "c9a053fb00f002060425533184bb334ac0062d6050381c942e3ddd576589be36",
+    "ca2b919c50619a8126260b3c5bc989aa052114f1b10078264dca4cea9e9097af",
+    "cb50f61fe3e110fce2948be7596b07367b804c32246cac029404ad483a10ee50",
+    "cc67782bb170c700df419a403dc60a2ef55647ef875c9fddd391ddab08863b4a",
+    "cef6fddb88c843adc9497f8afc6afbfac7ddf9c0463bf55486e48b8bca0bf54a",
+    "cf02718e755f978df58f6696fd46ffa5f602f3b266e4aa156f93332b3456954a",
+    "d09e4f73ff99a233f663f91c47582d3f1b2d59ae92f354615e6a3cdb09c17bf5",
+    "d292485b4e52a7d7b00ee029da67401d2cfad279a5d2aeeee313f978a6a87539",
+    "d4c57a5840edff93b9938b256267d30cf8c54e87e62090ac72cd144574944f0f",
+    "d8d43eea53fdff236447482d80f09c1b7c138c8f26d2820f5cdf8d8b4df25a78",
+    "ddc575987968a30fe433322900287733913d2817fcaac70d766f59fdf3c79d97",
+    "ddfbe1a6d1c4e368f40a9b78a662e03c5f05d717554e9ea5b15a890f9e5ba3d4",
+    "e1a8fbcd766cce139b14ae84dee65728ef169b295cb22baa996d0f31ffb54c7f",
+    "ea1aa9415d9c19a357a4114a25d10aaa1f4a88acbc0702527d8f32ed5f388bca",
+    "ea2d02ed6abaddc3923c0e9561d1ca65794121c2a1be814224b907132a161b35",
+    "eb30fdf4061c1bbc04f3868a6b0b748e934d5e77c3523ad92d7d09275c3639c3",
+    "eb34ecfeed7302c426a011e537abb6af71e261a6c351e1a31f7b020b7b3b2bb2",
+    "eb8115ec920bd32c356fa04aa185399ad4cb19b85461903b032740994b83438e",
+    "ec81f12fbc571139d01331b3cba25ca7030602e5b6dca914daeb095fadee0839",
+    "f39fe1a1aed7b4761dd27a317621eb64eb807c5e6798b3860e35977ed0304fff",
+    "f7efa7bc1fc535ab733d92a56639bed62229ae3646bc9fd137e9cef2f6c1f1b2",
+    "fb92c565843ff487569e9c807558d251e329ea1751b88566b5cd517b07cf8bf4",
+    "fe089d71a5d830821a23b255ea7d66060ebb0db6d9e8210921e9594758d2c02e",
+    "ff55d7adc915f20e665aeaafd90d552a7d385ce6469eb11b8db5726905c61460"
+  ],
+  "known_inline_scripts": {
+    "d6b382a1f0d476438e974d593c511cb25405f60fb29e1f535073e840237bf5ee": "(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src= 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-NFMWPLG');",
+    "747b5c74edd2784526f1749a3e887572fbe031da57ced3d1b0bfe9ca91a2700c": "var votar = function() { var radio_seleccion = $(\"#opciones-encuesta input:radio:checked\").attr('value'); if (radio_seleccion == undefined) { alert(\"Seleccione una opción\"); } else { document.getElementById(\"result\").classList.remove('collapse'); document.getElementById(\"thepoll\").classList.add('collapse'); $.ajaxSetup({ beforeSend: function(xhr) {xhr.setRequestHeader('X-CSRFToken','CSRF_SLOT')} }); $.post(\"/encuesta/\", { 'encuestaid': 'POLL_SLOT' , 'selec': radio_seleccion, 'csrf_token': 'CSRF_SLOT' } ); } };",
+    "66b12c0c46507150e057c2c71b9ccf0fcd93b0a51db4416b4e79af76f7f8ad9a": "function validar_encuesta_contestada(encuesta_id) { if (localStorage.getItem('encuesta_' + encuesta_id) == 'true') $('#link-btn-encuesta-contestada').click(); else $('#votar-submit-btn').click(); }",
+    "6d8887be0dfdcf4a397c976b02a71c451fce9a7a69dc8c2f2d1ccf88b5f8156c": "var player = videojs('my-video', { fluid: true, responsive: true, aspectRatio: '16:9', breakpoints: { tiny: 210, xsmall: 320, small: 480, medium: 768, large: 1024 } });"
+  },
+  "article_tag_shape": "div,center,div,div,a,img,div,a,img,p,header,ol,li,a,li,a,h1,div,p,blockquote,p,i,a,strong,i,i,p,ul,li,a,img,li,a,img,li,a,img,li,a,div,div,div,div,div,center,div,div,div,a,img,div,a,img,p,div,div,div,div,div,p,p,p,style,div,div,div,div,footer",
+  "body_tag_shape": "div,div,p,p,p,style,div,div,div",
+  "article_structure": [
+    [
+      "article",
+      -1,
+      {
+        "id": "article-post",
+        "class": [
+          "cat-sports"
+        ]
+      }
+    ],
+    [
+      "div",
+      0,
+      {
+        "class": [
+          "row"
+        ]
+      }
+    ],
+    [
+      "center",
+      1,
+      {}
+    ],
+    [
+      "div",
+      2,
+      {
+        "class": [
+          "col-xs-12",
+          "col-md-12",
+          "hidden-xs",
+          "visble-md"
+        ]
+      }
+    ],
+    [
+      "div",
+      2,
+      {
+        "class": [
+          "col-md-6",
+          "col-xs-6",
+          "hidden-md",
+          "visble-xs",
+          "hidden-lg",
+          "hidden-sm"
+        ]
+      }
+    ],
+    [
+      "a",
+      4,
+      {
+        "target": "_new",
+        "href": "AD_CLICK_SLOT"
+      }
+    ],
+    [
+      "img",
+      5,
+      {
+        "width": "180",
+        "height": "60",
+        "alt": "",
+        "src": "AD_IMAGE_SLOT"
+      }
+    ],
+    [
+      "div",
+      2,
+      {
+        "class": [
+          "col-md-6",
+          "col-xs-6",
+          "hidden-md",
+          "visble-xs",
+          "hidden-lg",
+          "hidden-sm"
+        ]
+      }
+    ],
+    [
+      "a",
+      7,
+      {
+        "target": "_new",
+        "href": "AD_CLICK_SLOT"
+      }
+    ],
+    [
+      "img",
+      8,
+      {
+        "width": "180",
+        "height": "60",
+        "alt": "",
+        "src": "AD_IMAGE_SLOT"
+      }
+    ],
+    [
+      "p",
+      7,
+      {}
+    ],
+    [
+      "header",
+      0,
+      {}
+    ],
+    [
+      "ol",
+      11,
+      {
+        "class": [
+          "breadcrumb"
+        ]
+      }
+    ],
+    [
+      "li",
+      12,
+      {}
+    ],
+    [
+      "a",
+      13,
+      {
+        "href": "/"
+      }
+    ],
+    [
+      "li",
+      12,
+      {
+        "class": [
+          "active"
+        ]
+      }
+    ],
+    [
+      "a",
+      15,
+      {
+        "href": "/local/"
+      }
+    ],
+    [
+      "h1",
+      11,
+      {
+        "style": "font-size: 40px; line-height: 40px; margin-bottom: 10px"
+      }
+    ],
+    [
+      "div",
+      0,
+      {
+        "class": [
+          "complemento-item",
+          "m-t-md"
+        ]
+      }
+    ],
+    [
+      "p",
+      0,
+      {
+        "class": [
+          "lead"
+        ]
+      }
+    ],
+    [
+      "blockquote",
+      19,
+      {
+        "style": "padding: 0px"
+      }
+    ],
+    [
+      "p",
+      20,
+      {}
+    ],
+    [
+      "i",
+      20,
+      {
+        "class": [
+          "fa",
+          "fa-user",
+          "text-muted"
+        ],
+        "style": "color: #444"
+      }
+    ],
+    [
+      "a",
+      20,
+      {
+        "href": "",
+        "class": [
+          "m-r-sm"
+        ]
+      }
+    ],
+    [
+      "strong",
+      23,
+      {}
+    ],
+    [
+      "i",
+      20,
+      {
+        "class": [
+          "fa",
+          "fa-calendar",
+          "text-muted"
+        ],
+        "style": "color: #444"
+      }
+    ],
+    [
+      "i",
+      20,
+      {
+        "class": [
+          "fa",
+          "fa-clock-o",
+          "text-muted"
+        ],
+        "style": "color: #444"
+      }
+    ],
+    [
+      "p",
+      0,
+      {
+        "class-lead": ""
+      }
+    ],
+    [
+      "ul",
+      27,
+      {
+        "class": [
+          "share-buttons"
+        ]
+      }
+    ],
+    [
+      "li",
+      28,
+      {}
+    ],
+    [
+      "a",
+      29,
+      {
+        "href": "https://www.facebook.com/sharer/sharer.php?u=",
+        "title": "TITLE_SLOT",
+        "target": "_blank",
+        "onclick": "window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(document.URL) + '&t=' + encodeURIComponent(document.URL)); return false;"
+      }
+    ],
+    [
+      "img",
+      30,
+      {
+        "src": "https://static.tiempo.com.mx/assets/periodico/Facebook-fadd0e82b4162d374ae3a21ea4d60ac35328835f16667377036e57d8d5e9f321.svg",
+        "alt": "Facebook"
+      }
+    ],
+    [
+      "li",
+      28,
+      {}
+    ],
+    [
+      "a",
+      32,
+      {
+        "href": "https://twitter.com/intent/tweet?source=&text=TITLE_SLOT",
+        "target": "_blank",
+        "title": "Tweet",
+        "onclick": "window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(document.title) + ':%20'  + encodeURIComponent(document.URL)); return false;"
+      }
+    ],
+    [
+      "img",
+      33,
+      {
+        "src": "https://static.tiempo.com.mx/assets/periodico/Twitter-3470bf4b2062803a4162e2eed64b9cf6351f0a9952639c31d2d2d402902fce16.svg",
+        "alt": "Twitter"
+      }
+    ],
+    [
+      "li",
+      28,
+      {}
+    ],
+    [
+      "a",
+      35,
+      {
+        "href": "mailto:?subject=&body=TITLE_SLOT",
+        "target": "_blank",
+        "title": "Email",
+        "onclick": "window.open('mailto:?subject=' + encodeURIComponent(document.title) + '&body=' +  encodeURIComponent(document.URL)); return false;"
+      }
+    ],
+    [
+      "img",
+      36,
+      {
+        "src": "https://static.tiempo.com.mx/assets/periodico/Email-3f9f953a6a84e22b1ae5ffe1aaa1684767b9216f08484b8bfb571004aaf2e5e7.svg",
+        "alt": "Email"
+      }
+    ],
+    [
+      "li",
+      28,
+      {}
+    ],
+    [
+      "a",
+      38,
+      {
+        "data-text": "TITLE_SLOT",
+        "data-link": "CANONICAL_SLOT",
+        "class": [
+          "whatsapp-icon",
+          "whatsapp",
+          "w3_whatsapp_btn",
+          "w3_whatsapp_btn_x_large"
+        ]
+      }
+    ],
+    [
+      "div",
+      0,
+      {
+        "class": [
+          "row"
+        ]
+      }
+    ],
+    [
+      "div",
+      40,
+      {
+        "class": [
+          "col-xs-12",
+          "col-md-12",
+          "hidden-xs",
+          "visble-md"
+        ]
+      }
+    ],
+    [
+      "div",
+      40,
+      {
+        "class": [
+          "clearfix",
+          "publicidad-content",
+          "two-publicidad"
+        ],
+        "style": "margin-bottom: 10px;"
+      }
+    ],
+    [
+      "div",
+      42,
+      {
+        "class": [
+          "row"
+        ]
+      }
+    ],
+    [
+      "div",
+      43,
+      {
+        "class": [
+          "col-sm-12",
+          "col-xs-12",
+          "col-md-12"
+        ]
+      }
+    ],
+    [
+      "center",
+      40,
+      {}
+    ],
+    [
+      "div",
+      45,
+      {
+        "class": [
+          "row"
+        ]
+      }
+    ],
+    [
+      "div",
+      46,
+      {
+        "class": [
+          "col-xs-12",
+          "col-md-12",
+          "hidden-xs",
+          "visble-md"
+        ]
+      }
+    ],
+    [
+      "div",
+      46,
+      {
+        "class": [
+          "col-md-6",
+          "col-xs-6",
+          "hidden-md",
+          "visble-xs",
+          "hidden-lg",
+          "hidden-sm"
+        ]
+      }
+    ],
+    [
+      "a",
+      48,
+      {
+        "target": "_new",
+        "href": "AD_CLICK_SLOT"
+      }
+    ],
+    [
+      "img",
+      49,
+      {
+        "width": "180",
+        "height": "60",
+        "alt": "",
+        "src": "AD_IMAGE_SLOT"
+      }
+    ],
+    [
+      "div",
+      46,
+      {
+        "class": [
+          "col-md-6",
+          "col-xs-6",
+          "hidden-md",
+          "visble-xs",
+          "hidden-lg",
+          "hidden-sm"
+        ]
+      }
+    ],
+    [
+      "a",
+      51,
+      {
+        "target": "_new",
+        "href": "AD_CLICK_SLOT"
+      }
+    ],
+    [
+      "img",
+      52,
+      {
+        "width": "180",
+        "height": "60",
+        "alt": "",
+        "src": "AD_IMAGE_SLOT"
+      }
+    ],
+    [
+      "p",
+      51,
+      {}
+    ],
+    [
+      "div",
+      54,
+      {}
+    ],
+    [
+      "div",
+      0,
+      {
+        "class": [
+          "tags",
+          "m-b-lg",
+          "l-h-2x"
+        ]
+      }
+    ],
+    [
+      "div",
+      0,
+      {
+        "class": [
+          "complementos-container",
+          "img-responsive",
+          "complemento-img"
+        ]
+      }
+    ],
+    [
+      "div",
+      57,
+      {}
+    ],
+    [
+      "div",
+      58,
+      {
+        "style": "font-size: 20px; line-height: 20px"
+      }
+    ],
+    [
+      "p",
+      59,
+      {}
+    ],
+    [
+      "p",
+      60,
+      {}
+    ],
+    [
+      "p",
+      60,
+      {}
+    ],
+    [
+      "style",
+      62,
+      {}
+    ],
+    [
+      "div",
+      57,
+      {
+        "class": [
+          "row"
+        ]
+      }
+    ],
+    [
+      "div",
+      64,
+      {
+        "class": [
+          "col-xs-12",
+          "col-md-12",
+          "hidden-xs",
+          "visble-md"
+        ]
+      }
+    ],
+    [
+      "div",
+      64,
+      {
+        "class": [
+          "col-md-12",
+          "col-xs-12",
+          "hidden-md",
+          "visble-xs",
+          "hidden-lg",
+          "hidden-sm"
+        ]
+      }
+    ],
+    [
+      "div",
+      0,
+      {
+        "class": [
+          "row"
+        ]
+      }
+    ],
+    [
+      "footer",
+      67,
+      {
+        "class": [
+          "footer-noticia-redes",
+          "col-xs-12",
+          "col-md-12"
+        ],
+        "style": "background-color: transparent; margin-top: 10px !important;"
+      }
+    ]
+  ],
+  "recommendation_structure": [
+    [
+      "div",
+      -1,
+      {
+        "id": "main",
+        "class": [
+          "article"
+        ]
+      }
+    ],
+    [
+      "div",
+      0,
+      {
+        "class": []
+      }
+    ],
+    [
+      "hr",
+      0,
+      {
+        "style": "height:2px; background:#269abc;"
+      }
+    ],
+    [
+      "center",
+      0,
+      {}
+    ],
+    [
+      "h2",
+      3,
+      {
+        "style": "font-size: 30px; line-height: 40px; margin-bottom: 10px"
+      }
+    ],
+    [
+      "hr",
+      0,
+      {
+        "style": "height:2px; background:#269abc;"
+      }
+    ],
+    [
+      "div",
+      0,
+      {
+        "class": [
+          "complemento-item",
+          "m-t-md"
+        ]
+      }
+    ],
+    [
+      "p",
+      6,
+      {
+        "class": [
+          "lead"
+        ]
+      }
+    ],
+    [
+      "blockquote",
+      7,
+      {
+        "style": "padding: 0px;font-size:25px;"
+      }
+    ],
+    [
+      "a",
+      8,
+      {
+        "href": "RECOMMENDATION_URL_SLOT"
+      }
+    ],
+    [
+      "a",
+      6,
+      {
+        "href": "RECOMMENDATION_URL_SLOT"
+      }
+    ],
+    [
+      "img",
+      10,
+      {
+        "class": [
+          "img-responsive",
+          "complemento-img"
+        ],
+        "style": "width: 100%",
+        "src": "RECOMMENDATION_IMAGE_SLOT",
+        "alt": ""
+      }
+    ],
+    [
+      "p",
+      0,
+      {}
+    ],
+    [
+      "br",
+      12,
+      {}
+    ],
+    [
+      "div",
+      12,
+      {
+        "class": [
+          "row"
+        ]
+      }
+    ],
+    [
+      "div",
+      14,
+      {
+        "class": [
+          "col-md-6",
+          "col-xs-6"
+        ],
+        "style": "font-size:18px;"
+      }
+    ],
+    [
+      "a",
+      15,
+      {
+        "href": "RECOMMENDATION_URL_SLOT"
+      }
+    ],
+    [
+      "img",
+      16,
+      {
+        "width": "100%",
+        "src": "RECOMMENDATION_IMAGE_SLOT"
+      }
+    ],
+    [
+      "p",
+      15,
+      {}
+    ],
+    [
+      "div",
+      14,
+      {
+        "class": [
+          "col-md-6",
+          "col-xs-6"
+        ],
+        "style": "font-size:18px;"
+      }
+    ],
+    [
+      "a",
+      19,
+      {
+        "href": "RECOMMENDATION_URL_SLOT"
+      }
+    ],
+    [
+      "img",
+      20,
+      {
+        "width": "100%",
+        "src": "RECOMMENDATION_IMAGE_SLOT"
+      }
+    ],
+    [
+      "p",
+      19,
+      {}
+    ],
+    [
+      "p",
+      12,
+      {}
+    ],
+    [
+      "br",
+      23,
+      {}
+    ],
+    [
+      "div",
+      23,
+      {
+        "class": [
+          "row"
+        ]
+      }
+    ],
+    [
+      "div",
+      25,
+      {
+        "class": [
+          "col-md-6",
+          "col-xs-6"
+        ],
+        "style": "font-size:18px;"
+      }
+    ],
+    [
+      "a",
+      26,
+      {
+        "href": "RECOMMENDATION_URL_SLOT"
+      }
+    ],
+    [
+      "img",
+      27,
+      {
+        "width": "100%",
+        "src": "RECOMMENDATION_IMAGE_SLOT"
+      }
+    ],
+    [
+      "p",
+      26,
+      {}
+    ],
+    [
+      "div",
+      25,
+      {
+        "class": [
+          "col-md-6",
+          "col-xs-6"
+        ],
+        "style": "font-size:18px;"
+      }
+    ],
+    [
+      "a",
+      30,
+      {
+        "href": "RECOMMENDATION_URL_SLOT"
+      }
+    ],
+    [
+      "img",
+      31,
+      {
+        "width": "100%",
+        "src": "RECOMMENDATION_IMAGE_SLOT"
+      }
+    ],
+    [
+      "p",
+      30,
+      {}
+    ],
+    [
+      "p",
+      23,
+      {}
+    ],
+    [
+      "br",
+      34,
+      {}
+    ],
+    [
+      "div",
+      34,
+      {
+        "class": [
+          "row"
+        ]
+      }
+    ],
+    [
+      "div",
+      36,
+      {
+        "class": [
+          "col-md-6",
+          "col-xs-6"
+        ],
+        "style": "font-size:18px;"
+      }
+    ],
+    [
+      "a",
+      37,
+      {
+        "href": "RECOMMENDATION_URL_SLOT"
+      }
+    ],
+    [
+      "img",
+      38,
+      {
+        "width": "100%",
+        "src": "RECOMMENDATION_IMAGE_SLOT"
+      }
+    ],
+    [
+      "p",
+      37,
+      {}
+    ],
+    [
+      "div",
+      36,
+      {
+        "class": [
+          "col-md-6",
+          "col-xs-6"
+        ],
+        "style": "font-size:18px;"
+      }
+    ],
+    [
+      "a",
+      41,
+      {
+        "href": "RECOMMENDATION_URL_SLOT"
+      }
+    ],
+    [
+      "img",
+      42,
+      {
+        "width": "100%",
+        "src": "RECOMMENDATION_IMAGE_SLOT"
+      }
+    ],
+    [
+      "p",
+      41,
+      {}
+    ],
+    [
+      "p",
+      34,
+      {}
+    ],
+    [
+      "br",
+      45,
+      {}
+    ],
+    [
+      "div",
+      45,
+      {
+        "class": [
+          "row"
+        ]
+      }
+    ],
+    [
+      "div",
+      45,
+      {
+        "class": [
+          "line",
+          "line-lg",
+          "b-b",
+          "b-light"
+        ]
+      }
+    ]
+  ]
+}

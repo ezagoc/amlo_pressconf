@@ -2184,3 +2184,28 @@ reach the original400 boundary and require a separate actual-AI gate before401.
 No old halt is deleted and diagnostic reading is not a collection-gate approval.
 Code or prepared state alone does not prove launch: use the live locator,
 process, request ledger and review receipts to verify operating status.
+
+## Kevin — October 12, 2026: feature-based static source-gap policy
+
+The next isolated successor uses `TIEMPO_SOURCE_CLASSIFICATION.md`, the bound
+empty-shell feature classifier and a separate stop-policy overlay. This is an
+explicit classification change, replacing further per-URL exceptions. It does
+not alter the parser, native row checks, original payloads, failure history or
+research states. A matched response has no supported article text in the saved
+static source; its derived outcome is source-unavailable, not an accepted article.
+Unknown structure, media, dynamic content, identity/date inconsistency, access
+failure and unclassified missing-body cases still stop. External scripts are not
+executed, so permanent historical absence or a video type is not established.
+
+The formal adapter is bound to the investigated 334-row donor halt and preserves
+its prior recovery lineage. Original child65 position335, TC5_560498, is next;
+66 new requests reach the existing 400-row actual-AI gate. Original native checks
+continue to determine mandatory source-review samples. Three earlier diagnostic
+readings and derived classification decisions are not new gate readings or human
+approval. Inherited totals include the 334 rows exactly once.
+
+Verify the frozen feature file, code, donor exports and recovery provenance before
+launch; use the recorded current root. Keep one writer, atomic validated review
+publication, battery/quota pauses, request budgets and storage protections. The
+local locator and live evidence, not this handoff, determine whether collection
+actually started or completed. Never restart an older stopped donor.
