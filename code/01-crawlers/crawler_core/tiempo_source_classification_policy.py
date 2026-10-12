@@ -11,9 +11,24 @@ import sqlite3
 from . import tiempo_continuous_v5 as w
 from . import tiempo_empty_shell as classifier
 
-SCHEMA = 'tiempo-source-classification-policy-v1'
-DECISION_SCHEMA = 'tiempo-bound-source-classification-v1'
+SCHEMA = 'tiempo-source-classification-policy-v2'
+DECISION_SCHEMA = 'tiempo-bound-source-classification-v2'
 EXPLAINED_FLAGS = {'missing_body', 'unexplained_result_error'}
+REPRESENTATION_FLAGS = {'source_title_metadata_disagreement', 'visible_title_difference'}
+
+
+def _explained_flags(decision,record):
+    """A matched, recomputed source proof can explain only its own flags."""
+    extra=decision.get('evidence',{}).get('explained_representation_flags',[])
+    observed=set(record.get('automatic_flags',[])) | set(record.get('unexplained_flags',[]))
+    w.require(decision.get('matched') is True and isinstance(extra,list) and
+              all(isinstance(x,str) for x in extra) and len(extra)==len(set(extra)) and
+              set(extra)<=REPRESENTATION_FLAGS and set(extra)<=observed,
+              'Representation flags lack an exact observed, feature-bound explanation')
+    explained=EXPLAINED_FLAGS | set(extra)
+    w.require(not record.get('critical_flags') and set(record.get('unexplained_flags',[]))<=explained,
+              'Classified source contains another unresolved anomaly')
+    return explained
 
 
 def _binding(path):
@@ -38,7 +53,7 @@ def create_policy(root, indices, synthetic):
          'synthetic_fixture':synthetic,'rule_version':classifier.RULE_VERSION,
          'classifier':_binding(classifier.__file__),'features':_binding(classifier.FEATURE_PATH),'overlay':_binding(__file__),
          'native_program_sha256':w.program_hashes(),'human_approval':False,'article_acceptance':False,
-         'semantics':'Native errors, null body, row checks and full risk history are preserved. Only feature-verified empty article shells receive a separate source_unavailable classification; their explained missing-body flags do not count as unexplained extraction anomalies. Unclassified missing-body pages stop immediately unless already recognized by the native video-only rule.'}
+         'semantics':'Native errors, null body, row checks and full risk history are preserved. Only feature-verified empty article shells receive a separate source_unavailable classification. The two missing-body flags and only title-representation flags explicitly proven for that record by the recomputed source classifier do not count as unexplained extraction anomalies. No global title-flag waiver exists. Unclassified missing-body pages stop immediately unless already recognized by the native video-only rule.'}
     path=root/'Source_Classification_Policy.json';_once(path,doc)
     return _binding(path)
 
@@ -81,18 +96,15 @@ def assess(root,plan,batch,row,record,policy_binding):
     payload,response,raw,check,database=_source(root,batch,row,record)
     decision=classifier.classify_empty_article_shell(row,raw.read_bytes(),response,record)
     matched=decision.get('matched') is True
-    # A classifier result can explain only these exact native anomaly reasons.
-    if matched:
-        w.require(not record.get('critical_flags') and
-                  set(record.get('unexplained_flags',[]))<=EXPLAINED_FLAGS,
-                  'Classifier attempted to explain an unrelated native anomaly')
+    explained=_explained_flags(decision,record) if matched else set()
     doc={'schema':DECISION_SCHEMA,'author':'Kevin','sample_id':row['sample_id'],
          'native_plan_sha256':plan['plan_sha256'],'policy':policy_binding,
          'rule_version':classifier.RULE_VERSION,'native_record_sha256':w.digest(record),
          'native_row_check':_binding(check),'raw':_binding(raw),'database':str(database),
          'attempt_id':row['attempt_id'],'payload_sha256':hashlib.sha256(payload.encode()).hexdigest(),
          'fields_sha256':w.fields_digest(row),'response_metadata_sha256':w.digest(response),
-         'decision':decision,'effective_outcome':'source_unavailable' if matched else record.get('collection_outcome'),
+         'decision':decision,'effective_explained_flags':sorted(explained),
+         'effective_outcome':'source_unavailable' if matched else record.get('collection_outcome'),
          'source_gap_kind':'source_unavailable_body_in_saved_response' if matched else None,
          'article_candidate':False if matched else record.get('collection_outcome')=='article_candidate',
          'native_qa_status':row['qa_status'],'native_error':row.get('error'),
@@ -129,9 +141,8 @@ def verify_decision(binding,record,policy_binding,cache=None):
     w.require(doc['effective_outcome']==('source_unavailable' if matched else record.get('collection_outcome')) and
               doc['article_candidate']==(False if matched else record.get('collection_outcome')=='article_candidate') and
               doc['research_status']==('NEEDS_JOAQUIN_REVIEW' if matched else None), 'Classification outcome/status changed')
-    if matched:
-        w.require(not record.get('critical_flags') and set(record.get('unexplained_flags',[]))<=EXPLAINED_FLAGS,
-                  'Classified history contains another unresolved anomaly')
+    explained=_explained_flags(actual,record) if matched else set()
+    w.require(doc['effective_explained_flags']==sorted(explained),'Effective explanation differs from recomputed source proof')
     if cache is not None:cache[key]=doc
     return doc
 
@@ -155,8 +166,9 @@ def trigger(history,bindings,policy_binding,current_row,cache):
             doc=verify_decision(bindings[record['sample_id']],record,policy_binding,cache)
             if record['sample_id']==current['sample_id']:current_doc=doc
             if doc['decision'].get('matched') is True:
-                item['unexplained_flags']=[x for x in item['unexplained_flags'] if x not in EXPLAINED_FLAGS]
-                item['unexplained_families']=[]  # Only the exact two explained flags were permitted.
+                explained=_explained_flags(doc['decision'],record)
+                item['unexplained_flags']=[x for x in item['unexplained_flags'] if x not in explained]
+                item['unexplained_families']=[]  # All remaining reasons were separately required to be explained.
         effective.append(item)
     if (current_row.get('error')=='missing_body' or 'missing_body' in current.get('automatic_flags',[])) and not current.get('recognized_video_only') and not (
             current_doc and current_doc['decision'].get('matched') is True):

@@ -19,17 +19,20 @@ from crawler_core import tiempo_empty_shell as rule
 
 
 def qualifying_case(title='A synthetic headline', slug='synthetic-empty-shell',
-                    published='2021-05-06T11:12:13', author='Test Author', sample_id='SYNTHETIC'):
+                    published='2021-05-06T11:12:13', author='Test Author', sample_id='SYNTHETIC', section='local'):
     """Return row, raw bytes, response and source-check for isolated integration."""
     d = datetime.fromisoformat(published)
     url = f'https://www.tiempo.com.mx/noticia/{slug}/'
-    canonical = f'https://www.tiempo.com.mx/local/{slug}/'
+    canonical = f'https://www.tiempo.com.mx/{section}/{slug}/'
     article = (Path(__file__).parent/'fixtures/tiempo_empty_shell_article.html').read_text()
     for before, after in {'TITLE_SLOT':html.escape(title),'SLUG_SLOT':slug,'AUTHOR_SLOT':html.escape(author),
             'DATE_SLOT':f'{d.day:02d} {rule._MONTHS[d.month-1]} {d.year}',
             'TIME_SLOT':f'{d.hour:02d}:{d.minute:02d}'}.items():
         article = article.replace(before, after)
     a = BeautifulSoup(article, 'html.parser')
+    breadcrumb = a.select_one('li.active a');breadcrumb['href']='/'+section+'/'
+    breadcrumb.string=rule.FEATURES['official_sections'][section]
+    for tag in a.select('.share-buttons a[data-link]'):tag['data-link']=canonical
     for tag in a.select('.share-buttons a'):
         for key in list(tag.attrs):
             if key not in {'href','title','target','onclick','data-link','data-text','class'}:
@@ -46,14 +49,15 @@ def qualifying_case(title='A synthetic headline', slug='synthetic-empty-shell',
     scripts = '<script type="application/ld+json">'+json.dumps(ld,ensure_ascii=False)+'</script>'
     scripts += ''.join('<script>'+v+'</script>' for v in rule.FEATURES['known_inline_scripts'].values())
     scripts += ''.join('<script src="'+v+'"></script>' for v in sorted(rule._EXTERNAL))
-    raw = ('<html><head>'+head+scripts+'</head><body><div id="main" class="article">'+str(a)+'</div></body></html>').encode()
+    nav='<nav id="menu">'+''.join(f'<a href="/{route}/">{label}</a>' for route,label in rule.FEATURES['official_sections'].items())+'</nav>'
+    raw = ('<html><head>'+head+scripts+'</head><body>'+nav+'<div id="main" class="article">'+str(a)+'</div></body></html>').encode()
     row = {'sample_id':sample_id,'url':url,'final_url':url,'canonical_url':canonical,'title':title,
         'authors':author,'date_published':published,'date_modified':published,'summary':None,'main_text':None,
         'error':'missing_body','qa_status':'error','status':200,'content_type':'text/html; charset=utf-8',
-        'publication_date_source':'jsonld.datePublished','date_conflict':None,'source_specific_error':None,
+        'publication_date_source':'jsonld.datePublished','date_conflict':None,'source_specific_error':None,'section':rule.FEATURES['official_sections'][section],
         'media_embeds':'[]','media_evidence':'[]','article_kind':'article','snapshot_sha256':hashlib.sha256(raw).hexdigest()}
     response = {'status':200,'final_url':url,'error':None,'curl_exit_code':0,'body_text_limit_exceeded':False,
-        'body_encoding':'utf-8','content_type':'text/html; charset=utf-8'}
+        'body_encoding':'utf-8','body_encoding_source':'http_charset','content_type':'text/html; charset=utf-8'}
     check = {'sample_id':sample_id,'url':url,'snapshot_sha256':row['snapshot_sha256'],
         'automatic_flags':['missing_body','unexplained_result_error','suspicious_very_short_body_review_only'],
         'critical_flags':[],'manual_review_status':'not_reviewed','source_markup_warnings':[],
@@ -76,6 +80,43 @@ def sidebar_poll(value='55.8', poll_id='12345'):
         f'style="width: {value}%; height:20px; background-color: #439646;">'
         f'<!-- span class="value">{value}% </span --><span class="">{value}% </span>'
         '</div></div></div></div></div>')
+
+
+def representation_case(slug='unseen-representation-fixture', sample_id='REPRESENTATION_SYNTHETIC', batch=None, published=None):
+    """In-memory derivative of bound339, no HTTP/permanent corpus fixture.
+
+    The real byte-parser encoding misdetection is content dependent. Preserve
+    that saved template but replace every article-identity slug, then recompute
+    the actual unchanged native checker instead of fabricating its flags.
+    """
+    from crawler_core.tiempo_continuous_source import diagnose
+    batch=Path(batch or os.environ['TIEMPO_EMPTY_SHELL_REAL_BATCH'])
+    with sqlite3.connect((batch/'pilot.sqlite').as_uri()+'?mode=ro&immutable=1',uri=True) as db:
+        row=json.loads(db.execute('SELECT payload_json FROM articles WHERE sample_id=?',('TC5_623467',)).fetchone()[0])
+        response=json.loads(db.execute('SELECT response_json FROM fetch_attempts WHERE sample_id=?',('TC5_623467',)).fetchone()[0])
+    raw=(batch/row['snapshot_path']).read_bytes()
+    if hashlib.sha256(raw).hexdigest()!=row['snapshot_sha256']:raise ValueError('External fixture snapshot changed')
+    original_slug=row['url'].strip('/').split('/')[-1]
+    raw=raw.replace(original_slug.encode(),slug.encode())
+    if published is not None:
+        old_date=datetime.fromisoformat(row['date_published']);new_date=datetime.fromisoformat(published)
+        raw=raw.replace(row['date_published'].encode(),published.encode())
+        raw=raw.replace(f'{old_date.day:02d} {rule._MONTHS[old_date.month-1]} {old_date.year}'.encode(),f'{new_date.day:02d} {rule._MONTHS[new_date.month-1]} {new_date.year}'.encode())
+        raw=raw.replace(old_date.strftime('%H:%M').encode(),new_date.strftime('%H:%M').encode())
+        raw=raw.replace(old_date.strftime('%H %M').encode(),new_date.strftime('%H %M').encode())
+        for key in ['date','date_published','date_modified']:row[key]=published
+        row['sample_metadata_json']='{}'
+    for key in ['url','final_url','canonical_url']:row[key]=row[key].replace(original_slug,slug)
+    row['sample_id']=sample_id;row['snapshot_sha256']=hashlib.sha256(raw).hexdigest()
+    row['snapshot_path']=row['raw_html_path']='representation_fixture.html';response['final_url']=row['url']
+    with tempfile.TemporaryDirectory() as tmp:
+        Path(tmp,row['snapshot_path']).write_bytes(raw)
+        check=diagnose(row,Path(tmp))
+    return row,raw,response,check
+
+
+def representation_transport_case(slug, published='2024-06-01T12:01:33', batch=None):
+    return representation_case(slug=slug,published=published,batch=batch)
 
 
 class EmptyShellTests(unittest.TestCase):
@@ -231,6 +272,43 @@ class EmptyShellTests(unittest.TestCase):
                 ('"@id": "synthetic-empty-shell"','"@id": "different-article"')]:
             with self.subTest(new=new):self.reject_html(lambda s:s.replace(old,new))
 
+    def test_source_section_and_entity_equivalence(self):
+        for section in rule.FEATURES['official_sections']:
+            case=qualifying_case(title='An "example" title',section=section)
+            raw=case[1].decode().replace('An \\"example\\" title','An &quot;example&quot; title').encode()
+            with self.subTest(section=section):
+                result=rule.classify_empty_article_shell(*rebind(case,raw))
+                self.assertTrue(result['matched'],result)
+                self.assertEqual(result['evidence']['explained_representation_flags'],[])
+
+    def test_source_section_and_title_representation_cannot_mask_conflicts(self):
+        for old,new in [('href="/local/">Local','href="/local/">Different Section'),
+                ('href="/local/">Local','href="/unknown/">Local'),
+                ('"headline": "A synthetic headline"','"headline": "A different headline"'),
+                ('<title>A synthetic headline','<title>A different headline'),
+                ('"synthetic-empty-shell"','"different-slug"')]:
+            with self.subTest(new=new):self.reject_html(lambda s:s.replace(old,new))
+        for key,value in [('section','Espectáculos'),('canonical_url','https://www.tiempo.com.mx/unknown/synthetic-empty-shell/')]:
+            case=copy.deepcopy(self.case);case[0][key]=value
+            with self.subTest(key=key):self.assertFalse(rule.classify_empty_article_shell(*case)['matched'])
+        for flag in ['visible_title_difference','source_title_metadata_disagreement']:
+            case=copy.deepcopy(self.case);case[3]['automatic_flags'].append(flag)
+            with self.subTest(flag=flag):self.assertFalse(rule.classify_empty_article_shell(*case)['matched'])
+        self.reject_html(lambda s:s.replace('</head>','<meta name="twitter:title" content="Different title"></head>'))
+
+    def test_dom_title_is_never_decoded_twice(self):
+        case=qualifying_case(title='A literal &quot; token')
+        self.assertTrue(rule.classify_empty_article_shell(*case)['matched'])
+        # In raw JSON-LD the literal visible entity needs an amp entity itself.
+        raw=case[1].replace(b'"headline": "A literal &quot; token"',b'"headline": "A literal &amp;quot; token"')
+        case=rebind(case,raw)
+        self.assertTrue(rule.classify_empty_article_shell(*case)['matched'])
+        text=raw.decode();start=text.index('<h1');end=text.index('</h1>',start)
+        text=text[:start]+text[start:end].replace('&amp;quot;','&quot;')+text[end:]
+        result=rule.classify_empty_article_shell(*rebind(case,text.encode()))
+        self.assertFalse(result['matched'],result)
+        self.assertIn('title_identity_mismatch',result['rejection_reasons'])
+
     def test_unhandled_research_or_technical_flag_is_not_waived(self):
         for flag in ['article_vs_discovery_day_difference','raw_visible_body_difference_requires_reading','non_html_response']:
             case=copy.deepcopy(self.case);case[3]['automatic_flags'].append(flag)
@@ -247,10 +325,10 @@ class EmptyShellTests(unittest.TestCase):
 
 @unittest.skipUnless(os.environ.get('TIEMPO_EMPTY_SHELL_REAL_BATCH'), 'Set the bound local batch explicitly; no online fixture retrieval.')
 class SavedSourceTests(unittest.TestCase):
-    def test_five_actual_saved_responses(self):
+    def test_eight_actual_saved_responses(self):
         batch=Path(os.environ['TIEMPO_EMPTY_SHELL_REAL_BATCH']);child=batch.parent.parent
         with sqlite3.connect((batch/'pilot.sqlite').as_uri()+'?mode=ro&immutable=1',uri=True) as db:
-            for sid in ['TC5_476522','TC5_501081','TC5_552341','TC5_560498','TC5_514287']:
+            for sid in ['TC5_476522','TC5_501081','TC5_552341','TC5_560498','TC5_514287','TC5_438720','TC5_557844','TC5_623467']:
                 row=json.loads(db.execute('SELECT payload_json FROM articles WHERE sample_id=?',(sid,)).fetchone()[0])
                 response=json.loads(db.execute('SELECT response_json FROM fetch_attempts WHERE sample_id=?',(sid,)).fetchone()[0])
                 raw=(batch/row['snapshot_path']).read_bytes();check=json.loads((child/'row_checks'/f'{sid}.json').read_text())['record']
@@ -258,6 +336,26 @@ class SavedSourceTests(unittest.TestCase):
                     self.assertEqual(hashlib.sha256(raw).hexdigest(),row['snapshot_sha256'])
                     result=rule.classify_empty_article_shell(row,raw,response,check)
                     self.assertTrue(result['matched'],result)
+
+    def test_representation_flags_require_actual_encoding_evidence(self):
+        from crawler_core.tiempo_continuous_source import fields_digest
+        case=representation_case();before=copy.deepcopy(case)
+        result=rule.classify_empty_article_shell(*case)
+        self.assertTrue(result['matched'],result)
+        self.assertEqual(set(result['evidence']['explained_representation_flags']),{'visible_title_difference','source_title_metadata_disagreement'})
+        self.assertEqual(case,before)
+        for field,value in [('body_encoding','latin-1'),('body_encoding_source','guessed'),('content_type','text/html; charset=latin-1')]:
+            bad=copy.deepcopy(case);bad[2][field]=value
+            with self.subTest(field=field):self.assertFalse(rule.classify_empty_article_shell(*bad)['matched'])
+        bad=copy.deepcopy(case);bad[3]['fields_sha256']='0'*64
+        self.assertFalse(rule.classify_empty_article_shell(*bad)['matched'])
+        bad=rebind(case,case[1].replace(b'</html>',b'\xff</html>'));bad[3]['fields_sha256']=fields_digest(bad[0])
+        self.assertFalse(rule.classify_empty_article_shell(*bad)['matched'])
+        for before,after in [(b'&quot;serie&quot;',b'&quot;Different story&quot;'),
+                (b'</head>',b'<meta property="og:title" content="Different story"></head>'),
+                (b'<p> </p>',b'<p>A real source body was omitted.</p>')]:
+            bad=rebind(case,case[1].replace(before,after));bad[3]['fields_sha256']=fields_digest(bad[0])
+            with self.subTest(after=after):self.assertFalse(rule.classify_empty_article_shell(*bad)['matched'])
 
 
 if __name__=='__main__':unittest.main()

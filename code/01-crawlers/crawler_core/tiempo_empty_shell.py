@@ -8,6 +8,7 @@ the finding is limited to the saved static response, never historical absence.
 from __future__ import annotations
 
 import hashlib
+import html as html_entities
 import json
 import re
 from datetime import datetime
@@ -16,13 +17,14 @@ from urllib.parse import urlsplit
 
 from bs4 import BeautifulSoup, Comment
 
-RULE_VERSION = 'tiempo-verified-static-empty-shell-v3'
+RULE_VERSION = 'tiempo-verified-static-empty-shell-v4'
 FEATURE_PATH = Path(__file__).with_name('tiempo_empty_shell_features.json')
 _FEATURE_BYTES = FEATURE_PATH.read_bytes()
 FEATURES = json.loads(_FEATURE_BYTES)
 FEATURE_SHA256 = hashlib.sha256(_FEATURE_BYTES).hexdigest()
 CLASSIFICATION = 'source_unavailable_body_in_saved_response'
 _ALLOWED_FLAGS = {'missing_body', 'unexplained_result_error', 'suspicious_very_short_body_review_only'}
+_REPRESENTATION_FLAGS = {'visible_title_difference','source_title_metadata_disagreement'}
 _EXTERNAL = {'https://static.tiempo.com.mx/assets/htmx.min-1.js',
              'https://static.tiempo.com.mx/assets/periodico/application.js'}
 _MONTHS = ('Enero Febrero Marzo Abril Mayo Junio Julio Agosto Septiembre Octubre Noviembre Diciembre').split()
@@ -31,6 +33,23 @@ _CSS = '.video-container { max-width: 100%; max-height: 600px; margin: 0 auto; d
 
 def _norm(text):
     return re.sub(r'\s+', ' ', str(text or '')).strip()
+
+
+def _title(text):
+    # DOM attributes/text and native values have already been HTML-decoded.
+    return _norm(text)
+
+
+def _jsonld_title(text):
+    # Only raw JSON-LD has the observed remaining source entity representation.
+    return _norm(html_entities.unescape(str(text or '')))
+
+
+def _source_jsonld_title(text, expected):
+    # Preserve a literal entity spelling when the independent DOM/native
+    # channels use that same spelling. Decode once only as a fallback.
+    value = _norm(text)
+    return value if value == _title(expected) else _jsonld_title(value)
 
 
 def _sha(value):
@@ -42,7 +61,7 @@ def _identity(url):
     if p.scheme not in {'http', 'https'} or p.hostname not in {'tiempo.com.mx', 'www.tiempo.com.mx'} or p.username or p.password or p.query or p.fragment or p.port not in (None, 80, 443):
         raise ValueError('unrecognized_article_identity')
     parts = p.path.strip('/').split('/')
-    if len(parts) != 2 or not all(parts) or parts[0] not in {'noticia', 'local'}:
+    if len(parts) != 2 or not all(parts) or parts[0] not in {'noticia', *FEATURES['official_sections']}:
         raise ValueError('unrecognized_article_route')
     return parts[-1]
 
@@ -61,17 +80,17 @@ def article_structure(article, row):
     nodes = [article, *article.find_all(True)]
     positions = {id(node): i for i, node in enumerate(nodes)}
     result = []
-    title_words = set(_norm(row['title']).lower().split())
+    title_words = set(_title(row['title']).lower().split())
     for node in nodes:
         attrs = dict(node.attrs)
         share = node.find_parent('ul', class_='share-buttons')
         if share and node.name == 'a':
             # The inspected source has malformed unquoted title-word attributes.
             for key in list(attrs):
-                if key not in {'href','title','target','onclick','data-link','data-text','class'} and attrs[key] == '' and key in title_words:
+                if key not in {'href','title','target','onclick','data-link','data-text','class'} and attrs[key] == '' and html_entities.unescape(key) in title_words:
                     del attrs[key]
             for key in ('title','data-text'):
-                if _norm(attrs.get(key)) == _norm(row['title']):
+                if _title(attrs.get(key)) == _title(row['title']):
                     attrs[key] = 'TITLE_SLOT'
             if attrs.get('data-link') == row['canonical_url']:
                 attrs['data-link'] = 'CANONICAL_SLOT'
@@ -82,6 +101,10 @@ def article_structure(article, row):
             attrs['href'] = 'AD_CLICK_SLOT'
         if node.name == 'img' and attrs.get('src','').startswith('https://ads.tiempo.com.mx/uploads/banners/'):
             attrs['src'] = 'AD_IMAGE_SLOT'
+        if node.name == 'a' and node.find_parent('ol', class_='breadcrumb'):
+            route = urlsplit(row['canonical_url']).path.strip('/').split('/')[0]
+            if attrs == {'href':'/'+route+'/'} and _norm(node.get_text()) == FEATURES['official_sections'].get(route):
+                attrs['href'] = 'SECTION_SLOT'
         result.append([node.name, positions.get(id(node.parent), -1), attrs])
     return result
 
@@ -176,7 +199,7 @@ def classify_empty_article_shell(row, html_bytes, response_metadata, source_chec
     evidence = {'scope': 'saved_static_response_only', 'native_result_unchanged': True,
                 'human_approval': False, 'article_acceptance': False,
                 'research_status': 'NEEDS_JOAQUIN_REVIEW',
-                'feature_sha256': FEATURE_SHA256}
+                'feature_sha256': FEATURE_SHA256, 'explained_representation_flags': []}
 
     def need(ok, reason):
         if not ok:
@@ -192,13 +215,15 @@ def classify_empty_article_shell(row, html_bytes, response_metadata, source_chec
         need(source_check.get('sample_id') == row.get('sample_id') and source_check.get('url') == row.get('url'), 'rowcheck_identity_mismatch')
         need(row.get('error') == 'missing_body' and row.get('qa_status') == 'error' and row.get('main_text') is None and row.get('summary') is None, 'not_native_null_missing_body')
         need(not row.get('source_specific_error') and not row.get('date_conflict') and not source_check.get('critical_flags'), 'source_identity_date_or_access_flag')
-        need(set(source_check.get('automatic_flags', [])) <= _ALLOWED_FLAGS and 'missing_body' in source_check.get('automatic_flags', []), 'unrelated_source_check_flag')
+        observed_representation_flags = set(source_check.get('automatic_flags', [])) & _REPRESENTATION_FLAGS
+        need(set(source_check.get('automatic_flags', [])) <= _ALLOWED_FLAGS | _REPRESENTATION_FLAGS and 'missing_body' in source_check.get('automatic_flags', []), 'unrelated_source_check_flag')
         need(not source_check.get('source_markup_warnings') and not source_check.get('outside_body_scope_evidence'), 'unexplained_source_markup')
         need(not source_check.get('recognized_video_only'), 'recognized_video_uses_existing_rule')
         need(row.get('status') == 200 and response_metadata.get('status') == 200 and response_metadata.get('curl_exit_code') == 0 and response_metadata.get('error') is None and response_metadata.get('body_text_limit_exceeded') is False, 'incomplete_or_failed_transport')
         need(response_metadata.get('final_url') == row.get('final_url') == row.get('url'), 'unexpected_transport_redirect')
         need('html' in str(response_metadata.get('content_type', '')).lower() and 'html' in str(row.get('content_type', '')).lower(), 'non_html_response')
         need(response_metadata.get('body_encoding', '').lower() == 'utf-8', 'unknown_response_encoding')
+        need(all(re.search(r'(?:^|;)\s*charset\s*=\s*[\"\']?utf-8(?:[\"\']?(?:;|\s*$))', str(v), re.I) for v in [row.get('content_type'), response_metadata.get('content_type')]), 'unbound_utf8_content_type')
         html = html_bytes.decode('utf-8', errors='strict')
         need(html.rstrip().lower().endswith('</html>') and '</body>' in html.lower(), 'incomplete_html_envelope')
         need(not re.search(r'cf-chl-|captcha|access denied|verify you are human|checking your browser', html, re.I), 'access_challenge_marker')
@@ -238,6 +263,16 @@ def classify_empty_article_shell(row, html_bytes, response_metadata, source_chec
         if len(articles) != 1:
             raise ValueError('missing_unique_article')
         a = articles[0]
+        route = urlsplit(row['canonical_url']).path.strip('/').split('/')[0]
+        section = FEATURES['official_sections'].get(route)
+        breadcrumbs = a.select('header ol.breadcrumb li.active a')
+        navs = s.select('nav#menu')
+        navlinks = navs[0].select('a[href="/'+route+'/"]') if len(navs) == 1 else []
+        need(section is not None and len(breadcrumbs) == len(navlinks) == 1
+             and breadcrumbs[0].attrs == {'href':'/'+route+'/'}
+             and _norm(breadcrumbs[0].get_text()) == _norm(navlinks[0].get_text()) == section
+             and row.get('section') == section, 'unverified_source_section_identity')
+        evidence['source_section_identity'] = {'canonical_route':route,'official_label':section}
         for alternate in s.select('[itemprop~="articleBody"],.article-content,.article-body,#article-body,#article-content'):
             need(alternate is a or any(parent is a for parent in alternate.parents), 'alternate_article_body_outside_primary_scope')
         need(','.join(x.name for x in a.find_all(True)) == FEATURES['article_tag_shape'], 'unknown_article_tag_structure')
@@ -248,10 +283,10 @@ def classify_empty_article_shell(row, html_bytes, response_metadata, source_chec
         if len(headers) != 1 or len(leads) != 1 or len(bodies) != 1:
             raise ValueError('missing_unique_title_lead_body')
         title, lead, body = headers[0], leads[0], bodies[0]
-        need(_norm(title.get_text(' ', strip=True)) == _norm(row['title']), 'title_identity_mismatch')
-        need(_norm(s.title.get_text()) == _norm(row['title']) if s.title else False, 'document_title_mismatch')
+        need(_title(title.get_text(' ', strip=True)) == _title(row['title']), 'title_identity_mismatch')
+        need(_title(s.title.get_text()) == _title(row['title']) if s.title else False, 'document_title_mismatch')
         channels = s.select('meta[property="og:title"],meta[name="twitter:title"]')
-        need(bool(channels) and all(_norm(x.get('content')) == _norm(row['title']) for x in channels), 'title_metadata_mismatch')
+        need(bool(channels) and all(_title(x.get('content')) == _title(row['title']) for x in channels), 'title_metadata_mismatch')
         canonical = s.select('link[rel="canonical"]')
         need(len(canonical) == 1 and canonical[0].get('href') == row['canonical_url'], 'canonical_source_mismatch')
         ogurls = s.select('meta[property="og:url"]')
@@ -268,7 +303,38 @@ def classify_empty_article_shell(row, html_bytes, response_metadata, source_chec
         allowed_ld = {'@context', '@type', 'headline', 'datePublished', 'dateModified', 'description', 'keywords', 'articleSection', 'articleBody', 'isAccessibleForFree', 'publisher', 'mainEntityOfPage', 'author', 'image'}
         need(isinstance(j, dict) and set(j) <= allowed_ld and j.get('@type') == 'NewsArticle', 'unknown_jsonld_structure')
         need(isinstance(j.get('articleBody'), str) and not _norm(j['articleBody']) and not _norm(j.get('description')), 'jsonld_contains_prose')
-        need(_norm(j.get('headline')) == _norm(row['title']) and j.get('datePublished') == published and j.get('dateModified') == row.get('date_modified'), 'jsonld_identity_or_date_mismatch')
+        need(_source_jsonld_title(j.get('headline'),row['title']) == _title(row['title']) and j.get('datePublished') == published and j.get('dateModified') == row.get('date_modified'), 'jsonld_identity_or_date_mismatch')
+        if observed_representation_flags:
+            from crawler_core.tiempo_continuous_source import fields_digest
+            need(source_check.get('fields_sha256') == fields_digest(row), 'representation_native_field_binding_mismatch')
+            need(response_metadata.get('body_encoding_source') == 'http_charset', 'representation_encoding_evidence_missing')
+            old = BeautifulSoup(html_bytes, 'html.parser')
+            old_heading = old.select('article#article-post header h1')
+            old_ld = old.select('script[type="application/ld+json"]')
+            need(len(old_heading) == len(old_ld) == 1, 'unreproducible_native_title_structure')
+            reproduced = set()
+            if len(old_heading) == len(old_ld) == 1:
+                if _norm(old_heading[0].get_text(' ',strip=True)) != _norm(row['title']):
+                    reproduced.add('visible_title_difference')
+                old_json = json.loads(old_ld[0].get_text(),strict=False)
+                # Exactly reproduce the unchanged native check, including its
+                # own single unescape. This is explanatory evidence only.
+                old_channels = [_jsonld_title(x.get('content')) for x in old.select('meta[property="og:title"],meta[name="twitter:title"]')]
+                old_channels += [_jsonld_title(old.title.get_text())] if old.title else []
+                old_channels += [_jsonld_title(old_json.get('headline'))]
+                if any(v and v != _jsonld_title(row['title']) for v in old_channels):
+                    reproduced.add('source_title_metadata_disagreement')
+            strict_channels = [_title(title.get_text(' ',strip=True)),_title(s.title.get_text()) if s.title else '',_source_jsonld_title(j.get('headline'),row['title'])]
+            strict_channels += [_title(x.get('content')) for x in channels]
+            strict_agrees = all(v == _title(row['title']) for v in strict_channels)
+            proven = strict_agrees and reproduced == observed_representation_flags and old.original_encoding not in (None,'utf-8','utf8')
+            need(proven, 'unexplained_title_representation_flags')
+            evidence['representation_validation'] = {'strict_utf8_channels_agree':strict_agrees,
+                'old_byte_parser_encoding':old.original_encoding,'reproduced_native_flags':sorted(reproduced),
+                'native_fields_sha256':source_check.get('fields_sha256'),'raw_jsonld_entity_decode_passes':int(_norm(j.get('headline')) != _title(row['title'])),
+                'additional_dom_entity_decode_passes':0}
+            if proven:
+                evidence['explained_representation_flags'] = sorted(observed_representation_flags)
         author = j.get('author')
         need(j.get('mainEntityOfPage') == {'@type': 'WebPage', '@id': slug}
              and isinstance(author, dict) and set(author) == {'@type','name'}

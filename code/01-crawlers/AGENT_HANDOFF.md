@@ -2236,3 +2236,16 @@ TC5_438720, with64 new URLs to the pending400 gate. Earlier source reads do not
 replace that gate. Consult the authoritative locator and actual process evidence
 before asserting this successor is prepared or running. Previous worktrees and
 technical stops remain protected; never use an old halt as a normal pause.
+
+
+## 2026-10-12 Source representation successor (in preparation)
+
+Author: Kevin. Current protected donor is Remaining_Source_Author_Classification_20261012,
+stopped at339 with339 closed calls.337 and338 matched the existing source-missing
+rule and continued;339 added category/title checks. Actual saved source read
+found UTF-8/byte-guessing and entity representations, not omitted news prose.
+The isolated successor preserves native checker/parser outputs and derives
+only evidence-bound representation explanations. Runtime source checks are not
+silently rewritten. Require tests and independent review; next340 TC5_603201,
+61 new requests to400, then real AI source gate. Old native review statuses and
+all stops remain. The locator and actual process evidence determine live state.

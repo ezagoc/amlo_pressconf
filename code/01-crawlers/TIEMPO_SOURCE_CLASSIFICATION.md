@@ -37,9 +37,9 @@ stop. Existing verified short/video retention, service limits, spacing, retries,
 disk reserve and actual AI gates remain in force.
 
 Offline recovery must verify existing donor files before creating any recovery
-export. Use a disjoint successor, preserving the donor's 336 saved results and
+export. Use a disjoint successor, preserving the donor's 339 saved results and
 closed calls exactly once, its halt, prior recovery lineage and pending duties.
-Original child65 position337 is the first new request. Another64 requests reach
+Original child65 position340 is the first new request. Another61 requests reach
 400 and complete the existing 80-row batch. Save/readback verification and the
 real 400-row AI gate must precede position401. No investigation note substitutes
 for this gate.
@@ -74,3 +74,17 @@ results are unchanged. This is not author inference, a person whitelist or
 permission to ignore different names. The successor preserves the336-result
 donor and its original rejected decision, verifies it under its own frozen code,
 and starts at337 only after formal offline preparation and independent review.
+
+A later preserved stop at339 exposed source-representation differences. Native
+byte-guessing interpreted a valid UTF-8 Spanish headline as another encoding.
+The source uses an entertainment section and HTML entities in JSON-LD. A new
+derived rule may explain only specifically reproduced false title flags when
+strict UTF-8 decoding is bound to the saved transport metadata and all decoded
+headline channels agree with the native article. Actual title differences remain
+blocking. Section identity must match frozen source navigation evidence, current
+navigation, canonical, breadcrumb and article identity; an arbitrary route is
+not permitted. Entity normalization is for comparison, never source rewriting.
+Native checker output, failures, null bodies and previous decisions remain
+unchanged. The policy records exactly which representation flags its evidence
+explains; it does not globally exempt title conflicts. The pending400 gate remains
+required. Consult runtime/tests/independent evidence before claiming deployment.

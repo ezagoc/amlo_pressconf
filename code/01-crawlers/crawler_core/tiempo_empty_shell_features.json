@@ -251,7 +251,7 @@
       "a",
       15,
       {
-        "href": "/local/"
+        "href": "SECTION_SLOT"
       }
     ],
     [
@@ -1082,5 +1082,18 @@
         ]
       }
     ]
-  ]
+  ],
+  "official_sections": {
+    "local": "Local",
+    "nacional": "Nacional",
+    "opinion": "Opinión",
+    "cronos": "Cronos",
+    "espectaculos": "Espectáculos",
+    "economia": "Economía",
+    "deportes": "Deportes",
+    "cultura": "Cultura",
+    "internacional": "Internacional",
+    "tecnologia": "Tecnología",
+    "crealo": "Créalo"
+  }
 }
