@@ -38,7 +38,7 @@ def code_binding():
     return {**w.program_hashes(), **{n: sha(base / n) for n in (
         'tiempo_remaining_campaign.py', 'tiempo_resumable_worker.py', 'tiempo_stage_review.py',
         'tiempo_connection_recovery.py', 'tiempo_review_recovery.py', 'tiempo_review_publish.py',
-        'tiempo_source_gap_recovery.py', 'tiempo_empty_shell.py', 'tiempo_empty_shell_features.json',
+        'tiempo_source_gap_recovery.py', 'tiempo_empty_shell.py', 'tiempo_empty_shell_features.json', 'tiempo_source_encoding.py',
         'tiempo_source_classification_policy.py', 'tiempo_source_classification_recovery.py')},
         'remaining_cli': sha(base.parent / 'scripts/run_tiempo_remaining.py'),
         'review_publish_cli': sha(base.parent / 'scripts/publish_tiempo_review_receipt.py'),
@@ -137,28 +137,36 @@ def _verify_gate_event(entry):
     return coverage
 
 
-def _inherited_gate(m, index, rows):
-    """Return only an explicitly bound prior reading, never an inferred approval."""
-    recovery = m.get('connection_recovery', {})
-    matches = [e for e in recovery.get('inherited_checkpoint_gates', [])
-               if e['index'] == index and e['rows'] == rows]
-    require(len(matches) <= 1, 'Duplicate inherited checkpoint gate')
-    if not matches:
-        return None
-    gate = matches[0]
-    require(index == recovery['child_index'] and gate['kind'] == 'checkpoint_gate_satisfied' and
+def _inherited_gate_binding(m, index, rows):
+    """Only one explicitly bound recovery may supply this old reading."""
+    matches=[]
+    for name in ('connection_recovery','source_classification_recovery'):
+        recovery=m.get(name,{})
+        matches.extend((recovery,e) for e in recovery.get('inherited_checkpoint_gates',[])
+                       if e['index']==index and e['rows']==rows)
+    require(len(matches)<=1,'Duplicate inherited checkpoint gate')
+    if not matches:return None
+    recovery,gate=matches[0]
+    require(index==recovery['child_index'] and gate['kind']=='checkpoint_gate_satisfied' and
             gate.get('human_approval') is False and gate.get('article_acceptance') is False,
             'Wrong inherited checkpoint identity or approval scope')
     _verify_gate_event(gate)
-    return gate
+    return recovery,gate
+
+
+def _inherited_gate(m, index, rows):
+    match=_inherited_gate_binding(m,index,rows)
+    return match[1] if match else None
 
 
 def _verify_inherited_gate_event(m, entry):
-    original = _inherited_gate(m, entry['index'], entry['rows'])
-    require(original is not None and entry.get('inherited_event_sha256') == original['event_sha256'] and
-            entry.get('recovery_provenance') == m['connection_recovery']['provenance'] and
-            entry['selection'] == original['selection'] and entry['coverage'] == original['coverage'] and
-            entry.get('new_actual_ai_read_count') == 0 and entry.get('human_approval') is False,
+    match=_inherited_gate_binding(m,entry['index'],entry['rows'])
+    require(match is not None,'Inherited checkpoint has no supported recovery binding')
+    recovery,original=match
+    require(entry.get('inherited_event_sha256')==original['event_sha256'] and
+            entry.get('recovery_provenance')==recovery['provenance'] and
+            entry['selection']==original['selection'] and entry['coverage']==original['coverage'] and
+            entry.get('new_actual_ai_read_count')==0 and entry.get('human_approval') is False,
             'Inherited checkpoint marker differs from bound historical reading')
 
 
@@ -496,9 +504,20 @@ def run(root, *, allow_network=False, resume=False, fetcher=None, clock=time.tim
             # arriving during those checks still cause a normal pause.
             ack.update(pending)
             event(root,'resume_acknowledgment',pause_request_ids=sorted(pending),evidence=[initial_requests[r] for r in sorted(pending)])
-        previous_gates=[e for e in ev if e['kind']=='checkpoint_gate_satisfied']
-        history=([{'coverage':previous_gates[-1]['coverage']['path'],'sha256':previous_gates[-1]['coverage']['sha256']}]
-                 if previous_gates else list(m['historical_ai_receipts']))
+        try:
+            previous_gates=_checkpoint_gate_events(m,ev)
+            # An interruption after the first inherited marker must not regress
+            # history below a later gate already bound in recovery provenance.
+            for recovery_name in ('connection_recovery','source_classification_recovery'):
+                for inherited in m.get(recovery_name,{}).get('inherited_checkpoint_gates',[]):
+                    gate=_inherited_gate(m,inherited['index'],inherited['rows'])
+                    if not any((e['index'],e['rows'])==(gate['index'],gate['rows']) for e in previous_gates):
+                        previous_gates.append(gate)
+            previous_gates.sort(key=lambda e:(e['index'],e['rows']))
+            history=([{'coverage':previous_gates[-1]['coverage']['path'],'sha256':previous_gates[-1]['coverage']['sha256']}]
+                     if previous_gates else list(m['historical_ai_receipts']))
+        except Exception as exc:
+            return _technical_stop(root,'checkpoint_history_invalid',detail=type(exc).__name__+': '+str(exc))
         event(root,'run_started',baseline_saved=m['baseline_saved'],new_saved=saved,new_calls=calls)
         with worker.graceful_signals(controller):
             try:
@@ -559,7 +578,7 @@ def run(root, *, allow_network=False, resume=False, fetcher=None, clock=time.tim
                                 event(root,'checkpoint_gate_inherited',index=index,rows=n,
                                       selection=inherited['selection'],coverage=inherited['coverage'],
                                       inherited_event_sha256=inherited['event_sha256'],
-                                      recovery_provenance=recovery['provenance'],new_actual_ai_read_count=0,
+                                      recovery_provenance=_inherited_gate_binding(m,index,n)[0]['provenance'],new_actual_ai_read_count=0,
                                       new_saved=before_saved+counts['saved'],new_calls=before_calls+counts['calls'])
                             # Do not roll latest inherited (or newly sealed) history
                             # backwards while replaying earlier 400/800 checkpoints.

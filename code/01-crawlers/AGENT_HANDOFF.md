@@ -2287,3 +2287,36 @@ availability/content validation. The isolated derived classification must preser
 the reference, all native failures and pending research/400 duties; never imply
 media absence or complete successful extraction. Next376 TC5_638335,25 to400.
 Use actual test, prepared-copy and process evidence before claiming recovery.
+
+## 2026-10-12 Bound UTF-8 diagnostic recovery at659 (offline validation)
+
+Author: Kevin. The static-image successor reached the actual400 gate:381 selected
+sources were actually read, and original401 began after the gate. It later stopped
+at659 TC5_73693 with661 closed calls. Contributors595 TC5_509968,629 TC5_521168 and
+659 contain intact source prose; the byte-fed independent diagnostic guessed
+legacy encodings despite explicit HTTP/HTML UTF-8 and strictly decodable bytes.
+Native extraction, original row checks, request history and stop evidence stay
+unchanged. A separate bound correction reuses the unchanged diagnostic against
+the exact response with evidence-based decoding. This is an explicit derived
+stop-assessment change, not a source-gap exemption or article/human approval.
+Unknown identity, dynamic content, charset conflicts, incomplete responses and
+real text differences reject the correction. Malformed generic title metadata
+and unviewed images remain sourced research issues; no image text is invented.
+
+The exact659/661 successor must preserve the prior actual400 coverage with zero
+new reading credit, continue at660 TC5_124998, and require the actual800 gate.
+Native program/plan/rows/checks stay byte-bound; the new encoding helper and
+policy are independently frozen. Consult current PROJECT_MEMORY, RUN_LOCATION,
+verification and actual process state before any start; this note is not proof
+that preparation or live recovery occurred. Do not run a donor technical stop.
+
+Kevin's latest quota instruction replaces the former7percent threshold with
+strictly less than5percent remaining in any valid main Codex usage window
+(100-usedPercent). Check at actual work nodes, before large AI readings and
+existing collection/review checkpoints. Unknown readings may be retried once;
+still unknown means no expansion or claim of sufficient quota. Credits and reset
+coupons are not main quota. On a trigger use the existing safe-pause interface
+immediately, then verify saved/readback/breakpoint, no open request and process
+exit. Preserve existing technical stops and pending readings. A quota-triggered
+pause requires explicit new user instruction to resume, even after quota resets.
+No continuous quota monitor or hourly automation is installed or implied.

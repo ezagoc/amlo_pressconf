@@ -1,10 +1,11 @@
-"""Kevin: preserve the exact stopped375 prefix and version the feature policy.
+"""Kevin: preserve the exact stopped659 prefix and version the feature policy.
 
 The donor and all native records/plans/checks stay unchanged. The separately
 bound classifier explains source gaps by evidence, never by sample-ID whitelist.
 """
 from pathlib import Path
 import argparse
+import hashlib
 import json
 import shutil
 import subprocess
@@ -17,12 +18,14 @@ from . import tiempo_connection_recovery as connection
 from . import tiempo_source_gap_recovery as previous
 from . import tiempo_source_classification_policy as policy
 
-SCHEMA='tiempo-source-classification-successor-v7'
-PRODUCTION={'expected_child_index':65,'expected_saved':375,'expected_calls':375,
-    'next_sample_id':'TC5_638335',
-    'donor_campaign_sha256':'80b8677b52bc0aa7701a8f741fc4c3566c7c02840b66dca634a2f3ef4fd8bb09',
-    'donor_master_halt_sha256':'607421f6a0b893dd5cfcf02deca94f3188a0df7479a486a429d9e0f40d6515c4',
-    'donor_native_halt_sha256':'c01d3c60465d52d9b33dff634fce5a27ca5110ba9597b240d24aad1d0c87288b'}
+SCHEMA='tiempo-source-classification-successor-v8'
+PRODUCTION={'expected_child_index':65,'expected_saved':659,'expected_calls':661,
+    'next_sample_id':'TC5_124998',
+    'donor_campaign_sha256':'0d4b461aa1599926b462efd70430f75737f34d7e0ce151ee8972ea0a48cda0b4',
+    'donor_master_halt_sha256':'68164edb0ddf37638af77dcefe0266afe123bad1a6b03eabb9b2211fa24a4495',
+    'donor_native_halt_sha256':'1874a9a08e2d3297de5b19c936136642c14f05d02010e4982610e6dcb12382d4'}
+PRODUCTION_SOURCE_IDS=('TC5_509968','TC5_521168','TC5_73693')
+
 PREFIX_KEYS=('prefix_payload_sha256','prefix_attempts_sha256','prefix_articles_sha256')
 
 # A changed helper cannot validate an old versioned policy in-process. The
@@ -55,6 +58,33 @@ def _verify_prior_classification(old, code_root):
     return expected
 
 
+def _source_review(cfg,child,prefix):
+    """Bind the three investigated saved sources; never award gate-reading credit."""
+    c._verify(cfg['source_review']);review=w.load(cfg['source_review']['path'])
+    w.require(review.get('author')=='Kevin' and review.get('human_approval') is False and
+              review.get('article_acceptance') is False and review.get('new_checkpoint_reading_credit')==0,
+              'Source investigation cannot assert new checkpoint or human approval')
+    entries=review.get('records',[]);ids=[x['sample_id'] for x in entries]
+    expected=list(PRODUCTION_SOURCE_IDS) if not cfg.get('synthetic_fixture') else cfg['source_sample_ids']
+    w.require(ids==expected and len(ids)==len(set(ids)),'Source investigation does not match the exact fault set')
+    saved={x['row']['sample_id']:x for x in prefix['rows']};result=[]
+    for item in entries:
+        sid=item['sample_id'];w.require(sid in saved,'Investigated source is outside saved prefix')
+        native=saved[sid];row=native['row'];batch=child/'batches'/native['batch_id']
+        raw=batch/row['snapshot_path'];check=child/'row_checks'/(sid+'.json')
+        w.require(item['raw']==c._bound(raw) and item['native_row_check']==c._bound(check) and
+                  item['raw']['sha256']==row['snapshot_sha256'],'Source investigation does not bind original raw and diagnostic')
+        c._verify(item['reading_evidence']);record=w.load(check)['record']
+        w.require(record['sample_id']==sid and record['fields_sha256']==w.fields_digest(row) and
+                  record.get('unexplained_flags') and row.get('main_text') and not row.get('error'),
+                  'Investigated text source/native flags differ')
+        # Payload digest uses the exact stored string rather than reserialization.
+        ordinal=[x['row']['sample_id'] for x in prefix['rows']].index(sid)
+        result.append({**item,'payload_sha256':hashlib.sha256(prefix['payloads'][ordinal].encode()).hexdigest(),
+                       'fields_sha256':record['fields_sha256'],'attempt_id':row['attempt_id']})
+    return result
+
+
 def _read_donor(cfg):
     donor=Path(cfg['donor_root']).resolve()
     w.require(w.sha_file(donor/'campaign.json')==cfg['donor_campaign_sha256'],'Donor campaign changed')
@@ -63,7 +93,7 @@ def _read_donor(cfg):
               bool(cfg.get('synthetic_fixture'))==old['synthetic_fixture'],'Wrong donor identity/type')
     if not old['synthetic_fixture']:
         w.require(all(cfg.get(k)==v for k,v in PRODUCTION.items()) and old.get('source_classification_recovery'),
-                  'Only the authorized375 source-classification recovery is supported')
+                  'Only the authorized659 source-classification recovery is supported')
     code=connection._donor_code_binding(cfg['donor_code_root'],old['program_sha256'])
     for key in ('config_source','preflight','prepared_manifest','source_context','source_ledger','registry','obligations','queue'):
         c._verify(old[key])
@@ -84,7 +114,8 @@ def _read_donor(cfg):
               w.sha_file(child/'safety_halt.json')==cfg['donor_native_halt_sha256'],'Donor specific halt changed')
     halt=w.load(child/'safety_halt.json');state=w.load(child/'continuous_state.json');master=w.load(donor/'technical_stop.json')
     queue=w.readcsv(child/'queue.csv')
-    expected_reason='unclassified_source_gap' if old.get('source_classification_recovery') else 'two_consecutive_same_family_anomalies'
+    expected_reason=('three_unexplained_rows_in_rolling80' if not old['synthetic_fixture'] else
+                     cfg.get('expected_halt_reason','unclassified_source_gap' if old.get('source_classification_recovery') else 'two_consecutive_same_family_anomalies'))
     w.require(halt['reason']==expected_reason and
               halt['sample_id']==queue[cfg['expected_saved']-1]['sample_id'] and
               queue[cfg['expected_saved']]['sample_id']==cfg['next_sample_id'] and
@@ -106,6 +137,8 @@ def _read_donor(cfg):
     prefix=worker.inherited_prefix_evidence(child,plan,cfg['expected_saved'])
     w.require(prefix['total_rows']==cfg['expected_saved'],'Donor prefix count differs')
     connection._verified_inherited_gates(old,events,index,cfg['expected_saved'])
+    if not old['synthetic_fixture'] or cfg.get('source_review'):
+        _source_review(cfg,child,prefix)
     return old,events,done,context,closed_saved,closed_calls,child,plan,prefix,code
 
 
@@ -116,10 +149,13 @@ def prepare(config_path):
     w.require(not root.exists() and root!=donor and root not in donor.parents and donor not in root.parents,
               'New disjoint source-classification runtime required')
     old,events,done,context,closed_saved,closed_calls,source,plan,prefix,code=_read_donor(cfg)
-    index=cfg['expected_child_index'];predecessor=Path(context['history_index']['path']).parent
+    index=cfg['expected_child_index'];inherited_gates=connection._verified_inherited_gates(old,events,index,cfg['expected_saved'])
+    predecessor=Path(context['history_index']['path']).parent
     inventory={str(p):w.sha_file(p) for p in connection._files(source)}
     controls=[donor/'campaign.json',donor/'status.json',donor/'technical_stop.json',donor/'Inherited_Review_Obligations.json']
     controls+=sorted((donor/'events').glob('*.json'))
+    for gate in inherited_gates:controls += [Path(gate[key]['path']) for key in ('selection','coverage')]
+    if cfg.get('source_review'):controls.append(Path(cfg['source_review']['path']))
     if old.get('source_gap_recovery'):
         controls += [Path(old['source_gap_recovery'][key]['path']) for key in ('provenance','acknowledgment')]
     prior_decisions=[]
@@ -145,7 +181,7 @@ def prepare(config_path):
                   'Prior pending-review obligation changed')
         if str(p) not in seen:pending.append({**c._bound(p),'rows':summary['pending_source_review_sample_count'],'summary':c._bound(summary_path)})
     obligations['native_pending_file_bindings']=pending
-    obligations['source_classification_policy_change']='Strict feature-recognized empty article shells receive a separate source_unavailable outcome; native error, original flags and all required actual AI samples remain. Unclassified missing-body candidates stop immediately.'
+    obligations['source_classification_policy_change']='Strict UTF-8 representation corrections retain native text, errors and flags and remain separate article candidates, never source gaps; prior actual AI gates are inherited with zero new reading credit. Strict feature-recognized empty article shells receive a separate source_unavailable outcome; native error, original flags and all required actual AI samples remain. Unclassified missing-body candidates stop immediately.'
     pre={**oldpre,'source_runtime':str(predecessor),'review_obligations':obligations,
         'source_bindings':{**oldpre['source_bindings'],'completed_predecessor_context':c._bound(predecessor/'continuation_context.json')},
         'protected_control_bindings':oldpre['protected_control_bindings']+bound_controls,
@@ -158,7 +194,7 @@ def prepare(config_path):
     control.mkdir();w.write(control,'Source_Preflight.json',pre)
     setup={'root':str(root),'preflight':c._bound(control/'Source_Preflight.json'),
         'max_new_calls':3*pre['boundary']['remaining_request_URLs'],'synthetic_fixture':old['synthetic_fixture'],
-        'forecast_growth_multiplier':old['forecast_growth_multiplier'],'historical_ai_receipts':old['historical_ai_receipts'],
+        'forecast_growth_multiplier':old['forecast_growth_multiplier'],'historical_ai_receipts':([{'coverage':inherited_gates[-1]['coverage']['path'],'sha256':inherited_gates[-1]['coverage']['sha256']}] if inherited_gates else old['historical_ai_receipts']),
         'source_classification_preparation':True}
     w.require(setup['max_new_calls']<=old['max_new_calls']-closed_calls,'Successor exceeds original request ceiling')
     w.write(control,'Campaign_Config.json',setup);c.prepare(control/'Campaign_Config.json')
@@ -184,7 +220,9 @@ def prepare(config_path):
         'donor_child':str(source),'target_child':str(target),'native_plan':c._bound(target/'continuous_plan.json'),
         'donor_campaign':c._bound(donor/'campaign.json'),'prior_source_gap_recovery':old.get('source_gap_recovery'),
         'prior_source_classification_recovery':old.get('source_classification_recovery'),
-        'prior_classification_decisions':prior_decisions,
+        'prior_classification_decisions':prior_decisions,'inherited_checkpoint_gates':inherited_gates,
+        'source_review':cfg.get('source_review'),
+        'investigated_sources':_source_review(cfg,source,prefix) if cfg.get('source_review') else [],
         'donor_transport_ledger':c._bound(source/'transport_calls.jsonl'),
         'prefix':{k:prefix[k] for k in PREFIX_KEYS},'child_index':index,'inherited_rows':cfg['expected_saved'],
         'inherited_calls':cfg['expected_calls'],'baseline_saved':m['baseline_saved'],'baseline_calls':m['baseline_calls'],
@@ -193,7 +231,7 @@ def prepare(config_path):
     w.write(root,'Classification_Recovery_Provenance.json',proof)
     m.pop('campaign_sha256');m.pop('source_classification_pending')
     m['source_classification_recovery']={'provenance':c._bound(root/'Classification_Recovery_Provenance.json'),
-                                      'policy':bound_policy,'child_index':index}
+                                      'policy':bound_policy,'child_index':index,'inherited_checkpoint_gates':inherited_gates}
     m['campaign_sha256']=w.digest(m);w.write(root,'campaign.json',m)
     c.event(root,'source_classification_recovery_prepared',campaign_sha256=m['campaign_sha256'],
         provenance=m['source_classification_recovery']['provenance'],inherited_saved=cfg['expected_saved'],
@@ -215,7 +253,7 @@ def verify(m,*,full=False):
         w.require(all(cfg.get(k)==v for k,v in PRODUCTION.items()) and m['baseline_saved']==128000 and
                   m['baseline_calls']==128061 and m['remaining_rows']==2531 and
                   [p['plan_index'] for p in m['parts']]==[65,66] and doc['prior_source_classification_recovery'],
-                  'Production375 recovery scope differs')
+                  'Production659 recovery scope differs')
     for binding in doc['donor_controls']:c._verify(binding)
     c._verify(doc['donor_campaign']);donor=c._signed(doc['donor_campaign']['path'],'campaign_sha256')
     w.require(donor.get('source_gap_recovery')==doc['prior_source_gap_recovery'],'Previous recovery lineage changed')
@@ -232,6 +270,13 @@ def verify(m,*,full=False):
     w.require(len(stops)==1 and events[-1]==stops[0] and
               stops[0]['evidence']==c._bound(Path(donor['root'])/'technical_stop.json'),
               'Donor appended or changed its exact terminal event')
+    inherited_gates=connection._verified_inherited_gates(donor,events,doc['child_index'],doc['inherited_rows'])
+    w.require(inherited_gates==doc['inherited_checkpoint_gates']==bound['inherited_checkpoint_gates'],'Inherited actual checkpoint evidence changed')
+    if doc.get('source_review'):
+        w.require(doc['source_review']==cfg['source_review'],'Source investigation binding changed')
+        donor_plan=w.load(Path(doc['donor_child'])/'continuous_plan.json')
+        donor_prefix=worker.inherited_prefix_evidence(Path(doc['donor_child']),donor_plan,doc['inherited_rows'])
+        w.require(_source_review(cfg,Path(doc['donor_child']),donor_prefix)==doc['investigated_sources'],'Investigated source evidence changed')
     c._verify(doc['native_plan']);plan=w.load(doc['native_plan']['path']);target=Path(doc['target_child'])
     w.require(w.sha_file(Path(doc['donor_child'])/'continuous_plan.json')==doc['native_plan']['sha256'],'Imported native plan bytes changed')
     policy.validate_policy(target,plan,bound['policy'])
@@ -241,20 +286,22 @@ def verify(m,*,full=False):
     with (target/'transport_calls.jsonl').open('rb') as stream:w.require(stream.read(len(oldbytes))==oldbytes,'Imported transport prefix changed')
     c._verify(doc['derived_prefix_summary']);summary=w.load(doc['derived_prefix_summary']['path'])
     native={x['row']['sample_id']:w.load(target/'row_checks'/(x['row']['sample_id']+'.json'))['record'] for x in current['rows']}
-    expected_ids=[x['row']['sample_id'] for x in current['rows'] if x['row'].get('error')=='missing_body' or
-                  'missing_body' in native[x['row']['sample_id']].get('automatic_flags',[])]
+    expected_ids=[x['row']['sample_id'] for x in current['rows'] if policy.requires_classification(x['row'],native[x['row']['sample_id']])]
     w.require(summary['policy']==bound['policy'] and summary['native_plan_sha256']==plan['plan_sha256'] and
               summary['native_rows']==doc['inherited_rows'] and
               [item['sample_id'] for item in summary['records']]==expected_ids,
               'Derived prefix summary omits, duplicates or changes a required source classification')
-    actual_matched=0
+    actual_matched=0;encoding_matched=0
     for item in summary['records']:
         decision=policy.verify_decision(item['binding'],native[item['sample_id']],bound['policy'])
         matched=decision['decision'].get('matched') is True
-        w.require(item['effective_outcome']==decision['effective_outcome'] and item['classified_source_gap']==matched,
+        w.require(item['effective_outcome']==decision['effective_outcome'] and item['classified_source_gap']==(matched and decision.get('source_gap_kind') is not None) and
+                  item.get('classified_encoding_correction',False)==(matched and decision.get('correction_kind') is not None),
                   'Derived summary outcome differs from its bound decision')
-        actual_matched+=matched
+        actual_matched+=bool(matched and decision.get('source_gap_kind') is not None)
+        encoding_matched+=bool(matched and decision.get('correction_kind') is not None)
     w.require(summary['classified_source_gap_count']==actual_matched,'Derived source-gap count differs')
+    w.require(summary.get('classified_encoding_correction_count',0)==encoding_matched,'Derived encoding-correction count differs')
     if full:
         for path,digest in doc['donor_inventory'].items():w.require(w.sha_file(path)==digest,'Immutable donor evidence changed: '+path)
     return doc
