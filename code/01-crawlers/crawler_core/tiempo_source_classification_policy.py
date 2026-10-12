@@ -11,8 +11,9 @@ import sqlite3
 from . import tiempo_continuous_v5 as w
 from . import tiempo_empty_shell as classifier
 from . import tiempo_source_encoding as encoding
+from . import tiempo_lead_media as lead_media
 
-SCHEMA = 'tiempo-source-classification-policy-v4'
+SCHEMA = 'tiempo-source-classification-policy-v5-effective-media'
 DECISION_SCHEMA = 'tiempo-bound-source-classification-v4'
 EXPLAINED_FLAGS = {'missing_body', 'unexplained_result_error'}
 REPRESENTATION_FLAGS = {'source_title_metadata_disagreement', 'visible_title_difference'}
@@ -71,6 +72,7 @@ def create_policy(root, indices, synthetic):
          'synthetic_fixture':synthetic,'rule_version':classifier.RULE_VERSION,
          'classifier':_binding(classifier.__file__),'features':_binding(classifier.FEATURE_PATH),'overlay':_binding(__file__),
          'encoding_rule_version':encoding.RULE_VERSION,'encoding_helper':_binding(encoding.__file__),
+         'effective_media_code':lead_media.code_bindings(),
          'native_program_sha256':w.program_hashes(),'human_approval':False,'article_acceptance':False,
          'semantics':'Native errors, row checks and full risk history are preserved. Feature-verified missing HTML bodies remain source_unavailable, distinguishing no-media shells and static header-image references. Separately, successful text-bearing article candidates can receive a response-bound UTF-8 diagnostic correction only when the unchanged checker with exact saved-response decoding explains all relevant native mismatch flags and no other technical anomaly remains. Such corrections preserve article_candidate status and are not source gaps, article acceptance or AI/human approval. Only each recomputed decision-specific explained flags are removed from the derived stop assessment. All other anomalies and required actual AI review gates remain effective.'}
     path=root/'Source_Classification_Policy.json';_once(path,doc)
@@ -81,6 +83,7 @@ def validate_policy(root,plan,binding):
     if binding is None:return None
     _verify(binding);doc=w.load(binding['path']);root=Path(root).resolve()
     _verify(doc['classifier']);_verify(doc['features']);_verify(doc['overlay']);_verify(doc['encoding_helper'])
+    w.require(doc.get('effective_media_code')==lead_media.code_bindings(),'Effective media code binding differs')
     base=Path(doc['campaign_root'])/'Media/data/00-newspaper_data/crawler/pilots/Kevin/tiempo_continuous_v5'
     allowed=[base/f'remaining_plan_{index:06d}' for index in doc['child_indices']]
     w.require(doc['schema']==SCHEMA and doc['rule_version']==classifier.RULE_VERSION and root in allowed and
@@ -133,6 +136,9 @@ def _outcomes(decision,record):
 
 def assess(root,plan,batch,row,record,policy_binding):
     """Persist a bound derived source-gap or decoding decision; never native rows."""
+    # Every saved row is checked, not just existing native anomaly flags: the
+    # frozen native parser and checker shared the original lead-media blind spot.
+    lead_media.assess(root,plan,batch,row,record,policy_binding)
     if not requires_classification(row,record):
         return None
     payload,response,raw,check,database=_source(root,batch,row,record)
@@ -216,6 +222,7 @@ def trigger(history,bindings,policy_binding,current_row,cache):
 
 
 def summary(root,plan,bindings,records,policy_binding):
+    media_summary=lead_media.summary(root,plan,records,policy_binding)
     docs=[]
     for record in records:
         bound=bindings.get(record['sample_id'])
@@ -228,5 +235,13 @@ def summary(root,plan,bindings,records,policy_binding):
          'native_rows':len(records),'classified_source_gap_count':sum(x['classified_source_gap'] for x in docs),
          'classified_encoding_correction_count':sum(x['classified_encoding_correction'] for x in docs),
          'records':docs,'native_rows_modified':False,'human_approval':False,'article_acceptance':False}
+    doc['effective_media_summary']=media_summary
     path=Path(root)/'source_classification_summaries'/f"saved_{len(records):08d}.json";_once(path,doc)
     return _binding(path)
+
+
+def verify_media_summary(root,plan,classification_summary_doc,policy_binding):
+    result=lead_media.verify_summary(root,plan,classification_summary_doc['effective_media_summary'],policy_binding)
+    w.require(result['native_rows']==classification_summary_doc['native_rows'],
+              'Classification and effective media prefix counts differ')
+    return result

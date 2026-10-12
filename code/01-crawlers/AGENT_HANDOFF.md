@@ -2320,3 +2320,38 @@ immediately, then verify saved/readback/breakpoint, no open request and process
 exit. Preserve existing technical stops and pending readings. A quota-triggered
 pause requires explicit new user instruction to resume, even after quota resets.
 No continuous quota monitor or hourly automation is installed or implied.
+
+
+## 2026-10-12 Paused800 effective lead-media recovery (not yet launched)
+
+Author: Kevin. The encoding successor genuinely processed660-800 and paused at
+800 saved/802 calls after actual AI reading found a lead YouTube reference omitted
+by both frozen native extractor and checker. Original TC5_436991 and TC5_177742
+payloads, raw, checks and requests remain unchanged. The real issue is separate
+from the source's headline/publication versus quoted-content conflicts, which
+remain NEEDS_JOAQUIN_REVIEW. No transcript or source text is invented.
+
+Native parser/checker bytes and original2000-row plan stay frozen. Separately
+versioned effective-media extractor/checker modules implement the independently
+tested scoped lead plus body fix. Every saved row receives a bound media check;
+unknown/dynamic lead targets or changed identity/prose/date remain blockers.
+Positive corrections save only media_embeds, media_evidence, article_kind and
+classification_rule_version in an effective view, with original values, exact
+source/request/check hashes and changed-field list. The JSON correction export
+must be joined by sample_id and matching native_payload_sha256 when consuming
+media fields; the original native export alone intentionally retains the old
+missing references. This is actual corrected output, not an error waiver.
+
+The exact paused800 adapter validates old files before replay, preserves802 calls
+and400 actual gate, carries all74 pending draft readings without approving800,
+and requires a new correction-bound800 gate before original801 TC5_114357.
+Each corrected source is mandatory, including newly affected historical IDs;
+actual notes may be reused only with matching source hashes, no duplicate unique
+reading credit. Effective-media receipt fields and summary/export are independently
+verified. A donor pause or historical technical stop is never deleted.
+
+At this entry isolation/tests are underway; inspect current PROJECT_MEMORY and
+RUN_LOCATION before use. Do not run this version against the old N9 namespace.
+Strict main quota below5percent remains the safety threshold; unknown twice is
+not sufficient quota. No hourly tasks, automatic resume, human approval, or
+newspaper-complete claim. No source request or real800 seal is implied here.

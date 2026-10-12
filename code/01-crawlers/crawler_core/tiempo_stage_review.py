@@ -119,7 +119,7 @@ def _plan(child):
     return plan, queue
 
 
-def _batch_rows(child, batch, origins, bindings):
+def _batch_rows(child, batch, origins, bindings, source_classification_policy=None):
     B = child / 'batches' / batch['batch_id']
     db_path = B / 'pilot.sqlite'
     before = _bound(db_path)
@@ -146,6 +146,17 @@ def _batch_rows(child, batch, origins, bindings):
                   'source_quality_issues_json')}
         flags = sorted(set(check.get('automatic_flags', [])) | set(check.get('critical_flags', [])) |
                        set(check.get('unexplained_flags', [])))
+        media_info={}
+        if source_classification_policy is not None:
+            from . import tiempo_lead_media as media
+            check_media=media.bound(child/'lead_media_checks'/(sid+'.json'))
+            proof=media.verify(check_media)
+            w.require(proof['policy']==source_classification_policy and proof['payload_sha256']==_sha(payload.encode()),
+                      'Focused review effective-media binding differs')
+            bindings.append(check_media)
+            if proof['result']['status']=='effective_media_correction':
+                media_info={'effective_media_correction':check_media,'effective_media_fields':proof['result']['effective']}
+                flags=sorted(set(flags)|{'effective_lead_media_correction_requires_source_reading'})
         out.append({'sample_id': sid, 'url': row['url'], 'batch_id': batch['batch_id'],
                     'snapshot_path': raw['path'], 'snapshot_sha256': raw['sha256'],
                     'payload_sha256': _sha(payload.encode()), 'row_check': check_binding,
@@ -154,7 +165,7 @@ def _batch_rows(child, batch, origins, bindings):
                     'origin': origin, 'automatic_flags': flags,
                     'critical_flags': check.get('critical_flags', []),
                     'publication_date': row.get('date_published'),
-                    'native_manual_review_status': 'not_reviewed'})
+                    'native_manual_review_status': 'not_reviewed',**media_info})
     return out
 
 
@@ -180,7 +191,8 @@ def _is_inherited_failure(row, acknowledgment):
         ('sample_id', 'url', 'batch_id', 'snapshot_sha256', 'payload_sha256', 'row_check_record_sha256'))
 
 
-def _closed(child, checkpoint_rows, previous_checkpoint_rows=None, inherited_failure_acknowledgment=None):
+def _closed(child, checkpoint_rows, previous_checkpoint_rows=None, inherited_failure_acknowledgment=None,
+            source_classification_policy=None):
     child = Path(child).resolve()
     plan, queue = _plan(child)
     w.require(plan.get('program_sha256') == w.program_hashes(), 'Frozen worker program changed')
@@ -209,6 +221,16 @@ def _closed(child, checkpoint_rows, previous_checkpoint_rows=None, inherited_fai
     origins = {r['sample_id']: r for r in queue}
     summaries = {s['batch_id']: s for s in summary['batch_checks']}
     all_rows, offset = [], 0
+    prior_media_rows=[];corrected_ids=set()
+    if source_classification_policy is not None:
+        from . import tiempo_lead_media as media
+        media_summary=media.bound(child/'lead_media_summaries'/f'saved_{checkpoint_rows:08d}.json')
+        media_doc=w.load(media_summary['path'])
+        w.require(media_doc['native_rows']==checkpoint_rows and media_doc['policy']==source_classification_policy,
+                  'Effective-media checkpoint inventory differs')
+        bindings.extend([source_classification_policy,media_summary,media_doc['effective_media_export']])
+        _verify(media_doc['effective_media_export'])
+        corrected_ids={r['sample_id'] for r in media_doc['records'] if r['status']=='effective_media_correction'}
     for batch in plan['batches']:
         end = offset + batch['row_count']
         if end > checkpoint_rows:
@@ -221,17 +243,24 @@ def _closed(child, checkpoint_rows, previous_checkpoint_rows=None, inherited_fai
         bindings.append(check_file)
         if end > start:
             w.require(offset >= start, 'Review segment splits a native batch')
-            current = _batch_rows(child, batch, origins, bindings)
+            current = _batch_rows(child, batch, origins, bindings,source_classification_policy)
             for r in current:
                 w.require(w.load(r['row_check']['path'])['plan_sha256'] == plan['plan_sha256'],
                           'Row automatic check belongs to another plan')
             all_rows.extend(current)
+        elif corrected_ids.intersection(batch['sample_ids']):
+            # A new derived correction before this segment cannot hide behind
+            # a historical seal. Preserve that seal and explicitly review only
+            # the newly affected media evidence at the current gate.
+            prior_media_rows.extend(r for r in _batch_rows(child,batch,origins,bindings,source_classification_policy)
+                                    if r['sample_id'] in corrected_ids)
         offset = end
     w.require(offset == checkpoint_rows and len(all_rows) == checkpoint_rows - start,
               'Checkpoint is not a complete saved prefix')
     return {'child': str(child), 'plan_sha256': plan['plan_sha256'], 'checkpoint_rows': checkpoint_rows,
             'previous_checkpoint_rows': start, 'bindings': bindings, 'rows': all_rows,
             'investigated_inherited_failure': inherited_failure,
+            'prior_effective_media_rows':prior_media_rows,
             'native_pending_obligation': {'binding': _bound(native_pending), 'record_count': len(pending),
               'status': 'unresolved_native_pending_source_review',
               'rule': 'Preserved original semantics and not_reviewed state; this focused gate does not discharge these duties.'}}
@@ -281,9 +310,12 @@ def _legacy_history(item):
 
 
 def _compact(row):
-    return {key: row[key] for key in ('sample_id', 'snapshot_path', 'snapshot_sha256',
+    result={key: row[key] for key in ('sample_id', 'snapshot_path', 'snapshot_sha256',
             'payload_sha256', 'row_check_sha256', 'strata', 'reading_receipt',
             'reading_note_sha256')}
+    for key in ('effective_media_correction','effective_media_fields'):
+        if key in row:result[key]=row[key]
+    return result
 
 
 def _coverage(path):
@@ -373,7 +405,8 @@ def _obligations(path):
 
 
 def select_checkpoint(child, output_dir, *, checkpoint_rows, inherited_obligations,
-                      history_receipts=(), previous_checkpoint_rows=None, inherited_failure_acknowledgment=None):
+                      history_receipts=(), previous_checkpoint_rows=None, inherited_failure_acknowledgment=None,
+                      source_classification_policy=None):
     """Freeze selection once; a restart verifies and returns the exact same IDs.
 
     Legacy history items are {receipt, child}; new ones are {receipt, selection}.
@@ -385,15 +418,21 @@ def select_checkpoint(child, output_dir, *, checkpoint_rows, inherited_obligatio
                'history_receipts': [dict(i) for i in history_receipts],
                'previous_checkpoint_rows': previous_checkpoint_rows,
                'inherited_failure_acknowledgment': inherited_failure_acknowledgment}
+    if source_classification_policy is not None:request['source_classification_policy']=source_classification_policy
     if output.exists():
         existing = _validate_selection(output)
         w.require(existing['request'] == request, 'Restart inputs differ from frozen review selection')
         return {**existing, 'selection_path': str(output)}
-    snapshot = _closed(child, checkpoint_rows, previous_checkpoint_rows, inherited_failure_acknowledgment)
+    snapshot = _closed(child, checkpoint_rows, previous_checkpoint_rows, inherited_failure_acknowledgment,
+                       source_classification_policy)
     history = _history(history_receipts)
     historic = {r['sample_id']: r for r in history['records']}
     covered_strata = {s for r in historic.values() for s in r['strata']}
-    rows = snapshot['rows']
+    rows = list(snapshot['rows'])
+    for prior in snapshot.get('prior_effective_media_rows',[]):
+        old=historic.get(prior['sample_id'])
+        if not old or old.get('effective_media_correction')!=prior.get('effective_media_correction'):
+            rows.append(prior)
     rank = lambda row: _sha((snapshot['plan_sha256'] + '\n' + str(checkpoint_rows) + '\n' + row['sample_id']).encode())
     selected = {}
     def add(row, reason):
@@ -425,7 +464,9 @@ def select_checkpoint(child, output_dir, *, checkpoint_rows, inherited_obligatio
         if old:
             w.require(all(old[k] == row[k] for k in ('snapshot_sha256', 'payload_sha256')),
                       'Previously read ID has changed raw or payload evidence')
-        unchanged = old is not None and old['row_check_sha256'] == row['row_check_sha256'] and old['strata'] == row['strata']
+        unchanged = (old is not None and old['row_check_sha256'] == row['row_check_sha256'] and
+                     old['strata'] == row['strata'] and
+                     old.get('effective_media_correction')==row.get('effective_media_correction'))
         selected_rows.append({**row, 'selection_reasons': selected[row['sample_id']]['reasons'],
                               'reused_actual_ai_read': unchanged})
     doc = {'schema': SCHEMA, 'request': request, 'snapshot': snapshot,
@@ -505,6 +546,14 @@ def validate_gate(selection_path, receipt_paths=()):
                 seen.add(sid)
                 for key in ('snapshot_sha256', 'payload_sha256', 'row_check_sha256'):
                     w.require(record.get(key) == expected[sid][key], 'AI receipt source/check hash mismatch')
+                if expected[sid].get('effective_media_correction'):
+                    from . import tiempo_lead_media as media
+                    correction=expected[sid]['effective_media_correction']
+                    verified=media.verify(correction)
+                    w.require(record.get('effective_media_correction')==correction and
+                              record.get('effective_media_read') is True and
+                              verified['result']['effective']==expected[sid]['effective_media_fields'],
+                              'AI receipt must acknowledge actual source-bound effective media reading')
                 w.require(record.get('research_status') in (None, 'NEEDS_JOAQUIN_REVIEW'),
                           'A collection receipt cannot assert research/human PASS')
                 blockers.extend(record['technical_blockers'])
