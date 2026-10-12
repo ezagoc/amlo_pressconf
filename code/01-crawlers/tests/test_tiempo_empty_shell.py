@@ -31,7 +31,8 @@ def qualifying_case(title='A synthetic headline', slug='synthetic-empty-shell',
         article = article.replace(before, after)
     a = BeautifulSoup(article, 'html.parser')
     breadcrumb = a.select_one('li.active a');breadcrumb['href']='/'+section+'/'
-    breadcrumb.string=rule.FEATURES['official_sections'][section]
+    section_label=rule.FEATURES['official_sections'].get(section) or rule.FEATURES['legacy_sections'][section]
+    breadcrumb.string=section_label
     for tag in a.select('.share-buttons a[data-link]'):tag['data-link']=canonical
     for tag in a.select('.share-buttons a'):
         for key in list(tag.attrs):
@@ -54,7 +55,7 @@ def qualifying_case(title='A synthetic headline', slug='synthetic-empty-shell',
     row = {'sample_id':sample_id,'url':url,'final_url':url,'canonical_url':canonical,'title':title,
         'authors':author,'date_published':published,'date_modified':published,'summary':None,'main_text':None,
         'error':'missing_body','qa_status':'error','status':200,'content_type':'text/html; charset=utf-8',
-        'publication_date_source':'jsonld.datePublished','date_conflict':None,'source_specific_error':None,'section':rule.FEATURES['official_sections'][section],
+        'publication_date_source':'jsonld.datePublished','date_conflict':None,'source_specific_error':None,'section':section_label,
         'media_embeds':'[]','media_evidence':'[]','article_kind':'article','snapshot_sha256':hashlib.sha256(raw).hexdigest()}
     response = {'status':200,'final_url':url,'error':None,'curl_exit_code':0,'body_text_limit_exceeded':False,
         'body_encoding':'utf-8','body_encoding_source':'http_charset','content_type':'text/html; charset=utf-8'}
@@ -281,6 +282,32 @@ class EmptyShellTests(unittest.TestCase):
                 self.assertTrue(result['matched'],result)
                 self.assertEqual(result['evidence']['explained_representation_flags'],[])
 
+    def test_legacy_category_is_not_video_or_article_acceptance(self):
+        case=qualifying_case(section='videos',slug='unseen-legacy-section');before=copy.deepcopy(case)
+        result=rule.classify_empty_article_shell(*case)
+        self.assertTrue(result['matched'],result)
+        self.assertEqual(result['evidence']['source_section_identity']['basis'],'bound_legacy_source_category')
+        self.assertFalse(result['evidence']['source_section_identity']['category_is_playable_video_evidence'])
+        self.assertFalse(result['evidence']['article_acceptance'])
+        self.assertEqual(case,before)
+
+    def test_legacy_category_cannot_hide_unknown_sources(self):
+        case=qualifying_case(section='videos')
+        for old,new in [('/videos/','/unknown/'),('>Videos<','>Local<'),
+                ('"@id": "synthetic-empty-shell"','"@id": "other-story"'),
+                ('content="2021-05-06T11:12:13"','content="2021-05-07T11:12:13"')]:
+            with self.subTest(new=new):
+                self.assertFalse(rule.classify_empty_article_shell(*rebind(case,case[1].decode().replace(old,new).encode()))['matched'])
+        for markup in ['<iframe src="/clip"></iframe>','<video src="/clip"></video>',
+                '<source src="/clip">','<div data-loader="/clip"></div>','<p>Omitted article prose.</p>']:
+            with self.subTest(markup=markup):
+                raw=case[1].decode().replace('</article>',markup+'</article>').encode()
+                self.assertFalse(rule.classify_empty_article_shell(*rebind(case,raw))['matched'])
+        bad=copy.deepcopy(case);bad[0]['section']='Local'
+        self.assertFalse(rule.classify_empty_article_shell(*bad)['matched'])
+        # Official categories still need current navigation; legacy is separate.
+        self.reject_html(lambda s:s.replace('<a href="/local/">Local</a>','',1))
+
     def test_source_section_and_title_representation_cannot_mask_conflicts(self):
         for old,new in [('href="/local/">Local','href="/local/">Different Section'),
                 ('href="/local/">Local','href="/unknown/">Local'),
@@ -325,10 +352,10 @@ class EmptyShellTests(unittest.TestCase):
 
 @unittest.skipUnless(os.environ.get('TIEMPO_EMPTY_SHELL_REAL_BATCH'), 'Set the bound local batch explicitly; no online fixture retrieval.')
 class SavedSourceTests(unittest.TestCase):
-    def test_eight_actual_saved_responses(self):
+    def test_nine_actual_saved_responses(self):
         batch=Path(os.environ['TIEMPO_EMPTY_SHELL_REAL_BATCH']);child=batch.parent.parent
         with sqlite3.connect((batch/'pilot.sqlite').as_uri()+'?mode=ro&immutable=1',uri=True) as db:
-            for sid in ['TC5_476522','TC5_501081','TC5_552341','TC5_560498','TC5_514287','TC5_438720','TC5_557844','TC5_623467']:
+            for sid in ['TC5_476522','TC5_501081','TC5_552341','TC5_560498','TC5_514287','TC5_438720','TC5_557844','TC5_623467','TC5_603201']:
                 row=json.loads(db.execute('SELECT payload_json FROM articles WHERE sample_id=?',(sid,)).fetchone()[0])
                 response=json.loads(db.execute('SELECT response_json FROM fetch_attempts WHERE sample_id=?',(sid,)).fetchone()[0])
                 raw=(batch/row['snapshot_path']).read_bytes();check=json.loads((child/'row_checks'/f'{sid}.json').read_text())['record']

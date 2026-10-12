@@ -17,7 +17,7 @@ from urllib.parse import urlsplit
 
 from bs4 import BeautifulSoup, Comment
 
-RULE_VERSION = 'tiempo-verified-static-empty-shell-v4'
+RULE_VERSION = 'tiempo-verified-static-empty-shell-v5'
 FEATURE_PATH = Path(__file__).with_name('tiempo_empty_shell_features.json')
 _FEATURE_BYTES = FEATURE_PATH.read_bytes()
 FEATURES = json.loads(_FEATURE_BYTES)
@@ -61,7 +61,7 @@ def _identity(url):
     if p.scheme not in {'http', 'https'} or p.hostname not in {'tiempo.com.mx', 'www.tiempo.com.mx'} or p.username or p.password or p.query or p.fragment or p.port not in (None, 80, 443):
         raise ValueError('unrecognized_article_identity')
     parts = p.path.strip('/').split('/')
-    if len(parts) != 2 or not all(parts) or parts[0] not in {'noticia', *FEATURES['official_sections']}:
+    if len(parts) != 2 or not all(parts) or parts[0] not in {'noticia', *FEATURES['official_sections'], *FEATURES['legacy_sections']}:
         raise ValueError('unrecognized_article_route')
     return parts[-1]
 
@@ -103,7 +103,8 @@ def article_structure(article, row):
             attrs['src'] = 'AD_IMAGE_SLOT'
         if node.name == 'a' and node.find_parent('ol', class_='breadcrumb'):
             route = urlsplit(row['canonical_url']).path.strip('/').split('/')[0]
-            if attrs == {'href':'/'+route+'/'} and _norm(node.get_text()) == FEATURES['official_sections'].get(route):
+            section_label = FEATURES['official_sections'].get(route) or FEATURES['legacy_sections'].get(route)
+            if attrs == {'href':'/'+route+'/'} and _norm(node.get_text()) == section_label:
                 attrs['href'] = 'SECTION_SLOT'
         result.append([node.name, positions.get(id(node.parent), -1), attrs])
     return result
@@ -264,15 +265,24 @@ def classify_empty_article_shell(row, html_bytes, response_metadata, source_chec
             raise ValueError('missing_unique_article')
         a = articles[0]
         route = urlsplit(row['canonical_url']).path.strip('/').split('/')[0]
-        section = FEATURES['official_sections'].get(route)
+        official_section = FEATURES['official_sections'].get(route)
+        legacy_section = FEATURES['legacy_sections'].get(route)
+        section = official_section or legacy_section
         breadcrumbs = a.select('header ol.breadcrumb li.active a')
         navs = s.select('nav#menu')
         navlinks = navs[0].select('a[href="/'+route+'/"]') if len(navs) == 1 else []
-        need(section is not None and len(breadcrumbs) == len(navlinks) == 1
+        navigation_bound = (len(navlinks) == 1 and _norm(navlinks[0].get_text()) == section)
+        # A source-read legacy category may no longer be in current navigation.
+        # Its label is classification evidence only, never playable-media proof.
+        legacy_bound = legacy_section is not None and len(navs) == 1 and (not navlinks or navigation_bound)
+        need(section is not None and len(breadcrumbs) == 1
              and breadcrumbs[0].attrs == {'href':'/'+route+'/'}
-             and _norm(breadcrumbs[0].get_text()) == _norm(navlinks[0].get_text()) == section
+             and _norm(breadcrumbs[0].get_text()) == section
+             and (navigation_bound if official_section else legacy_bound)
              and row.get('section') == section, 'unverified_source_section_identity')
-        evidence['source_section_identity'] = {'canonical_route':route,'official_label':section}
+        evidence['source_section_identity'] = {'canonical_route':route,'source_label':section,
+            'basis':'current_navigation' if official_section else 'bound_legacy_source_category',
+            'category_is_playable_video_evidence':False}
         for alternate in s.select('[itemprop~="articleBody"],.article-content,.article-body,#article-body,#article-content'):
             need(alternate is a or any(parent is a for parent in alternate.parents), 'alternate_article_body_outside_primary_scope')
         need(','.join(x.name for x in a.find_all(True)) == FEATURES['article_tag_shape'], 'unknown_article_tag_structure')

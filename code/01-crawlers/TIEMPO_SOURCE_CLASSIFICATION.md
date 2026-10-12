@@ -37,9 +37,9 @@ stop. Existing verified short/video retention, service limits, spacing, retries,
 disk reserve and actual AI gates remain in force.
 
 Offline recovery must verify existing donor files before creating any recovery
-export. Use a disjoint successor, preserving the donor's 339 saved results and
+export. Use a disjoint successor, preserving the donor's 340 saved results and
 closed calls exactly once, its halt, prior recovery lineage and pending duties.
-Original child65 position340 is the first new request. Another61 requests reach
+Original child65 position341 is the first new request. Another60 requests reach
 400 and complete the existing 80-row batch. Save/readback verification and the
 real 400-row AI gate must precede position401. No investigation note substitutes
 for this gate.
@@ -88,3 +88,15 @@ Native checker output, failures, null bodies and previous decisions remain
 unchanged. The policy records exactly which representation flags its evidence
 explains; it does not globally exempt title conflicts. The pending400 gate remains
 required. Consult runtime/tests/independent evidence before claiming deployment.
+
+The next source340 consistently identifies its historical /videos/ category in
+canonical, OG, share and breadcrumb evidence, although that category is absent
+from the current primary navigation. The isolated legacy-section extension
+requires the source-backed category label and all existing article identity,
+known structure, complete transport and empty-static-source checks. The current
+11 navigation categories keep their navigation requirement; arbitrary routes
+are not accepted. A Videos section label is NOT proof of a playable video, a
+transcript or permanent historical loss. Any article-specific media destination,
+unknown dynamic component, nonempty omitted prose or identity conflict remains
+blocking. Original article_kind, missing_body, nulls and review status remain
+unchanged; derived outcomes are source unavailable, not successful news.
