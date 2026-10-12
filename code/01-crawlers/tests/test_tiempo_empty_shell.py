@@ -67,6 +67,17 @@ def rebind(case, raw):
     return row, raw, response, check
 
 
+def sidebar_poll(value='55.8', poll_id='12345'):
+    """Minimal source-derived sidebar UI; no article text or original tokens."""
+    return (f'<div id="sidebar"><div id="aplicacion-encuesta{poll_id}-container" class="encuesta">'
+        '<div id="result" class="bs-chart-container collapse" style="width: 88%;padding: 15px 0;">'
+        '<div class="progress" style="height:20px;">'
+        f'<div class="progress-bar" role="progressbar" aria-valuenow="{value}" aria-valuemin="0" '
+        f'style="width: {value}%; height:20px; background-color: #439646;">'
+        f'<!-- span class="value">{value}% </span --><span class="">{value}% </span>'
+        '</div></div></div></div></div>')
+
+
 class EmptyShellTests(unittest.TestCase):
     def setUp(self):
         self.case = qualifying_case()
@@ -155,6 +166,32 @@ class EmptyShellTests(unittest.TestCase):
                 self.assertIn('feature_file_changed_since_import',result['rejection_reasons'])
                 self.assertEqual(result['evidence']['feature_sha256'],rule.FEATURE_SHA256)
 
+    def test_poll_comment_accepts_only_bound_percentage_slot(self):
+        for value in ['0','11.0','55.8','15.3','2.3','15.6','100']:
+            raw=self.case[1].decode().replace('</body>',sidebar_poll(value)+'</body>').encode()
+            with self.subTest(value=value):
+                result=rule.classify_empty_article_shell(*rebind(self.case,raw))
+                self.assertTrue(result['matched'],result)
+        # IDs vary freely; no URL, record, poll-ID or numeric-value whitelist.
+        raw=self.case[1].decode().replace('</body>',sidebar_poll('42.72','87654321')+'</body>').encode()
+        self.assertTrue(rule.classify_empty_article_shell(*rebind(self.case,raw))['matched'])
+
+    def test_poll_comment_disagreement_scope_prose_media_reject(self):
+        for markup in [sidebar_poll('101'),sidebar_poll('-1'),
+                sidebar_poll().replace('aria-valuenow="55.8"','aria-valuenow="55.7"'),
+                sidebar_poll().replace('width: 55.8%','width: 55.7%'),
+                sidebar_poll().replace('<span class="">55.8%','<span class="">55.7%'),
+                sidebar_poll().replace('id="sidebar"','id="main-other"'),
+                sidebar_poll().replace('class="encuesta"','class="article-loader"'),
+                sidebar_poll().replace('55.8% </span -->','55.8% article prose </span -->'),
+                sidebar_poll().replace('55.8% </span -->','55.8% <iframe src="/clip"></iframe> </span -->'),
+                sidebar_poll().replace('<span class="">','<img src="/hidden-media"><span class="">')]:
+            with self.subTest(markup=markup):
+                self.reject_html(lambda s:s.replace('</body>',markup+'</body>'))
+        # A previously fingerprinted value must not evade contextual validation.
+        self.reject_html(lambda s:s.replace('</article>','<!-- span class="value">11.0% </span --></article>'))
+        self.reject_html(lambda s:s.replace('</article>',sidebar_poll()+'</article>'))
+
     def test_status_transport_truncation_and_binding(self):
         for key,value in [('status',403),('error','blocked'),('curl_exit_code',28),
                           ('body_text_limit_exceeded',True),('body_encoding','unknown')]:
@@ -190,10 +227,10 @@ class EmptyShellTests(unittest.TestCase):
 
 @unittest.skipUnless(os.environ.get('TIEMPO_EMPTY_SHELL_REAL_BATCH'), 'Set the bound local batch explicitly; no online fixture retrieval.')
 class SavedSourceTests(unittest.TestCase):
-    def test_three_actual_saved_responses(self):
+    def test_four_actual_saved_responses(self):
         batch=Path(os.environ['TIEMPO_EMPTY_SHELL_REAL_BATCH']);child=batch.parent.parent
         with sqlite3.connect((batch/'pilot.sqlite').as_uri()+'?mode=ro&immutable=1',uri=True) as db:
-            for sid in ['TC5_476522','TC5_501081','TC5_552341']:
+            for sid in ['TC5_476522','TC5_501081','TC5_552341','TC5_560498']:
                 row=json.loads(db.execute('SELECT payload_json FROM articles WHERE sample_id=?',(sid,)).fetchone()[0])
                 response=json.loads(db.execute('SELECT response_json FROM fetch_attempts WHERE sample_id=?',(sid,)).fetchone()[0])
                 raw=(batch/row['snapshot_path']).read_bytes();check=json.loads((child/'row_checks'/f'{sid}.json').read_text())['record']

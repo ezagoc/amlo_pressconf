@@ -1,4 +1,4 @@
-"""Kevin: preserve the exact stopped334 prefix and apply a feature-based policy.
+"""Kevin: preserve the exact stopped335 prefix and version the feature policy.
 
 The donor and all native records/plans/checks stay unchanged. The separately
 bound classifier explains source gaps by evidence, never by sample-ID whitelist.
@@ -7,6 +7,8 @@ from pathlib import Path
 import argparse
 import json
 import shutil
+import subprocess
+import sys
 
 from . import tiempo_continuous_v5 as w
 from . import tiempo_remaining_campaign as c
@@ -15,13 +17,42 @@ from . import tiempo_connection_recovery as connection
 from . import tiempo_source_gap_recovery as previous
 from . import tiempo_source_classification_policy as policy
 
-SCHEMA='tiempo-source-classification-successor-v1'
-PRODUCTION={'expected_child_index':65,'expected_saved':334,'expected_calls':334,
-    'next_sample_id':'TC5_560498',
-    'donor_campaign_sha256':'fb4c58bbc5f8977708d7e1a244b0341fda5331756c72cdf2fd3ae02e3bb55a30',
-    'donor_master_halt_sha256':'f98fa369504f9029c81b54db94c66e661a677efdd83a9543cce18b6466dc5823',
-    'donor_native_halt_sha256':'f5d6a839f8fad42c89c370a4cfad96bb0aea8e56069c8668cdfbd82cf665c305'}
+SCHEMA='tiempo-source-classification-successor-v2'
+PRODUCTION={'expected_child_index':65,'expected_saved':335,'expected_calls':335,
+    'next_sample_id':'TC5_514287',
+    'donor_campaign_sha256':'1855cf0480c3ec44d7891f69a1f68b000b68b09f2ec12cab3b5de5a5f668e817',
+    'donor_master_halt_sha256':'a3706a0a3ee62963e4d6ef45e8b5b1def2215d5688fd362bf21d85f8beb7af92',
+    'donor_native_halt_sha256':'0d1579d43d4581469bd9988ccf034aa538ac3872db462bd8b5ae3d030b53ec37'}
 PREFIX_KEYS=('prefix_payload_sha256','prefix_attempts_sha256','prefix_articles_sha256')
+
+# A changed helper cannot validate an old versioned policy in-process. The
+# exact donor code is checked before and after this read-only, bytecode-disabled
+# subprocess. It only calls read_bound; it never invokes run, inspect or export.
+_FROZEN_VERIFY = '''import json, sys
+sys.path.insert(0, sys.argv[1])
+from crawler_core import tiempo_remaining_campaign as c
+m, events = c.read_bound(sys.argv[2], full=True)
+assert m['campaign_sha256'] == sys.argv[3]
+print(json.dumps({'campaign_sha256':m['campaign_sha256'],
+    'source_classification_recovery':m['source_classification_recovery'],
+    'network_calls':0,'production_writes':0}))
+'''
+
+
+def _verify_prior_classification(old, code_root):
+    if not old.get('source_classification_recovery'):return None
+    before=connection._donor_code_binding(code_root,old['program_sha256'])
+    result=subprocess.run([sys.executable,'-B','-c',_FROZEN_VERIFY,
+        str(Path(code_root).resolve()/'code/01-crawlers'),old['root'],old['campaign_sha256']],
+        capture_output=True,text=True,timeout=120,cwd=code_root)
+    w.require(result.returncode==0,'Frozen donor classification validation failed: '+result.stderr[-2000:])
+    expected={'campaign_sha256':old['campaign_sha256'],
+        'source_classification_recovery':old['source_classification_recovery'],
+        'network_calls':0,'production_writes':0}
+    w.require(json.loads(result.stdout)==expected,'Frozen donor validator identity/result mismatch')
+    w.require(connection._donor_code_binding(code_root,old['program_sha256'])==before,
+              'Frozen donor code changed during its read-only validation')
+    return expected
 
 
 def _read_donor(cfg):
@@ -31,13 +62,15 @@ def _read_donor(cfg):
     w.require(old['root']==str(donor) and old['schema']==c.SCHEMA and
               bool(cfg.get('synthetic_fixture'))==old['synthetic_fixture'],'Wrong donor identity/type')
     if not old['synthetic_fixture']:
-        w.require(all(cfg.get(k)==v for k,v in PRODUCTION.items()),'Only the authorized334 recovery is supported')
+        w.require(all(cfg.get(k)==v for k,v in PRODUCTION.items()) and old.get('source_classification_recovery'),
+                  'Only the authorized335 source-classification recovery is supported')
     code=connection._donor_code_binding(cfg['donor_code_root'],old['program_sha256'])
     for key in ('config_source','preflight','prepared_manifest','source_context','source_ledger','registry','obligations','queue'):
         c._verify(old[key])
     for part in old['parts']:c._verify(part)
     c._verify_old(w.load(old['preflight']['path']))
     if old.get('source_gap_recovery'):previous.verify(old)
+    _verify_prior_classification(old,cfg['donor_code_root'])
     events=c.events(donor);stops=[e for e in events if e['kind']=='technical_stop']
     w.require(len(stops)==1 and events[-1]==stops[0] and stops[0]['evidence']==c._bound(donor/'technical_stop.json'),
               'Donor latest event must remain the exact technical stop')
@@ -51,7 +84,8 @@ def _read_donor(cfg):
               w.sha_file(child/'safety_halt.json')==cfg['donor_native_halt_sha256'],'Donor specific halt changed')
     halt=w.load(child/'safety_halt.json');state=w.load(child/'continuous_state.json');master=w.load(donor/'technical_stop.json')
     queue=w.readcsv(child/'queue.csv')
-    w.require(halt['reason']=='two_consecutive_same_family_anomalies' and
+    expected_reason='unclassified_source_gap' if old.get('source_classification_recovery') else 'two_consecutive_same_family_anomalies'
+    w.require(halt['reason']==expected_reason and
               halt['sample_id']==queue[cfg['expected_saved']-1]['sample_id'] and
               queue[cfg['expected_saved']]['sample_id']==cfg['next_sample_id'] and
               state['status']=='halted_no_automatic_resume' and state['halt_sha256']==cfg['donor_native_halt_sha256'] and
@@ -88,10 +122,22 @@ def prepare(config_path):
     controls+=sorted((donor/'events').glob('*.json'))
     if old.get('source_gap_recovery'):
         controls += [Path(old['source_gap_recovery'][key]['path']) for key in ('provenance','acknowledgment')]
+    prior_decisions=[]
+    if old.get('source_classification_recovery'):
+        controls += [Path(old['source_classification_recovery'][key]['path']) for key in ('provenance','policy')]
+        prior_decisions=[c._bound(p) for p in sorted((source/'source_classifications').glob('*.json'))]
+        expected_ids={x['row']['sample_id'] for x in prefix['rows'] if x['row'].get('error')=='missing_body' or
+            'missing_body' in w.load(source/'row_checks'/(x['row']['sample_id']+'.json'))['record'].get('automatic_flags',[])}
+        w.require({w.load(b['path'])['sample_id'] for b in prior_decisions}==expected_ids and
+                  len(prior_decisions)==len(expected_ids),'Prior classification decisions are incomplete or duplicated')
+        controls += [Path(b['path']) for b in prior_decisions]
     bound_controls=[c._bound(p) for p in controls]+code
     oldpre=w.load(old['preflight']['path']);obligations=dict(oldpre['review_obligations'])
     obligations['investigated_donor_obligations']=c._bound(donor/'Inherited_Review_Obligations.json')
-    obligations['inherited_source_gap_recovery']=old.get('source_gap_recovery')
+    if old.get('source_gap_recovery'):
+        obligations['inherited_source_gap_recovery']=old['source_gap_recovery']
+    if old.get('source_classification_recovery'):
+        obligations['inherited_source_classification_recovery']=old['source_classification_recovery']
     pending=list(obligations['native_pending_file_bindings']);seen={b['path'] for b in pending}
     for summary_path in source.glob('checkpoint_*/summary.json'):
         summary=w.load(summary_path);p=summary_path.parent/'pending_source_review_samples.csv'
@@ -137,6 +183,8 @@ def prepare(config_path):
         'donor_controls':bound_controls,'donor_inventory':inventory,'copied_native_files':copied,
         'donor_child':str(source),'target_child':str(target),'native_plan':c._bound(target/'continuous_plan.json'),
         'donor_campaign':c._bound(donor/'campaign.json'),'prior_source_gap_recovery':old.get('source_gap_recovery'),
+        'prior_source_classification_recovery':old.get('source_classification_recovery'),
+        'prior_classification_decisions':prior_decisions,
         'donor_transport_ledger':c._bound(source/'transport_calls.jsonl'),
         'prefix':{k:prefix[k] for k in PREFIX_KEYS},'child_index':index,'inherited_rows':cfg['expected_saved'],
         'inherited_calls':cfg['expected_calls'],'baseline_saved':m['baseline_saved'],'baseline_calls':m['baseline_calls'],
@@ -166,11 +214,20 @@ def verify(m,*,full=False):
     if not m['synthetic_fixture']:
         w.require(all(cfg.get(k)==v for k,v in PRODUCTION.items()) and m['baseline_saved']==128000 and
                   m['baseline_calls']==128061 and m['remaining_rows']==2531 and
-                  [p['plan_index'] for p in m['parts']]==[65,66],'Production334 recovery scope differs')
+                  [p['plan_index'] for p in m['parts']]==[65,66] and doc['prior_source_classification_recovery'],
+                  'Production335 recovery scope differs')
     for binding in doc['donor_controls']:c._verify(binding)
     c._verify(doc['donor_campaign']);donor=c._signed(doc['donor_campaign']['path'],'campaign_sha256')
     w.require(donor.get('source_gap_recovery')==doc['prior_source_gap_recovery'],'Previous recovery lineage changed')
     if donor.get('source_gap_recovery'):previous.verify(donor)
+    w.require(donor.get('source_classification_recovery')==doc['prior_source_classification_recovery'],
+              'Previous source-classification lineage changed')
+    _verify_prior_classification(donor,cfg['donor_code_root'])
+    prior_decisions=doc['prior_classification_decisions']
+    actual_paths=sorted((Path(doc['donor_child'])/'source_classifications').glob('*.json'))
+    w.require([b['path'] for b in prior_decisions]==[str(p) for p in actual_paths],
+              'Original classification decisions added, removed or renamed')
+    for binding in prior_decisions:c._verify(binding)
     events=c.events(donor['root']);stops=[e for e in events if e['kind']=='technical_stop']
     w.require(len(stops)==1 and events[-1]==stops[0] and
               stops[0]['evidence']==c._bound(Path(donor['root'])/'technical_stop.json'),

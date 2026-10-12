@@ -16,7 +16,7 @@ from urllib.parse import urlsplit
 
 from bs4 import BeautifulSoup, Comment
 
-RULE_VERSION = 'tiempo-verified-static-empty-shell-v1'
+RULE_VERSION = 'tiempo-verified-static-empty-shell-v2'
 FEATURE_PATH = Path(__file__).with_name('tiempo_empty_shell_features.json')
 _FEATURE_BYTES = FEATURE_PATH.read_bytes()
 FEATURES = json.loads(_FEATURE_BYTES)
@@ -106,8 +106,48 @@ def recommendation_structure(rest, row):
     return result
 
 
-def _known_comment(text, author, published):
+def _known_poll_percentage_comment(comment, value):
+    """Recognize only a redundant percentage label in the sidebar poll UI.
+
+    The numeric slot varies with votes; it is not article evidence. Requiring
+    its actual DOM position and four equal labels prevents a global comment
+    waiver or acceptance of prose/embeds hidden in other source locations.
+    """
+    if comment is None or not 0 <= float(value) <= 100:
+        return False
+    bar = comment.parent
+    progress = bar.parent
+    result = progress.parent
+    poll = result.parent
+    sidebar = poll.find_parent(id='sidebar')
+    if (bar.name != 'div' or set(bar.attrs) != {'class','role','aria-valuenow','aria-valuemin','style'}
+            or bar.get('class') != ['progress-bar'] or bar.get('role') != 'progressbar'
+            or bar.get('aria-valuenow') != value or bar.get('aria-valuemin') != '0'
+            or not re.fullmatch(r'width: '+re.escape(value)+r'%; height:20px; background-color: #(439646|009688|f44336);', _norm(bar.get('style')))):
+        return False
+    if (progress.name != 'div' or progress.attrs != {'class':['progress'],'style':'height:20px;'}
+            or result.name != 'div' or result.attrs != {'id':'result','class':['bs-chart-container','collapse'],'style':'width: 88%;padding: 15px 0;'}
+            or poll.name != 'div' or set(poll.attrs) != {'id','class'} or poll.get('class') != ['encuesta']
+            or re.fullmatch(r'aplicacion-encuesta\d+-container', poll.get('id','')) is None
+            or sidebar is None or sidebar.name != 'div' or sidebar.attrs != {'id':'sidebar'}
+            or poll.find_parent('article') is not None or poll.find_parent(id='main') is not None):
+        return False
+    children = bar.find_all(True, recursive=False)
+    if len(children) != 1 or children[0].name != 'span' or children[0].attrs != {'class': []} or children[0].find(True):
+        return False
+    if _norm(children[0].get_text()) != value+'%':
+        return False
+    comments = bar.find_all(string=lambda node:isinstance(node,Comment))
+    return (len(comments) == 1 and comments[0] is comment
+            and all(isinstance(node,Comment) or not _norm(node) for node in bar.find_all(string=True,recursive=False)))
+
+
+def _known_comment(text, author, published, comment=None):
     text = _norm(text)
+    percentage = re.fullmatch(r'span class="value">(\d{1,3}(?:\.\d+)?)% </span', text)
+    if percentage:
+        # Check contextual numeric comments before legacy fingerprints too.
+        return _known_poll_percentage_comment(comment, percentage.group(1))
     if _sha(text.encode()) in FEATURES['known_comment_sha256']:
         return True
     if re.fullmatch(r'[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', text):
@@ -280,7 +320,7 @@ def classify_empty_article_shell(row, html_bytes, response_metadata, source_chec
             else:
                 need(not rest.select('iframe,video,audio,source,object,embed,table,canvas,svg,template,img'), 'media_outside_primary_article')
         for comment in s.find_all(string=lambda x: isinstance(x, Comment)):
-            need(_known_comment(str(comment), row['authors'], published), 'unrecognized_comment_content')
+            need(_known_comment(str(comment), row['authors'], published, comment), 'unrecognized_comment_content')
         scripts_seen = []
         for script in s.find_all('script'):
             if script is ld[0]:

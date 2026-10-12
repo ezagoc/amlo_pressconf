@@ -2209,3 +2209,15 @@ launch; use the recorded current root. Keep one writer, atomic validated review
 publication, battery/quota pauses, request budgets and storage protections. The
 local locator and live evidence, not this handoff, determine whether collection
 actually started or completed. Never restart an older stopped donor.
+
+## Kevin — October 12, 2026: contextual sidebar-poll correction
+
+The first feature-policy launch retained one new result at child65/335 and
+stopped on changing percentage comments in the sidebar poll. An actual source
+read identified no omitted article prose or media. The isolated successor adds
+only contextual, cross-checked poll-percentage handling; comments elsewhere and
+unknown content still reject. Preserve that stopped runtime, its 335 closed
+results/calls and all original derived decisions. Verify its old policy under
+the old frozen code, not the revised classifier. The current recovery binding
+starts at position336 TC5_514287; 65 new requests reach the still-pending400 gate.
+The local locator remains authoritative for the prepared/launched runtime.

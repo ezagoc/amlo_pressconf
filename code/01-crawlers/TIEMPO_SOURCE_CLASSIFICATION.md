@@ -37,12 +37,23 @@ stop. Existing verified short/video retention, service limits, spacing, retries,
 disk reserve and actual AI gates remain in force.
 
 Offline recovery must verify existing donor files before creating any recovery
-export. Use a disjoint successor, preserving the donor's 334 saved results and
+export. Use a disjoint successor, preserving the donor's 335 saved results and
 closed calls exactly once, its halt, prior recovery lineage and pending duties.
-Original child65 position335 is the first new request. Another66 requests reach
+Original child65 position336 is the first new request. Another65 requests reach
 400 and complete the existing 80-row batch. Save/readback verification and the
 real 400-row AI gate must precede position401. No investigation note substitutes
 for this gate.
+
+The initial feature policy stopped at position335 because four changing sidebar
+poll percentages did not match static comment fingerprints. The saved article
+still had no body or article-specific media. The revised rule permits only the
+inspected percentage-comment syntax in verified sidebar poll progress bars,
+with numeric range and agreement with the bar attributes and visible label.
+It does not permit arbitrary numeric comments, article comments, prose or embeds.
+The old rule, rejected classification and technical stop remain unchanged.
+The successor verifies that earlier classification under its original frozen
+code, then saves separate decisions under the revised rule. This correction is
+not an additional URL whitelist or a new source-reading approval.
 
 Use the recorded successor locator and fixed code version, not an older stopped
 directory. A prepared namespace is not proof of live collection. Check the actual
