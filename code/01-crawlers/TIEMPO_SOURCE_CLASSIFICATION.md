@@ -37,9 +37,9 @@ stop. Existing verified short/video retention, service limits, spacing, retries,
 disk reserve and actual AI gates remain in force.
 
 Offline recovery must verify existing donor files before creating any recovery
-export. Use a disjoint successor, preserving the donor's 340 saved results and
+export. Use a disjoint successor, preserving the donor's 347 saved results and
 closed calls exactly once, its halt, prior recovery lineage and pending duties.
-Original child65 position341 is the first new request. Another60 requests reach
+Original child65 position348 is the first new request. Another53 requests reach
 400 and complete the existing 80-row batch. Save/readback verification and the
 real 400-row AI gate must precede position401. No investigation note substitutes
 for this gate.
@@ -100,3 +100,12 @@ transcript or permanent historical loss. Any article-specific media destination,
 unknown dynamic component, nonempty omitted prose or identity conflict remains
 blocking. Original article_kind, missing_body, nulls and review status remain
 unchanged; derived outcomes are source unavailable, not successful news.
+
+The preserved347 stop came only from leading whitespace inside two standard
+share-button headline payloads. The exact Twitter/mailto endpoint prefixes remain
+required. Only the remaining title payload is whitespace-normalized and compared
+with the independently verified headline. No percent-decoding, destination
+change, extra query/text, generic attribute waiver or content change is allowed.
+The original failure, raw source and rejected decision remain; only a separate
+versioned source-unavailable finding changes. Formal successor verification binds
+347 saved requests,694 ledger events,next348 TC5_603121 and the pending400 gate.

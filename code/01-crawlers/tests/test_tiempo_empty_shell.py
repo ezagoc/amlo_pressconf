@@ -175,6 +175,27 @@ class EmptyShellTests(unittest.TestCase):
                     ('max-height: 600px','max-height: 601px')]:
             with self.subTest(a=a,b=b):self.reject_html(lambda s:s.replace(a,b))
 
+    def test_only_known_share_title_suffix_whitespace_is_normalized(self):
+        for title in [' A synthetic headline','A synthetic headline ','A  synthetic\theadline','\nA synthetic headline\n']:
+            raw=self.case[1].decode()
+            for prefix in ['https://twitter.com/intent/tweet?source=&amp;text=','mailto:?subject=&amp;body=']:
+                raw=raw.replace(prefix+'A synthetic headline',prefix+title)
+            case=rebind(self.case,raw.encode());before=copy.deepcopy(case)
+            with self.subTest(title=title):
+                result=rule.classify_empty_article_shell(*case)
+                self.assertTrue(result['matched'],result);self.assertEqual(case,before)
+
+    def test_share_suffix_rule_cannot_change_destination_or_content(self):
+        for old,new in [('https://twitter.com/intent/tweet?source=&amp;text=','https://other.example/intent/tweet?source=&amp;text='),
+                ('https://twitter.com/intent/tweet?source=&amp;text=','https://twitter.com/intent/tweet?source= &amp;text='),
+                ('mailto:?subject=&amp;body=','mailto:someone@example.org?subject=&amp;body='),
+                ('text=A synthetic headline','text=A different headline'),
+                ('text=A synthetic headline','text=A synthetic headline&amp;url=/hidden-media'),
+                ('body=A synthetic headline','body=A synthetic headline&amp;attachment=/clip'),
+                ('class="complementos-container','data-url="mailto:?subject=&amp;body= A synthetic headline" class="complementos-container')]:
+            with self.subTest(new=new):self.reject_html(lambda s:s.replace(old,new))
+        self.reject_html(lambda s:s.replace('</article>','<a href="mailto:?subject=&amp;body= A synthetic headline">Actual omitted prose</a></article>'))
+
     def test_unknown_comments_cannot_hide_prose_or_embeds(self):
         for markup in ['<!--<p>Real omitted prose.</p>-->','<!--<iframe src="/clip"></iframe>-->',
                        '<!--unrecognized source content-->']:
@@ -352,10 +373,10 @@ class EmptyShellTests(unittest.TestCase):
 
 @unittest.skipUnless(os.environ.get('TIEMPO_EMPTY_SHELL_REAL_BATCH'), 'Set the bound local batch explicitly; no online fixture retrieval.')
 class SavedSourceTests(unittest.TestCase):
-    def test_nine_actual_saved_responses(self):
+    def test_ten_actual_saved_responses(self):
         batch=Path(os.environ['TIEMPO_EMPTY_SHELL_REAL_BATCH']);child=batch.parent.parent
         with sqlite3.connect((batch/'pilot.sqlite').as_uri()+'?mode=ro&immutable=1',uri=True) as db:
-            for sid in ['TC5_476522','TC5_501081','TC5_552341','TC5_560498','TC5_514287','TC5_438720','TC5_557844','TC5_623467','TC5_603201']:
+            for sid in ['TC5_476522','TC5_501081','TC5_552341','TC5_560498','TC5_514287','TC5_438720','TC5_557844','TC5_623467','TC5_603201','TC5_466643']:
                 row=json.loads(db.execute('SELECT payload_json FROM articles WHERE sample_id=?',(sid,)).fetchone()[0])
                 response=json.loads(db.execute('SELECT response_json FROM fetch_attempts WHERE sample_id=?',(sid,)).fetchone()[0])
                 raw=(batch/row['snapshot_path']).read_bytes();check=json.loads((child/'row_checks'/f'{sid}.json').read_text())['record']

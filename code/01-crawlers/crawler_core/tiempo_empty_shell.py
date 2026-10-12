@@ -17,7 +17,7 @@ from urllib.parse import urlsplit
 
 from bs4 import BeautifulSoup, Comment
 
-RULE_VERSION = 'tiempo-verified-static-empty-shell-v5'
+RULE_VERSION = 'tiempo-verified-static-empty-shell-v6'
 FEATURE_PATH = Path(__file__).with_name('tiempo_empty_shell_features.json')
 _FEATURE_BYTES = FEATURE_PATH.read_bytes()
 FEATURES = json.loads(_FEATURE_BYTES)
@@ -95,7 +95,8 @@ def article_structure(article, row):
             if attrs.get('data-link') == row['canonical_url']:
                 attrs['data-link'] = 'CANONICAL_SLOT'
             for prefix in ('https://twitter.com/intent/tweet?source=&text=', 'mailto:?subject=&body='):
-                if _norm(attrs.get('href')) == _norm(prefix + row['title']):
+                href = attrs.get('href', '')
+                if href.startswith(prefix) and _norm(href[len(prefix):]) == _norm(row['title']):
                     attrs['href'] = prefix + 'TITLE_SLOT'
         if node.name == 'a' and re.fullmatch(r'/hits/\d+', attrs.get('href','')):
             attrs['href'] = 'AD_CLICK_SLOT'
