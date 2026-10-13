@@ -2376,3 +2376,26 @@ Remaining original scope1014 URLs; baseline128000; copied prefix counts once.
 Strict main quota below5percent requires safe pause (or continued technical stop),
 verified saving/exit, and explicit new user instruction before any quota resume.
 No hourly automation, human approval, scope expansion, or automatic merge.
+
+
+## 2026-10-13 Paused1600 media-URL validation recovery (Kevin)
+
+The N12 native prefix is1600 saved outcomes/1602 closed calls with no open
+request. The1600 gate remains unapproved;38 actual readings are preserved as
+held drafts. TC5_368888 source.src contains7141 characters of escapedInstagram
+markup, not a media URL. The isolated effective-media fix validates literal
+URL syntax before joining and quarantines only the narrowly source-verified
+inert Instagram attribute template. Unknown/incomplete/dynamic targets still
+block. It neither repairs malformed links nor promotes captions to prose.
+Only four effective media fields may change; native rows, original raw,
+requests and original failure evidence remain immutable. See bound correction
+proofs for original literal, hash, removed false reference and source warning.
+
+The exact paused1600 adapter requires original pause/ledger/exports validation
+before copying only the necessary current working prefix. It inherits400/800/
+1200 gates and preserves the38 held readings without approving1600 or awarding
+new reading credit. The correction-bound1600 gate must pass before1601
+TC5_192913. New faults still stop. Consult live RUN_LOCATION and PROJECT_MEMORY;
+this entry does not assert production preparation, approval or launch.
+Main quota strictly below5 percent pauses; unknown twice does not permit
+expansion. No hourly task, native overwrite, human approval or scope expansion.

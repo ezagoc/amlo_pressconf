@@ -81,13 +81,23 @@ def native_video_links(body,base_url):
   if id(node) in excluded or any(id(parent) in excluded for parent in node.parents):continue
   raw=node.get('src')
   if not isinstance(raw,str) or not raw.strip():continue
-  try:
-   value=urljoin(base_url,raw.strip());parsed=urlsplit(value)
-   if parsed.scheme not in {'http','https'} or not parsed.hostname or parsed.username is not None or parsed.password is not None:continue
-   parsed.port  # Reject invalid ports rather than making an unusable resource.
-  except ValueError:continue
+  value=valid_media_resource(raw,base_url)
+  if value is None:continue
   links.append(value)
  return links
+
+def valid_media_resource(raw,base_url):
+ """Independent URL syntax check; it never repairs or requests a target."""
+ if not isinstance(raw,str) or not raw.strip():return None
+ value=raw.strip()
+ if any(ord(ch)<=32 or ord(ch)==127 or ch in '<>"\\' for ch in value):return None
+ try:
+  original=urlsplit(value)
+  if original.scheme and (original.scheme not in {'http','https'} or not original.netloc):return None
+  resolved=urljoin(base_url,value);parsed=urlsplit(resolved);parsed.port
+  if parsed.scheme not in {'http','https'} or not parsed.hostname or parsed.username is not None or parsed.password is not None:return None
+ except ValueError:return None
+ return resolved
 
 def recognized_source_videos(body,base_url):
  """Independent video markup evidence, never inferred from output labels."""
@@ -100,10 +110,9 @@ def recognized_source_videos(body,base_url):
   if id(node) in ignored_self or any(id(parent) in ignored for parent in node.parents):continue
   attr='href' if node.name=='a' else 'src';raw=node.get(attr)
   if not isinstance(raw,str) or not raw.strip():continue
-  try:
-   resolved=urljoin(base_url,raw.strip());parsed=urlsplit(resolved);parsed.port
-   if parsed.scheme not in {'http','https'} or not parsed.hostname or parsed.username is not None or parsed.password is not None:continue
-  except ValueError:continue
+  resolved=valid_media_resource(raw,base_url)
+  if resolved is None:continue
+  parsed=urlsplit(resolved)
   kind=None
   if node.name in {'video','source'}:kind='native_video'
   elif node.name=='iframe':

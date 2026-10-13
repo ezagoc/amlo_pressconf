@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup, Comment
 MONTHS = dict(zip("enero febrero marzo abril mayo junio julio agosto septiembre octubre noviembre diciembre".split(), range(1, 13)))
 MONTHS["setiembre"] = 9
 BYLINE = re.compile(r"Por:\s*(.*?)\s+(\d{1,2})\s+(" + "|".join(MONTHS) + r")\s+(20\d{2})(?:\s+(\d{1,2}):(\d{2}))?", re.I)
-MEDIA_CLASSIFICATION_VERSION = "tiempo_media_v2_lead_and_body"
+MEDIA_CLASSIFICATION_VERSION = "tiempo_media_v3_validated_source_urls"
 _NON_BODY_MEDIA_SCOPES = "script,style,noscript,iframe,form,button,nav,footer,aside,.share-buttons,.publicidad-content,.ad,#sidebar"
 
 
@@ -349,8 +349,15 @@ def _media_http_url(raw, base):
     """Resolve a source URL without allowing non-web schemes or credentials."""
     if not isinstance(raw, str) or not raw.strip():
         return None
+    value = raw.strip()
+    # A URL attribute may contain escaped HTML. Never join markup or a malformed
+    # absolute scheme onto the article URL and call it a media resource.
+    if re.search(r'[<>"\\\x00-\x20\x7f]', value):
+        return None
+    if re.match(r'^[A-Za-z][A-Za-z0-9+.-]*:', value) and not re.match(r'^https?://', value, re.I):
+        return None
     try:
-        resolved = urljoin(base, raw.strip())
+        resolved = urljoin(base, value)
         parsed = urlparse(resolved)
         # Reading port catches malformed explicit ports, even though no port
         # is needed to extract a URL. Nothing here requests or validates media.

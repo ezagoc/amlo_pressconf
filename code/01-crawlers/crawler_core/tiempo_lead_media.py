@@ -12,8 +12,9 @@ import json
 import re
 import sqlite3
 from pathlib import Path
+from urllib.parse import urljoin
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment, NavigableString
 from . import tiempo_continuous_v5 as w
 from . import tiempo_effective_media_html as extractor
 from . import tiempo_effective_media_source as source
@@ -44,12 +45,77 @@ def _list(value):
     return result
 
 
+def _inert_instagram_attribute(raw):
+    """Recognize source HTML in a URL slot, without interpreting nested links.
+
+    This is a quarantine profile, not an Instagram/video extraction method.
+    Other invalid or unexplained media values must still block collection.
+    """
+    if (not isinstance(raw,str) or not raw.strip().startswith('<blockquote')
+            or not raw.strip().endswith('</script>') or '</blockquote>' not in raw):
+        return False
+    doc=BeautifulSoup(raw,'html.parser')
+    if any(isinstance(n,Comment) or (isinstance(n,NavigableString) and str(n).strip())
+           for n in doc.contents):return False
+    top=doc.find_all(recursive=False)
+    if [n.name for n in top]!=['blockquote','script']:return False
+    quote,script=top
+    if (set(quote.get('class',[]))!={'instagram-media'} or
+            not isinstance(quote.get('data-instgrm-permalink'),str) or
+            set(quote.attrs)-{'class','data-instgrm-captioned','data-instgrm-permalink','data-instgrm-version','style'} or
+            set(script.attrs)-{'src','async'} or script.get_text(strip=True) or
+            script.get('src') not in {'https://www.instagram.com/embed.js','//www.instagram.com/embed.js','/www.instagram.com/embed.js'}):
+        return False
+    if quote.select('script,iframe,video,source,audio,object,embed,canvas,template,form,input,link,meta'):
+        return False
+    attributes={'blockquote':{'class','data-instgrm-captioned','data-instgrm-permalink','data-instgrm-version','style'},
+                'div':{'style'},'a':{'href','style','target'},'p':{'style'},'time':{'datetime','style'},
+                'svg':{'height','width','version','viewbox','xmlns','xmlns:xlink'},
+                'g':{'stroke','stroke-width','fill','fill-rule','transform'},'path':{'d'}}
+    static_css={'background','background-color','border','border-top','border-right','border-left','border-bottom',
+                'border-radius','box-shadow','margin','margin-bottom','margin-top','margin-left','margin-right',
+                'max-width','min-width','padding','padding-top','width','height','display','flex-direction',
+                'flex-grow','align-items','justify-content','line-height','text-align','text-decoration','transform','color',
+                'font-family','font-size','font-style','font-weight','word-wrap','overflow','text-overflow','white-space'}
+    for node in [quote]+quote.find_all(True):
+        style=node.get('style','')
+        if (node.name not in attributes or set(node.attrs)-attributes[node.name]
+                or re.search(r'url\s*\(|expression\s*\(|javascript|vbscript|behavior|@|\\',style,re.I)):
+            return False
+        for declaration in style.split(';'):
+            if declaration.strip() and (':' not in declaration or declaration.split(':',1)[0].strip().lower() not in static_css):return False
+        if node.has_attr('href') and not re.match(r'^https?:/{1,2}(?:www\.)?instagram\.com/',node['href']):return False
+    if not re.match(r'^https?:/{1,2}(?:www\.)?instagram\.com/p/[A-Za-z0-9_-]+/',quote['data-instgrm-permalink']):return False
+    return True
+
+
+def _quarantined_body_targets(article,base_url):
+    body=article.select_one('.complementos-container')
+    if body is None:return [],['effective_media_body_identity_ambiguous']
+    quarantined=[]
+    for node in body.select('video[src],video source[src]'):
+        if any(p.name in {'script','style','noscript','iframe','form','nav','footer','aside'}
+               or set(p.get('class',[])) & {'share-buttons','publicidad-content','ad'}
+               for p in node.parents if p is not body and p is not article):continue
+        raw=node.get('src')
+        if source.valid_media_resource(raw,base_url) is not None:continue
+        if (node.name=='source' and node.parent.name!='video') or not _inert_instagram_attribute(raw):
+            return [],['effective_media_unrecognized_invalid_body_target']
+        quarantined.append({'source':'native_video.src' if node.name=='video' else 'native_video.source.src',
+                            'raw_value':raw,'raw_value_sha256':hashlib.sha256(raw.encode()).hexdigest(),
+                            'original_normalized_url':urljoin(base_url,raw.strip()),
+                            'warning':'source_html_in_media_url_attribute',
+                            'action':'Preserve literal source evidence; exclude from effective URL/video fields. No nested URL repair, media request, transcript or caption promotion.'})
+    return quarantined,[]
+
+
 def compute(row,raw,response,record):
     """Pure comparison. It cannot fetch, edit native data, or waive other errors."""
     original={k:row.get(k) for k in MEDIA_FIELDS}
     base={'status':'no_effective_media_change','original':original,'effective':dict(original),
           'changed_fields':[],'added_references':[],'lead_evidence':[],
-          'technical_blockers':[],'native_other_fields_unchanged':True}
+          'technical_blockers':[],'native_other_fields_unchanged':True,
+          'quarantined_source_targets':[],'removed_references':[],'source_media_warnings':[]}
     if response.get('status') != 200:
         return {**base,'scope':'Native non-200 failure retained; no media correction attempted'}
     if row.get('error')=='soft_error_page':
@@ -81,6 +147,12 @@ def compute(row,raw,response,record):
     articles=soup.select('article#article-post')
     if len(articles)!=1:return stop('effective_media_article_identity_ambiguous')
     article=articles[0]
+    quarantine,body_flags=_quarantined_body_targets(article,row.get('url') or '')
+    if body_flags:return stop(','.join(body_flags))
+    removed={x['original_normalized_url'] for x in quarantine}
+    native_refs=_list(row.get('media_embeds'))
+    if any(source.valid_media_resource(v,row.get('url') or '') is None and v not in removed for v in native_refs):
+        return stop('effective_media_unexplained_invalid_reference')
     leads=[x for x in article.select('blockquote') if not x.find_parent(class_='complementos-container')]
     # Nested social quotes do not create a second outer article lead.
     leads=[x for x in leads if x.parent is article or (x.parent.name=='p' and
@@ -89,18 +161,23 @@ def compute(row,raw,response,record):
     scope,flags=source.independent_lead_media_scope(article,leads[0])
     refs,ref_flags=source.independent_lead_references(scope,row.get('final_url') or row['url'])
     if flags or ref_flags:return stop('effective_media_unknown_lead_structure:'+','.join(sorted(set(flags+ref_flags))))
-    if scope is None:return {**base,'scope':'No lead media; original native body-media fields retained'}
+    if scope is None and not quarantine:return {**base,'scope':'No lead media; original native body-media fields retained'}
     corrected=extractor.tiempo_fields(text,url=row['url'])
     differences=[k for k,v in corrected.items() if k not in MEDIA_FIELDS and row.get(k)!=v]
     if differences:return stop('effective_media_would_change_nonmedia_fields:'+','.join(sorted(differences)))
     before=_list(row.get('media_embeds'));after=_list(corrected.get('media_embeds'))
-    if set(after)!=set(before)|set(refs):return stop('effective_media_independent_reference_mismatch')
+    if not removed<=set(before):return stop('effective_media_quarantine_native_reference_mismatch')
+    if set(after)!=(set(before)-removed)|set(refs):return stop('effective_media_independent_reference_mismatch')
     expected_videos=source.recognized_source_videos(scope,row.get('final_url') or row['url'])
     old_evidence=_list(row.get('media_evidence'));new_evidence=_list(corrected.get('media_evidence'))
     old_urls={x['url'] for x in old_evidence};new_urls={x['url'] for x in new_evidence}
-    if new_urls!=old_urls|{x['url'] for x in expected_videos}:
+    if new_urls!=(old_urls-removed)|{x['url'] for x in expected_videos}:
         return stop('effective_media_independent_video_evidence_mismatch')
-    if not all(x in new_evidence for x in old_evidence):return stop('effective_media_lost_native_evidence')
+    if not all(x in new_evidence for x in old_evidence if x['url'] not in removed):return stop('effective_media_lost_native_evidence')
+    if quarantine and (not row.get('main_text') or not row['main_text'].strip()):
+        return stop('effective_media_quarantine_without_usable_prose')
+    if any(source.valid_media_resource(v,row.get('url') or '') is None for v in after):
+        return stop('effective_media_invalid_effective_reference')
     expected_kind=('article_with_video' if row.get('main_text') else 'video_only') if new_evidence else 'article'
     if corrected.get('article_kind')!=expected_kind:return stop('effective_media_kind_mismatch')
     effective={k:corrected.get(k) for k in MEDIA_FIELDS}
@@ -110,6 +187,9 @@ def compute(row,raw,response,record):
     return {**base,'status':'effective_media_correction','effective':effective,
             'changed_fields':[k for k in MEDIA_FIELDS if original[k]!=effective[k]],
             'added_references':[x for x in after if x not in before],
+            'removed_references':[x for x in before if x in removed],
+            'quarantined_source_targets':quarantine,
+            'source_media_warnings':['source_html_in_media_url_attribute'] if quarantine else [],
             'lead_evidence':expected_videos,'scope':'Unique source-bound article lead before byline plus original body media; no transcript or media HTTP request'}
 
 
