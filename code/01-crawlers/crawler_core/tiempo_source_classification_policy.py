@@ -12,8 +12,9 @@ from . import tiempo_continuous_v5 as w
 from . import tiempo_empty_shell as classifier
 from . import tiempo_source_encoding as encoding
 from . import tiempo_lead_media as lead_media
+from . import tiempo_title_scope as title_scope
 
-SCHEMA = 'tiempo-source-classification-policy-v5-effective-media'
+SCHEMA = 'tiempo-source-classification-policy-v6-title-scope'
 DECISION_SCHEMA = 'tiempo-bound-source-classification-v4'
 EXPLAINED_FLAGS = {'missing_body', 'unexplained_result_error'}
 REPRESENTATION_FLAGS = {'source_title_metadata_disagreement', 'visible_title_difference'}
@@ -29,6 +30,14 @@ def _source_gap_kind(decision):
 
 def _explained_flags(decision,record):
     """A matched, recomputed source proof can explain only its own flags."""
+    if decision.get('classification')==title_scope.CLASSIFICATION:
+        extra=decision.get('evidence',{}).get('explained_title_flags')
+        w.require(decision.get('matched') is True and extra==sorted(title_scope.EXPLAINABLE_FLAGS) and
+                  not record.get('critical_flags') and
+                  set(record.get('unexplained_flags',[]))==title_scope.EXPLAINABLE_FLAGS and
+                  title_scope.EXPLAINABLE_FLAGS<=set(record.get('automatic_flags',[])),
+                  'Title-scope correction cannot waive other anomalies')
+        return set(extra)
     if decision.get('classification')==encoding.CLASSIFICATION:
         extra=decision.get('evidence',{}).get('explained_encoding_flags')
         observed=set(record.get('automatic_flags',[]))
@@ -66,15 +75,19 @@ def _once(path,doc):
         w.write(path.parent,path.name,doc)
 
 
-def create_policy(root, indices, synthetic):
+def create_policy(root, indices, synthetic, title_role_evidence=None):
     root=Path(root).resolve()
     doc={'schema':SCHEMA,'author':'Kevin','campaign_root':str(root),'child_indices':indices,
          'synthetic_fixture':synthetic,'rule_version':classifier.RULE_VERSION,
          'classifier':_binding(classifier.__file__),'features':_binding(classifier.FEATURE_PATH),'overlay':_binding(__file__),
          'encoding_rule_version':encoding.RULE_VERSION,'encoding_helper':_binding(encoding.__file__),
          'effective_media_code':lead_media.code_bindings(),
+         'title_scope_rule_version':title_scope.RULE_VERSION,'title_scope_helper':_binding(title_scope.__file__),
+         'title_role_evidence':title_role_evidence,
          'native_program_sha256':w.program_hashes(),'human_approval':False,'article_acceptance':False,
          'semantics':'Native errors, row checks and full risk history are preserved. Feature-verified missing HTML bodies remain source_unavailable, distinguishing no-media shells and static header-image references. Separately, successful text-bearing article candidates can receive a response-bound UTF-8 diagnostic correction only when the unchanged checker with exact saved-response decoding explains all relevant native mismatch flags and no other technical anomaly remains. Such corrections preserve article_candidate status and are not source gaps, article acceptance or AI/human approval. Only each recomputed decision-specific explained flags are removed from the derived stop assessment. All other anomalies and required actual AI review gates remain effective.'}
+    title_scope.read_role_evidence(title_role_evidence)
+    doc['title_scope_semantics']='Only an exact-source actual AI role reading plus verified editor structure can remove body-prose H1 nodes from title candidates. Native null title, missing_title error, original diagnostic and research duties remain. Unknown or true headlines retain alarms. This changes only the derived stop assessment; no title is filled and no human approval is added.'
     path=root/'Source_Classification_Policy.json';_once(path,doc)
     return _binding(path)
 
@@ -83,6 +96,8 @@ def validate_policy(root,plan,binding):
     if binding is None:return None
     _verify(binding);doc=w.load(binding['path']);root=Path(root).resolve()
     _verify(doc['classifier']);_verify(doc['features']);_verify(doc['overlay']);_verify(doc['encoding_helper'])
+    _verify(doc['title_scope_helper']);title_scope.read_role_evidence(doc['title_role_evidence'])
+    w.require(doc['title_scope_helper']==_binding(title_scope.__file__) and doc['title_scope_rule_version']==title_scope.RULE_VERSION,'Title scope binding differs')
     w.require(doc.get('effective_media_code')==lead_media.code_bindings(),'Effective media code binding differs')
     base=Path(doc['campaign_root'])/'Media/data/00-newspaper_data/crawler/pilots/Kevin/tiempo_continuous_v5'
     allowed=[base/f'remaining_plan_{index:06d}' for index in doc['child_indices']]
@@ -113,11 +128,13 @@ def _source(root,batch,row,record):
 
 
 def requires_classification(row,record):
-    return (row.get('error')=='missing_body' or 'missing_body' in record.get('automatic_flags',[]) or
+    return ((row.get('error')=='missing_title' and 'unexplained_result_error' in record.get('automatic_flags',[])) or row.get('error')=='missing_body' or 'missing_body' in record.get('automatic_flags',[]) or
             bool(set(record.get('automatic_flags',[])) & encoding.EXPLAINABLE_FLAGS))
 
 
-def _classify(row,raw,response,record,batch):
+def _classify(row,raw,response,record,batch,policy_binding,payload_sha256,row_check_sha256):
+    if row.get("error")=="missing_title":
+        return title_scope.classify(row,raw,response,record,batch,role_evidence=w.load(policy_binding["path"]).get("title_role_evidence"),payload_sha256=payload_sha256,row_check_sha256=row_check_sha256)
     if row.get('error')=='missing_body' or 'missing_body' in record.get('automatic_flags',[]):
         return classifier.classify_empty_article_shell(row,raw,response,record)
     return encoding.classify_encoding_disagreement(row,raw,response,record,batch)
@@ -125,11 +142,11 @@ def _classify(row,raw,response,record,batch):
 
 def _outcomes(decision,record):
     matched=decision.get('matched') is True
-    correction=matched and decision.get('classification')==encoding.CLASSIFICATION
+    correction=matched and decision.get('classification') in {encoding.CLASSIFICATION,title_scope.CLASSIFICATION}
     gap=matched and not correction
     return {'effective_outcome':'source_unavailable' if gap else record.get('collection_outcome'),
             'source_gap_kind':_source_gap_kind(decision) if gap else None,
-            'correction_kind':encoding.CLASSIFICATION if correction else None,
+            'correction_kind':decision.get('classification') if correction else None,
             'article_candidate':False if gap else record.get('collection_outcome')=='article_candidate',
             'research_status':'NEEDS_JOAQUIN_REVIEW' if matched else None}
 
@@ -142,7 +159,7 @@ def assess(root,plan,batch,row,record,policy_binding):
     if not requires_classification(row,record):
         return None
     payload,response,raw,check,database=_source(root,batch,row,record)
-    decision=_classify(row,raw.read_bytes(),response,record,batch)
+    decision=_classify(row,raw.read_bytes(),response,record,batch,policy_binding,hashlib.sha256(payload.encode()).hexdigest(),w.sha_file(check))
     matched=decision.get('matched') is True
     explained=_explained_flags(decision,record) if matched else set()
     doc={'schema':DECISION_SCHEMA,'author':'Kevin','sample_id':row['sample_id'],
@@ -165,7 +182,7 @@ def verify_decision(binding,record,policy_binding,cache=None):
     if cache is not None and key in cache:return cache[key]
     _verify(binding);doc=w.load(binding['path']);_verify(doc['raw']);_verify(doc['native_row_check'])
     w.require(doc['schema']==DECISION_SCHEMA and doc['policy']==policy_binding and
-              doc['rule_version'] in {classifier.RULE_VERSION,encoding.RULE_VERSION} and doc['native_record_sha256']==w.digest(record) and
+              doc['rule_version'] in {classifier.RULE_VERSION,encoding.RULE_VERSION,title_scope.RULE_VERSION} and doc['native_record_sha256']==w.digest(record) and
               doc['sample_id']==record['sample_id'] and doc['human_approval'] is False and
               doc['article_acceptance'] is False and doc['manual_review_status']=='not_reviewed',
               'Inherited classification is not bound to this native history record/policy')
@@ -181,7 +198,7 @@ def verify_decision(binding,record,policy_binding,cache=None):
               w.fields_digest(row)==doc['fields_sha256'] and w.digest(response)==doc['response_metadata_sha256'] and
               attempt['sample_id']==record['sample_id'] and attempt['url']==row['url'] and
               row['snapshot_sha256']==doc['raw']['sha256'], 'Inherited source classification input changed')
-    actual=_classify(row,Path(doc['raw']['path']).read_bytes(),response,record,dbpath.parent)
+    actual=_classify(row,Path(doc['raw']['path']).read_bytes(),response,record,dbpath.parent,policy_binding,doc['payload_sha256'],doc['native_row_check']['sha256'])
     w.require(actual==doc['decision'] and doc['rule_version']==actual['rule_version'],
               'Inherited classification cannot be an unverified Boolean approval')
     matched=actual.get('matched') is True
@@ -230,10 +247,12 @@ def summary(root,plan,bindings,records,policy_binding):
             doc=verify_decision(bound,record,policy_binding)
             docs.append({'sample_id':record['sample_id'],'binding':bound,'effective_outcome':doc['effective_outcome'],
                          'classified_source_gap':doc['source_gap_kind'] is not None,
-                         'classified_encoding_correction':doc['correction_kind'] is not None})
+                         'classified_encoding_correction':doc['correction_kind']==encoding.CLASSIFICATION,
+                         'classified_title_scope_correction':doc['correction_kind']==title_scope.CLASSIFICATION})
     doc={'schema':SCHEMA,'author':'Kevin','policy':policy_binding,'native_plan_sha256':plan['plan_sha256'],
          'native_rows':len(records),'classified_source_gap_count':sum(x['classified_source_gap'] for x in docs),
          'classified_encoding_correction_count':sum(x['classified_encoding_correction'] for x in docs),
+         'classified_title_scope_correction_count':sum(x['classified_title_scope_correction'] for x in docs),
          'records':docs,'native_rows_modified':False,'human_approval':False,'article_acceptance':False}
     doc['effective_media_summary']=media_summary
     path=Path(root)/'source_classification_summaries'/f"saved_{len(records):08d}.json";_once(path,doc)

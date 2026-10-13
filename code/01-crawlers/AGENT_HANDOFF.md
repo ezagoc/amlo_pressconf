@@ -2399,3 +2399,28 @@ TC5_192913. New faults still stop. Consult live RUN_LOCATION and PROJECT_MEMORY;
 this entry does not assert production preparation, approval or launch.
 Main quota strictly below5 percent pauses; unknown twice does not permit
 expansion. No hourly task, native overwrite, human approval or scope expansion.
+
+## 2026-10-13 Stopped107 title-channel scope recovery (Kevin)
+
+N13 ended at child66/107, with107 closed calls and no open request; baseline
+130000 excludes that inherited107, so424 original URLs remain. The native
+27-row tail has valid exports/readback evidence but no original native batch
+certificate. Preserve it, the original technical halt, and child65 completed
+2000/gates unchanged. Never launch the stopped N13 namespace.
+
+The isolated title-role overlay requires an exact saved-source actual AI role
+reading plus the verified editor structure and intact identity/prose/date/response.
+It removes only proven body-prose H1 channels from derived title assessment;
+it cannot infer role from H1, length, or JSON-LD alone. Real/explicit/unresolved
+headlines, conflicting metadata, unknown structures and missing prose still block.
+Native null titles, body, original missing_title diagnostics and research duties
+remain. No new title, body, source reading credit or human approval is created.
+
+The exact107 successor validates original files before copying the necessary
+current prefix, binds source-role evidence and old halt, and derives corrections
+separately. Original108 TC5_138299 is next;53 new outcomes complete the80-row batch
+at160. Actual400 and final531 gates remain mandatory and unapproved at preparation.
+Use current PROJECT_MEMORY/RUN_LOCATION for live state. Main quota strictly below
+5percent requires verified safe pause and explicit new authorization to resume;
+unknown quota is not sufficient. Keep one collector, actual readers, battery guard,
+original intervals/retries,10GiB reserve; no hourly automation or tracker update.
