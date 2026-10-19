@@ -1,0 +1,2134 @@
+{
+  "entries": [
+    {
+      "name": "Uno TV",
+      "id": "uno tv",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "year_founded": 2008,
+        "founding_date": "2008-12-22",
+        "owner_group": "América Móvil Contenidos",
+        "legal_name": "AMX Contenido, S.A. de C.V.",
+        "state": "Ciudad de Mexico",
+        "municipality": "Miguel Hidalgo",
+        "type_media": "digital / video",
+        "coverage_scope": "national",
+        "url": "https://www.unotv.com/",
+        "twitter_handle": "@UnoNoticias"
+      },
+      "sources": [
+        "https://www.unotv.com/acerca-de/quienes-somos/",
+        "https://www.unotv.com/acerca-de/aviso-de-privacidad/",
+        "https://www.unotv.com/acerca-de/portal/terminos-de-uso/",
+        "https://www.unotv.com/"
+      ],
+      "review_note": "",
+      "legal_entities": [
+        {
+          "name": "AMX Contenido, S.A. de C.V.",
+          "source": "https://www.unotv.com/acerca-de/aviso-de-privacidad/",
+          "relationship": "privacy responsible"
+        },
+        {
+          "name": "Publicidad y Contenido Editorial, S.A. de C.V.",
+          "source": "https://www.unotv.com/acerca-de/portal/terminos-de-uso/",
+          "relationship": "website terms entity; period applicability requires review"
+        }
+      ],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UC-bk3CDvTwt2TqPHykduhcQ",
+        "channel_id": "UC-bk3CDvTwt2TqPHykduhcQ",
+        "source": "https://www.unotv.com/acerca-de/quienes-somos/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@unotv"
+      },
+      "missing_fields": [
+        "founder_name"
+      ],
+      "question_id": "unotv",
+      "linkage_id": "unotv",
+      "youtube_check_status": "verified_official_link"
+    },
+    {
+      "name": "Enfoque Oportuno",
+      "id": "enfoque oportuno",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "digital",
+        "url": "https://enfoqueoportuno.com/",
+        "twitter_handle": "@OportunoEnfoque"
+      },
+      "sources": [
+        "https://enfoqueoportuno.com/"
+      ],
+      "review_note": "Distinct from Enfoque Noticias. Exact attendance label found.",
+      "legal_entities": [],
+      "missing_fields": [
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "enfoque oportuno",
+      "linkage_id": "enfoque oportuno",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCs0fUuFvp1N1aef4qiN_3tQ",
+        "channel_id": "UCs0fUuFvp1N1aef4qiN_3tQ",
+        "source": "https://www.youtube.com/@enfoqueoportuno3814",
+        "status": "needs_identity_review",
+        "checked_at": "2026-10-16",
+        "original_url": null
+      },
+      "youtube_check_status": "needs_identity_review"
+    },
+    {
+      "name": "Diario Red Latinoamerica",
+      "id": "diario red latinoamerica",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "year_founded": 2025,
+        "founding_date": "2025-03-21",
+        "type_media": "digital",
+        "coverage_scope": "international",
+        "url": "https://www.diario-red.com/"
+      },
+      "sources": [
+        "https://www.diario-red.com/articulo/editorial/a-okupar-los-medios/20250321110118044428.html",
+        "https://www.diario-red.com/"
+      ],
+      "review_note": "User confirmed Diario Red Latinoamerica = Diario Red on 2026-10-16. DIARIO RED has 5 eligible attendance records in September 2025 and is now linked. The mixed DIARIO.RED, PIEDEPAGINA.MX label (October 2024) remains separate; the Latin America edition launch is March 2025, not the founding date of the parent brand.",
+      "legal_entities": [],
+      "missing_fields": [
+        "legal_name",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "diario red latinoamerica",
+      "linkage_id": "diario red latinoamerica",
+      "youtube_check_status": "not_identified"
+    },
+    {
+      "name": "Hidalgo News",
+      "id": "hidalgo news",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "digital",
+        "state": "Hidalgo",
+        "url": "https://hidalgonews.mx/",
+        "twitter_handle": "@hidalgonewsmx"
+      },
+      "sources": [
+        "https://hidalgonews.mx/"
+      ],
+      "review_note": "Homepage links MarcoOlveraOficial1 on YouTube. A link alone is insufficient to merge the outlet or select that channel as Hidalgo News.",
+      "legal_entities": [],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCRnrpzWcc20-BHRtSdzdSuw",
+        "channel_id": "UCRnrpzWcc20-BHRtSdzdSuw",
+        "source": "https://hidalgonews.mx/",
+        "status": "needs_identity_review",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@MarcoOlveraOficial1"
+      },
+      "missing_fields": [
+        "legal_name",
+        "year_founded",
+        "founder_name"
+      ],
+      "question_id": "hidalgo news",
+      "linkage_id": "hidalgo news",
+      "youtube_check_status": "needs_identity_review"
+    },
+    {
+      "name": "ABC Australia",
+      "id": "abc australia",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "year_founded": 1932,
+        "founding_date": "1932-07-01",
+        "legal_name": "Australian Broadcasting Corporation",
+        "type_media": "television / radio / digital",
+        "coverage_scope": "international",
+        "url": "https://www.abc.net.au/news/"
+      },
+      "sources": [
+        "https://www.abc.net.au/about/about-the-abc",
+        "https://www.abc.net.au/listen/programs/conversations/conversations-abc-90-for-90/13945278",
+        "https://www.abc.net.au/news/"
+      ],
+      "review_note": "Australian public broadcaster; separate from Mexican ABC and US ABC News. Founding year refers to broadcaster, not news website.",
+      "legal_entities": [
+        {
+          "name": "Australian Broadcasting Corporation",
+          "source": "https://www.abc.net.au/about/about-the-abc",
+          "relationship": "public corporation"
+        }
+      ],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCVgO39Bk5sMo66-6o6Spn6Q",
+        "channel_id": "UCVgO39Bk5sMo66-6o6Spn6Q",
+        "source": "https://www.abc.net.au/news/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@abcnewsaustralia"
+      },
+      "missing_fields": [
+        "founder_name",
+        "state"
+      ],
+      "question_id": "abc australia",
+      "linkage_id": "abc australia",
+      "youtube_check_status": "verified_official_link"
+    },
+    {
+      "name": "Der Spiegel",
+      "id": "der spiegel",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "year_founded": 1947,
+        "founding_date": "1947-01-04",
+        "founder_name": "Rudolf Augstein",
+        "legal_name": "SPIEGEL-Verlag Rudolf Augstein GmbH & Co. KG",
+        "type_media": "revista / digital",
+        "coverage_scope": "international",
+        "city_headq": "Hamburg",
+        "url": "https://www.spiegel.de/"
+      },
+      "sources": [
+        "https://gruppe.spiegel.de/unternehmen/historie",
+        "https://gruppe.spiegel.de/impressum",
+        "https://www.spiegel.de/"
+      ],
+      "review_note": "",
+      "legal_entities": [
+        {
+          "name": "SPIEGEL-Verlag Rudolf Augstein GmbH & Co. KG",
+          "source": "https://gruppe.spiegel.de/impressum",
+          "relationship": "publisher"
+        }
+      ],
+      "missing_fields": [
+        "state"
+      ],
+      "question_id": "der spiegel",
+      "linkage_id": "der spiegel",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UC1w6pNGiiLdZgyNpXUnA4Zw",
+        "channel_id": "UC1w6pNGiiLdZgyNpXUnA4Zw",
+        "source": "https://www.youtube.com/channel/UC1w6pNGiiLdZgyNpXUnA4Zw",
+        "status": "verified_channel_profile",
+        "checked_at": "2026-10-16",
+        "original_url": null
+      },
+      "youtube_check_status": "verified_channel_profile"
+    },
+    {
+      "name": "Miled",
+      "id": "miled",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "radio / digital",
+        "coverage_scope": "multistate",
+        "url": "https://miled.com/",
+        "twitter_handle": "@noticiasmiled"
+      },
+      "sources": [
+        "https://miled.com/"
+      ],
+      "review_note": "Multistation radio/digital brand; station launches are not the founding date of the group.",
+      "legal_entities": [],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCsHI3Guf8kmuuY7l_Y8pI4w",
+        "channel_id": "UCsHI3Guf8kmuuY7l_Y8pI4w",
+        "source": "https://miled.com/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@SuperStereoMILED"
+      },
+      "missing_fields": [
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "miled",
+      "linkage_id": "miled",
+      "youtube_check_status": "verified_official_link"
+    },
+    {
+      "name": "Agua Quemada",
+      "id": "agua quemada",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "digital",
+        "url": "https://aguaquemada.mx/",
+        "twitter_handle": "@aguaquemadamx"
+      },
+      "sources": [
+        "https://aguaquemada.mx/nosotros/",
+        "https://aguaquemada.mx/"
+      ],
+      "review_note": "Co-mentioned with Los Tubos and Postdata in a transcript; this is not ownership evidence.",
+      "legal_entities": [],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCdJ6WZH_4y43sdandQHMCDw",
+        "channel_id": "UCdJ6WZH_4y43sdandQHMCDw",
+        "source": "https://aguaquemada.mx/nosotros/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@aguaquemadamx"
+      },
+      "missing_fields": [
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "agua quemada",
+      "linkage_id": "agua quemada",
+      "youtube_check_status": "verified_official_link"
+    },
+    {
+      "name": "Los Tubos",
+      "id": "los tubos",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "digital",
+        "state": "Nuevo Leon",
+        "coverage_scope": "regional",
+        "url": "https://lostubos.com/",
+        "twitter_handle": "@lostubosmty"
+      },
+      "sources": [
+        "https://lostubos.com/los-tubos/",
+        "https://lostubos.com/",
+        "https://lostubos.com/politica-privacidad/"
+      ],
+      "review_note": "Separate from Noreste. No verified common ownership.",
+      "legal_entities": [],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UC2TNo5mdeEL5lBfI-DZh03w",
+        "channel_id": "UC2TNo5mdeEL5lBfI-DZh03w",
+        "source": "https://lostubos.com/los-tubos/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/channel/UC2TNo5mdeEL5lBfI-DZh03w"
+      },
+      "missing_fields": [
+        "legal_name",
+        "year_founded",
+        "founder_name"
+      ],
+      "question_id": "los tubos",
+      "linkage_id": "los tubos",
+      "youtube_check_status": "verified_official_link"
+    },
+    {
+      "name": "La Pancarta de Quintana Roo",
+      "id": "la pancarta de quintana roo",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "digital",
+        "state": "Quintana Roo",
+        "url": "https://lapancartadequintanaroo.com.mx/"
+      },
+      "sources": [
+        "https://lapancartadequintanaroo.com.mx/"
+      ],
+      "review_note": "Identified in mixed attendance label LA PANCARTA DE QUINTANA ROO, Y SABER P (1 eligible record, 2025-08-15), corroborated by a La Pancarta self-introduction in the local official transcript on the same date. Brand presence is confirmed; the combined record remains excluded from single-outlet assignment pending a multi-affiliation rule.",
+      "legal_entities": [],
+      "missing_fields": [
+        "legal_name",
+        "year_founded",
+        "founder_name"
+      ],
+      "question_id": "la pancarta de quintana roo",
+      "linkage_id": "la pancarta de quintana roo",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCluAUFcI-uhxCn0O2km-rjg",
+        "channel_id": "UCluAUFcI-uhxCn0O2km-rjg",
+        "source": "https://www.youtube.com/@lapancartadequintanaroo6000",
+        "status": "needs_identity_review",
+        "checked_at": "2026-10-16",
+        "original_url": null
+      },
+      "youtube_check_status": "needs_identity_review"
+    },
+    {
+      "name": "El Politico en las Redes",
+      "id": "el politico en las redes",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "url": "https://revistaelpolitico.com/",
+        "legal_name": "Comunicación y Tecnología en Medios del Centro, S.A. de C.V.",
+        "state": "Puebla",
+        "municipality": "San Andrés Cholula",
+        "address": "Atlixcáyotl 1499 A-13, piso 2, Reserva Territorial Atlixcáyotl, CP 72820, San Andrés Cholula, Puebla",
+        "type_media": "digital",
+        "journalist": "Manuel Galeazzi Ramírez",
+        "twitter_handle": "@politicodelared"
+      },
+      "sources": [
+        "https://revistaelpolitico.com/",
+        "https://revistaelpolitico.com/politica-privacidad/",
+        "https://revistaelpolitico.com/aviso-legal/",
+        "https://www.gob.mx/presidencia/articulos/version-estenografica-conferencia-de-prensa-de-la-presidenta-claudia-sheinbaum-pardo-del-18-de-octubre-de-2024?idiom=es",
+        "https://sinlineamx.com/wp-content/uploads/2025/06/Revista-SL-Vol-16-web.pdf"
+      ],
+      "review_note": "User confirmed revistaelpolitico.com. Manuel Galeazzi Ramirez explicitly identifies Sin Linea and El Politico en las Redes together in the official 2024-10-18 transcript; also present in local transcripts 2025-01-09 and 2025-03-21. Affiliation with Grupo Editorial Sin Linea is documented, but legal ownership and historical common identity are not inferred. Keep separate brand IDs; do not transfer all Sin Linea attendance or duplicate question turns. POLITICO.MX attendance is a different outlet. Website footer 2021 is not a verified founding year.",
+      "legal_entities": [
+        {
+          "name": "Comunicación y Tecnología en Medios del Centro, S.A. de C.V.",
+          "source": "https://revistaelpolitico.com/politica-privacidad/",
+          "relationship": "website privacy responsible and legal notice entity; historical applicability requires review"
+        }
+      ],
+      "missing_fields": [
+        "year_founded",
+        "founder_name"
+      ],
+      "question_id": "el politico en las redes",
+      "linkage_id": "el politico en las redes",
+      "youtube_check_status": "not_identified"
+    },
+    {
+      "name": "Helios Comunicacion",
+      "id": "helios comunicacion",
+      "reviewed_at": "2026-10-16",
+      "fields": {},
+      "sources": [],
+      "review_note": "HELIOS COMUNICACIONES occurs once in attendance. heliosmx.org is a candidate engineering publisher, not established as the attending outlet; no URL assigned.",
+      "legal_entities": [],
+      "missing_fields": [
+        "url",
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "helios comunicacion",
+      "linkage_id": "helios comunicacion",
+      "youtube_check_status": "not_identified"
+    },
+    {
+      "name": "Revista Fortuna",
+      "id": "revista fortuna",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "legal_name": "V&L Global Services Consulting & Advisors Business, S.C.",
+        "type_media": "revista / digital",
+        "coverage_scope": "national",
+        "state": "Ciudad de Mexico",
+        "url": "https://revistafortuna.com.mx/",
+        "year_founded": 2003,
+        "founding_date": "2003-02"
+      },
+      "sources": [
+        "https://revistafortuna.com.mx/aviso-de-privacidad/",
+        "https://www.consar.gob.mx/gobmx/general/obligaciones_transparencia/art70/Fraccion_XXIII/B/2024/CONTRATOS2024/CONSAR0852024_VLGLOBALSERVICESCONSULTING.pdf",
+        "https://fonacot.gob.mx/SIPOT-XXVIII/XXVIII%202025/FNCOT-AD-CAAS-123-2025/FNCOT%20AD%20CAAS%20123%202025%20VP.pdf",
+        "https://revistafortuna.com.mx/",
+        "https://revistafortuna.com.mx/2026/03/08/en-su-cuarta-edicion-de-el-personaje-del-ano-revista-fortuna-reconoce-el-trabajo-de-la-dra-cristina-rivera-garza-premio-pulitzer-y-nominada-al-premio-nobel-de-literatura/"
+      ],
+      "review_note": "",
+      "legal_entities": [
+        {
+          "name": "V&L Global Services Consulting & Advisors Business, S.C.",
+          "rfc": "VGS140401A35",
+          "source": "https://www.consar.gob.mx/gobmx/general/obligaciones_transparencia/art70/Fraccion_XXIII/B/2024/CONTRATOS2024/CONSAR0852024_VLGLOBALSERVICESCONSULTING.pdf",
+          "relationship": "advertising provider for Revista Fortuna; corroborated privacy responsible"
+        }
+      ],
+      "missing_fields": [
+        "founder_name"
+      ],
+      "question_id": "revista fortuna",
+      "linkage_id": "revista fortuna",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCxGqK_Mplf5jw17yqNUiJrQ",
+        "channel_id": "UCxGqK_Mplf5jw17yqNUiJrQ",
+        "source": "https://www.youtube.com/@RevistaFortuna",
+        "status": "needs_identity_review",
+        "checked_at": "2026-10-16",
+        "original_url": null
+      },
+      "youtube_check_status": "needs_identity_review"
+    },
+    {
+      "name": "Canal Universidad de Guadalajara",
+      "id": "canal universidad de guadalajara",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "year_founded": 2011,
+        "founding_date": "2011-01-31",
+        "owner_group": "Universidad de Guadalajara",
+        "type_media": "television / digital",
+        "state": "Jalisco",
+        "municipality": "Guadalajara",
+        "coverage_scope": "state",
+        "url": "https://udgtv.com/"
+      },
+      "sources": [
+        "https://www.gaceta.udg.mx/la-udeg-toma-la-television/",
+        "https://ww1.udg.mx/es/promociones/s-parte-la-comunidad-44",
+        "https://udgtv.com/"
+      ],
+      "review_note": "First broadcast date; not the 2010 permit date. Distinct from Intermedia/XHIJ Canal 44. Bare CANAL 44 unresolved.",
+      "legal_entities": [],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCj8fSVDJwXy2uLm_8gZjBnQ",
+        "channel_id": "UCj8fSVDJwXy2uLm_8gZjBnQ",
+        "source": "https://udgtv.com/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/user/CANAL44TV"
+      },
+      "missing_fields": [
+        "legal_name",
+        "founder_name"
+      ],
+      "question_id": "canal 44 udg",
+      "linkage_id": "canal 44 udg",
+      "youtube_check_status": "verified_official_link"
+    },
+    {
+      "name": "Grupo Intermedia",
+      "id": "grupo intermedia",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "legal_name": "Grupo Intermedia, S.A. de C.V.",
+        "type_media": "television / digital",
+        "state": "Chihuahua",
+        "municipality": "Juarez",
+        "coverage_scope": "regional",
+        "url": "https://canal44.com/"
+      },
+      "sources": [
+        "https://www.te.gob.mx/EE/SG/2016/JRC/119/SG_2016_JRC_119-605436.pdf",
+        "https://canal44.com/"
+      ],
+      "review_note": "Canal 44 Ciudad Juarez/XHIJ; distinct from Universidad de Guadalajara. Group incorporation date not verified.",
+      "legal_entities": [
+        {
+          "name": "Grupo Intermedia, S.A. de C.V.",
+          "source": "https://www.te.gob.mx/EE/SG/2016/JRC/119/SG_2016_JRC_119-605436.pdf",
+          "relationship": "Canal 44 operator identified in court record"
+        }
+      ],
+      "missing_fields": [
+        "year_founded",
+        "founder_name"
+      ],
+      "question_id": "grupo intermedia",
+      "linkage_id": "grupo intermedia",
+      "youtube_check_status": "not_identified"
+    },
+    {
+      "name": "Posta",
+      "id": "posta",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "digital",
+        "coverage_scope": "national",
+        "url": "https://www.posta.com.mx/",
+        "twitter_handle": "@postamx"
+      },
+      "sources": [
+        "https://www.posta.com.mx/aviso-de-privacidad",
+        "https://www.posta.com.mx/"
+      ],
+      "review_note": "Privacy notice identifies POSTA Comunicacion but does not supply full legal form or RFC.",
+      "legal_entities": [
+        {
+          "name": "POSTA Comunicación",
+          "source": "https://www.posta.com.mx/aviso-de-privacidad",
+          "relationship": "privacy responsible; legal form unverified",
+          "status": "partial"
+        }
+      ],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCajPfXohuBQr_jpRNIJBQ4w",
+        "channel_id": "UCajPfXohuBQr_jpRNIJBQ4w",
+        "source": "https://www.posta.com.mx/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@Postamx"
+      },
+      "missing_fields": [
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "posta",
+      "linkage_id": "posta",
+      "youtube_check_status": "verified_official_link"
+    },
+    {
+      "name": "Noticias de Frente",
+      "id": "noticias de frente",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "digital",
+        "coverage_scope": "national",
+        "url": "https://noticiasdefrente.com/",
+        "state": "Ciudad de Mexico",
+        "twitter_handle": "@NDFrente"
+      },
+      "sources": [
+        "https://noticiasdefrente.com/2026/01/14/acerca-de-nosotros/",
+        "https://noticiasdefrente.com/",
+        "https://noticiasdefrente.com/politica-de-privacidad/"
+      ],
+      "review_note": "About-page publication date is not a founding date; news archive predates it.",
+      "legal_entities": [],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UC26mDmynpJiRfW5cVen8KAw",
+        "channel_id": "UC26mDmynpJiRfW5cVen8KAw",
+        "source": "https://noticiasdefrente.com/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@NoticiasdeFrenteOficial"
+      },
+      "missing_fields": [
+        "legal_name",
+        "year_founded",
+        "founder_name"
+      ],
+      "question_id": "noticias de frente",
+      "linkage_id": "noticias de frente",
+      "youtube_check_status": "verified_official_link"
+    },
+    {
+      "name": "Ecos Media",
+      "id": "ecos media",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "digital",
+        "url": "https://ecosmediamx.com/",
+        "twitter_handle": "@ecosmediamx"
+      },
+      "sources": [
+        "https://ecosmediamx.com/"
+      ],
+      "review_note": "ECOS MEDIA MX exact attendance label. No evidence to merge with Ecosfera.",
+      "legal_entities": [],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCUtmb6lCbaUbNzsYS5CWEWw",
+        "channel_id": "UCUtmb6lCbaUbNzsYS5CWEWw",
+        "source": "https://ecosmediamx.com/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@ecosmediamx"
+      },
+      "missing_fields": [
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "ecos media",
+      "linkage_id": "ecos media",
+      "youtube_check_status": "verified_official_link"
+    },
+    {
+      "name": "Ecosfera",
+      "id": "ecosfera",
+      "reviewed_at": "2026-10-16",
+      "fields": {},
+      "sources": [],
+      "review_note": "Identity unresolved. Do not substitute Ecoosfera or merge with Ecos Media without evidence. No attendance label found. Checked ECOS DE HOY and ECOS MEDIA MX; no evidence establishes either as an alias. No exact match in the scanned AMLO/Sheinbaum introductions.",
+      "legal_entities": [],
+      "missing_fields": [
+        "url",
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "ecosfera",
+      "linkage_id": "ecosfera",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCm46ovknyl9Z0MLeEx9IMaQ",
+        "channel_id": "UCm46ovknyl9Z0MLeEx9IMaQ",
+        "source": "https://www.youtube.com/@EcosferaInformativa",
+        "status": "needs_identity_review",
+        "checked_at": "2026-10-16",
+        "original_url": null
+      },
+      "youtube_check_status": "needs_identity_review"
+    },
+    {
+      "name": "Albavision",
+      "id": "albavision",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "television group",
+        "coverage_scope": "international",
+        "url": "https://www.albavision.tv/"
+      },
+      "sources": [
+        "https://es.wikipedia.org/wiki/Canal_13_(M%C3%A9xico)",
+        "https://ift.org.mx/sites/all/themes/bootstrap/templates/ift-umca/files/pdfs/mpc/telsusa.pdf",
+        "https://gobiernoabierto.pueblacapital.gob.mx/transparencia_file/InformacionFiscal/2022/adjud/ocr/depend/fto28b_cgcs_2022_telsusa.pdf",
+        "https://www.albavision.tv/"
+      ],
+      "review_note": "Network/group record. Mexican attendance explicitly says CANAL 13 ALBAVISION. Telsusa is a Mexican operating entity, not the legal name of the entire international group. Do not allocate all subsidiary contracts to an individual station.",
+      "legal_entities": [
+        {
+          "name": "Telsusa Televisión México, S.A. de C.V.",
+          "rfc": "TTM161208C64",
+          "source": "https://gobiernoabierto.pueblacapital.gob.mx/transparencia_file/InformacionFiscal/2022/adjud/ocr/depend/fto28b_cgcs_2022_telsusa.pdf",
+          "relationship": "Mexican Canal 13 operating entity; group-level candidate only",
+          "status": "related_entity"
+        }
+      ],
+      "missing_fields": [
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "albavision",
+      "linkage_id": "albavision",
+      "youtube_check_status": "not_identified"
+    },
+    {
+      "name": "Transmitiendo desde la Frontera",
+      "id": "transmitiendo desde la frontera",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "digital / video",
+        "journalist": "Juan Felipe Prado",
+        "url": "https://tdfnoticias.com.mx/",
+        "state": "Baja California",
+        "municipality": "Tijuana",
+        "coverage_scope": "regional"
+      },
+      "sources": [
+        "https://tdfnoticias.com.mx/",
+        "https://tdfnoticias.com.mx/aviso-legal/"
+      ],
+      "review_note": "Official site identifies Juan Felipe Prado; attendance has both program title and his name.",
+      "legal_entities": [
+        {
+          "name": "Juan Felipe Prado",
+          "source": "https://tdfnoticias.com.mx/aviso-legal/",
+          "relationship": "individual responsible and director; not proof of sole ownership"
+        }
+      ],
+      "missing_fields": [
+        "legal_name",
+        "year_founded",
+        "founder_name"
+      ],
+      "question_id": "desde la frontera",
+      "linkage_id": "desde la frontera",
+      "youtube_check_status": "not_identified"
+    },
+    {
+      "name": "Maxima FM",
+      "id": "maxima fm",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "radio",
+        "journalist": "Jonathan Lozada",
+        "state": "Chiapas"
+      },
+      "sources": [
+        "https://fredalvarez.blogspot.com/2024/10/mananera-del-jueves-24-de-octubre-de.html",
+        "https://jonathanlozadaenlared.com/podcast/"
+      ],
+      "review_note": "Jonathan Lozada identifies Maxima FM together with Cuarto Poder de Chiapas (2024-10-24 transcript). His own podcast page identifies transmission on Maxima FM 96.9 and 97.9, supporting attendance aliases MAXIMA 969 and MAXIMA 979 Y MAXIMA 969 (2 eligible records). Generic Maxima, RADIOSA and Tlaxiaco labels remain unresolved or distinct; mixed MAXIMA FM/CUARTO PODER remains a co-affiliation, not two attendees. Station legal entity and founding year remain unverified.",
+      "legal_entities": [],
+      "missing_fields": [
+        "url",
+        "legal_name",
+        "year_founded",
+        "founder_name"
+      ],
+      "question_id": "maxima fm",
+      "linkage_id": "maxima fm",
+      "youtube_check_status": "not_identified"
+    },
+    {
+      "name": "Laboratorio de Periodismo y Opinion Publica",
+      "id": "laboratorio de periodismo y opinion publica",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "legal_name": "Laboratorio de Periodismo y Opinión Pública, S.C.",
+        "type_media": "digital",
+        "state": "Guanajuato",
+        "coverage_scope": "regional",
+        "url": "https://poplab.mx/",
+        "municipality": "Leon",
+        "address": "Alameda Diamante 119, Alameda Diamante, Leon, Guanajuato 37204",
+        "founder_name": "Arnoldo Cuellar Ornelas; Kennia Velazquez; Carmen Pizano; Nicolas Aranda",
+        "twitter_handle": "@poplabmx"
+      },
+      "sources": [
+        "https://poplab.mx/nosotros/",
+        "https://www.codegto.gob.mx/transparencia/Comunicacion_social/2024/T4/Facturas/F0000000326.pdf",
+        "https://poplab.mx/",
+        "https://poplab.mx/aviso-de-privacidad/"
+      ],
+      "review_note": "",
+      "legal_entities": [
+        {
+          "name": "Laboratorio de Periodismo y Opinión Pública, S.C.",
+          "source": "https://poplab.mx/aviso-de-privacidad/",
+          "relationship": "privacy responsible",
+          "rfc": "LPO190212UA8"
+        }
+      ],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCcENehckclJCXvfGBfW5iVw",
+        "channel_id": "UCcENehckclJCXvfGBfW5iVw",
+        "source": "https://poplab.mx/nosotros/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/channel/UCcENehckclJCXvfGBfW5iVw"
+      },
+      "missing_fields": [
+        "year_founded"
+      ],
+      "question_id": "poplab",
+      "linkage_id": "poplab",
+      "youtube_check_status": "verified_official_link"
+    },
+    {
+      "name": "Animales con Derechos",
+      "id": "animales con derechos",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "video / digital",
+        "url": "https://www.animalesconderechos.com/",
+        "twitter_handle": "@ACD_canal",
+        "journalist": "Elideth Fernández"
+      },
+      "sources": [
+        "https://www.animalesconderechos.com/animales-con-derechos-youtube/",
+        "https://movimientoconsciencia.com/se-abrira-la-conversacion-sobre-el-reconocimiento-de-la-naturaleza-y-sus-componentes-como-sujetos-de-derecho-en-nuestra-constitucion/",
+        "https://www.animalesconderechos.com/",
+        "https://www.gob.mx/amlo/articulos/version-estenografica-conferencia-de-prensa-del-presidente-andres-manuel-lopez-obrador-del-8-de-diciembre-de-2023?idiom=es"
+      ],
+      "review_note": "Uniendo causas, conectando derechos is this project’s slogan, not a second outlet. Elideth Fernandez reports collaboration; not common ownership with Movimiento Consciencia. Official AMLO introductions confirm the co-affiliation on five dates in 2023-2024. No standalone attendance alias found; Movimiento Consciencia attendance is not automatically transferred.",
+      "legal_entities": [],
+      "requested_aliases": [
+        "Uniendo Causas con Derechos",
+        "Animales con Derechos uniendo causas con derechos"
+      ],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCdRwDcqQjcBIaib4T2gcmFA",
+        "channel_id": "UCdRwDcqQjcBIaib4T2gcmFA",
+        "source": "https://www.animalesconderechos.com/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@AnimalesconDerechos"
+      },
+      "missing_fields": [
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "animales con derechos",
+      "linkage_id": "animales con derechos",
+      "youtube_check_status": "verified_official_link"
+    },
+    {
+      "name": "Exclusivas Puebla",
+      "id": "exclusivas puebla",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "year_founded": 2009,
+        "type_media": "periodico / digital",
+        "state": "Puebla",
+        "coverage_scope": "state",
+        "url": "https://exclusivaspuebla.com.mx/",
+        "legal_name": "Consultoría y Estrategias San Best, S.A. de C.V.",
+        "municipality": "Puebla",
+        "address": "Tehuacan Sur 80, La Paz, Puebla 72160",
+        "twitter_handle": "@XclusivasPuebla"
+      },
+      "sources": [
+        "https://exclusivaspuebla.com.mx/lanzamiento-de-exclusivas-puebla-como-periodico-impreso/",
+        "https://exclusivaspuebla.com.mx/",
+        "https://exclusivaspuebla.com.mx/politica-de-privacidad/"
+      ],
+      "review_note": "Director explicitly dates origin to 2009 (article contains an inconsistent elapsed-year count). Print launch 2018-01-08; not the digital founding date. Exclusivas Tlaxcala is distinct.",
+      "legal_entities": [
+        {
+          "name": "Consultoría y Estrategias San Best, S.A. de C.V.",
+          "source": "https://exclusivaspuebla.com.mx/politica-de-privacidad/",
+          "relationship": "privacy responsible"
+        }
+      ],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCcwQbH1nl4iQcHKpYMUk-yQ",
+        "channel_id": "UCcwQbH1nl4iQcHKpYMUk-yQ",
+        "source": "https://exclusivaspuebla.com.mx/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/user/ExclusivasPuebla"
+      },
+      "missing_fields": [
+        "founder_name"
+      ],
+      "question_id": "exclusivas puebla",
+      "linkage_id": "exclusivas puebla",
+      "youtube_check_status": "verified_official_link"
+    },
+    {
+      "name": "Grupo 7 Noticias",
+      "id": "grupo 7 noticias",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "radio / digital",
+        "state": "Ciudad de Mexico",
+        "coverage_scope": "national",
+        "url": "https://www.gruposiete.com.mx/",
+        "legal_name": "Comercializadora Siete de México, S.A. de C.V."
+      },
+      "sources": [
+        "https://www.gruposiete.com.mx/contacto",
+        "https://www.gruposiete.com.mx/",
+        "https://www.gruposiete.com.mx/politica-privacidad/"
+      ],
+      "review_note": "Official group contact page lists Grupo Siete Noticias and 1440 station. Group and individual station launch dates require separate evidence.",
+      "legal_entities": [
+        {
+          "name": "Comercializadora Siete de México, S.A. de C.V.",
+          "source": "https://www.gruposiete.com.mx/politica-privacidad/",
+          "relationship": "privacy responsible",
+          "dataset_name_aliases": [
+            "COMERCIALIZADORA SIETE DE MEXICO, S.A. DE C.V. (RADIO 14.40)"
+          ]
+        }
+      ],
+      "missing_fields": [
+        "year_founded",
+        "founder_name"
+      ],
+      "question_id": "grupo siete noticias",
+      "linkage_id": "grupo siete noticias",
+      "youtube_check_status": "not_identified"
+    },
+    {
+      "name": "The Human Hoy",
+      "id": "the human hoy",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "journalist": "Ramón Flores"
+      },
+      "sources": [
+        "https://www.gob.mx/amlo/articulos/version-estenografica-conferencia-de-prensa-del-presidente-andres-manuel-lopez-obrador-del-5-de-mayo-de-2022?idiom=es",
+        "https://www.gob.mx/amlo/articulos/version-estenografica-conferencia-de-prensa-del-presidente-andres-manuel-lopez-obrador-del-28-de-agosto-de-2024?idiom=es",
+        "https://www.gob.mx/presidencia/articulos/version-estenografica-conferencia-de-prensa-de-la-presidenta-claudia-sheinbaum-pardo-del-18-de-octubre-de-2024?idiom=es"
+      ],
+      "review_note": "Ramón Flores repeatedly names The Human Hoy of England together with El Centinela Informa in official transcripts. The Human, The Humane, Human Hoy, TheHuman Hoy and The Humanoid are observed transcription variants associated with him; exact question aliases now normalize to the human hoy. This does not identify DIARIO HUMANO attendance, establish common ownership with Centinela, or establish an official website.",
+      "legal_entities": [],
+      "missing_fields": [
+        "url",
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "the human hoy",
+      "linkage_id": "the human hoy",
+      "youtube_check_status": "not_identified"
+    },
+    {
+      "name": "Tiempo y Espacio",
+      "id": "tiempo y espacio",
+      "reviewed_at": "2026-10-16",
+      "fields": {},
+      "sources": [
+        "https://canal10.com.mx/sitio/tiempo-y-espacio-vespertino/",
+        "https://eldiariomx.com/columnas/tiempo-y-espacio/"
+      ],
+      "review_note": "Ambiguous: Durango Canal 10 news program and Jaime Luis Soto column share title. No exact attendance label or evidence selecting one; website and founding year withheld. Candidate @tiempoyespac10 also appears on X covering Canal 10 Durango. Link to requested attendance identity remains unverified. Raw attendance ESPACIO Y TIEMPO RIO VERDE 400 A (2020-03-06) has an excluded role and different location; not adopted as an alias.",
+      "legal_entities": [],
+      "missing_fields": [
+        "url",
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "tiempo y espacio",
+      "linkage_id": "tiempo y espacio",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCgHyhY0gzmcTt_oUzjUAOFA",
+        "channel_id": "UCgHyhY0gzmcTt_oUzjUAOFA",
+        "source": "https://www.youtube.com/@tiempoyespac10",
+        "status": "needs_identity_review",
+        "checked_at": "2026-10-16",
+        "original_url": null
+      },
+      "youtube_check_status": "needs_identity_review",
+      "youtube_review_note": "Candidate @tiempoyespac10 also appears on X covering Canal 10 Durango. Link to requested attendance identity remains unverified."
+    },
+    {
+      "name": "Asi lo dice La Mont",
+      "id": "asi lo dice la mont",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "radio / column / digital",
+        "journalist": "Federico La Mont",
+        "url": "https://www.federicolamont.com/",
+        "twitter_handle": "@federicolamont_"
+      },
+      "sources": [
+        "https://www.federicolamont.com/la-mont-en-vivo/",
+        "https://www.federicolamont.com/",
+        "https://oem.com.mx/elsoldemexico/analisis/asi-lo-dice-la-mont-16739552"
+      ],
+      "review_note": "Federico La Mont program/column, not automatically a separate incorporated newspaper. No exact attendance label found. Reporter La Mont appearing for other outlets does not establish attendance under this program name.",
+      "legal_entities": [],
+      "missing_fields": [
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "asi lo dice la mont",
+      "linkage_id": "asi lo dice la mont",
+      "youtube_check_status": "not_identified"
+    },
+    {
+      "name": "SemMexico",
+      "id": "semmexico",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "year_founded": 2015,
+        "owner_group": "SEMlac",
+        "type_media": "agencia / digital",
+        "coverage_scope": "national",
+        "url": "https://semmexico.mx/"
+      },
+      "sources": [
+        "https://semmexico.mx/somos/",
+        "https://redsemlac.com/semmexico/cierra-semmexico-uno-de-los-principales-portales-independientes-de-periodismo-feminista-en-mexico/",
+        "https://semmexico.mx/servicio-especial-para-la-mujer-mexico-semmexico-mx/",
+        "https://semmexico.mx/"
+      ],
+      "review_note": "SEMlac national platform launched 2015; closure announcement dated 2026-06-30. Preserve as historical outlet; site availability may change.",
+      "legal_entities": [],
+      "missing_fields": [
+        "legal_name",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "semmexico",
+      "linkage_id": "semmexico",
+      "youtube_check_status": "not_identified"
+    },
+    {
+      "name": "Puntos Suspensivos",
+      "id": "puntos suspensivos",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "radio / digital",
+        "journalist": "Héctor Serafín Tlatempa Camacho"
+      },
+      "sources": [
+        "https://fredalvarez.blogspot.com/2024/07/mananera-del-jueves-4-de-julio-de-2024.html?m=0",
+        "https://turismo.nayarit.gob.mx/2026/07/03/medios-de-comunicacion-nacionales-conocen-la-riqueza-turistica-de-san-blas-nayarit/"
+      ],
+      "review_note": "Transcript identifies Hector Tlatempa and Puntos Suspensivos Radio/Comunicacion. Unrelated Argentina podcasts and university shows excluded; official URL unresolved. Reporter identified by state government source. X candidate @HectorTlatempa_ is personal, not an outlet account.",
+      "legal_entities": [],
+      "missing_fields": [
+        "url",
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "puntos suspensivos",
+      "linkage_id": "puntos suspensivos",
+      "youtube_check_status": "not_identified"
+    },
+    {
+      "name": "Enlace Mesoamerica",
+      "id": "enlace mesoamerica",
+      "reviewed_at": "2026-10-16",
+      "fields": {},
+      "sources": [
+        "https://enlacemexamerica.com/"
+      ],
+      "review_note": "Candidate spelling: ENLACE MEXAAMERICA (1 eligible attendance record, 2024-08-30), matching the observed brand Enlace Mexamerica. The local 2025-06-17 transcript identifies Alejandro Aleman with Diario Plaza Juarez and Red de Periodistas Enlace Mexamerica; his byline appears on enlacemexamerica.com. The 2025-06-04 transcript says Enlace Mesoamerica, a migrant network, without enough evidence that this is the same organization. Candidate retained, no automatic merge.",
+      "legal_entities": [],
+      "missing_fields": [
+        "url",
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "enlace mesoamerica",
+      "linkage_id": "enlace mesoamerica",
+      "youtube_check_status": "not_identified"
+    },
+    {
+      "name": "Grupo Tribu",
+      "id": "grupo tribu",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "digital group"
+      },
+      "sources": [
+        "https://news.culturacolectiva.com/noticias/nace-al-filo-la-nueva-apuesta-digital-de-tribu-y-cultura-colectiva/"
+      ],
+      "review_note": "Cultura Colectiva identifies Grupo Tribu with El Fildeo and Al Filo. No evidence linking attendance TRIBU POLITICA to this group. Group official URL/legal name unresolved. TRIBU POLITICA has 1 eligible attendance record (2024-08-30); no corroborating question introduction was found for that equivalence.",
+      "legal_entities": [],
+      "missing_fields": [
+        "url",
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "grupo tribu",
+      "linkage_id": "grupo tribu",
+      "youtube_check_status": "not_identified"
+    },
+    {
+      "name": "Revista Posdata",
+      "id": "revista posdata",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "url": "https://postdata.news/",
+        "state": "Michoacan",
+        "municipality": "Morelia",
+        "type_media": "digital / radio",
+        "coverage_scope": "state",
+        "journalist": "Verónica García Magaña",
+        "twitter_handle": "@postdata_news"
+      },
+      "sources": [
+        "https://postdata.news/",
+        "https://www.gob.mx/amlo/articulos/version-estenografica-conferencia-de-prensa-del-presidente-andres-manuel-lopez-obrador-del-3-de-diciembre-de-2021?idiom=es"
+      ],
+      "review_note": "User confirmed postdata.news on 2026-10-16. POSTDATA.NEWS attendance (2024-03-08, 1 eligible record) now links to the stable revista posdata ID. Verónica García identifies Postdata in the official 2021-12-03 transcript. The cultural magazine revistaposdata.com / @revistaposdatamx is a rejected namesake. User reconfirmed the Posdata identity on 2026-10-16 after review of the conflicting cultural-publication wording. Accept the five dated Aguaquemada co-affiliation links (2025-07-11, 2025-08-01, 2025-08-08, 2025-09-03, 2025-09-22) under revista posdata, with user-confirmed provenance; do not globally merge Aguaquemada and PostData News. Official postdata.news links the verified Post Data YouTube channel @postdata8008.",
+      "legal_entities": [],
+      "missing_fields": [
+        "legal_name",
+        "year_founded",
+        "founder_name"
+      ],
+      "question_id": "revista posdata",
+      "linkage_id": "revista posdata",
+      "youtube_check_status": "verified_official_link",
+      "youtube_review_note": "Official postdata.news links @postdata8008 (UCHZSNk1Bps8aVlL3pfSu_kw). The separate @revistaposdatamx channel remains rejected.",
+      "rejected_youtube_candidates": [
+        {
+          "url": "https://www.youtube.com/channel/UC4HHqCM8HXAzA6JgaOTl59g",
+          "channel_id": "UC4HHqCM8HXAzA6JgaOTl59g",
+          "source": "https://www.youtube.com/@revistaposdatamx",
+          "status": "needs_identity_review",
+          "checked_at": "2026-10-16",
+          "original_url": null,
+          "rejection_reason": "Official channel links revistaposdata.com, a different cultural magazine from user-confirmed postdata.news"
+        }
+      ],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCHZSNk1Bps8aVlL3pfSu_kw",
+        "channel_id": "UCHZSNk1Bps8aVlL3pfSu_kw",
+        "source": "https://postdata.news/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@postdata8008"
+      },
+      "identity_confirmation": {
+        "date": "2026-10-16",
+        "source": "user conversation",
+        "verbatim": "posdata is potdata.news",
+        "interpreted_url": "https://postdata.news/",
+        "interpretation": "Missing s treated as typo in context of prior explicit postdata.news confirmation; potdata.news did not load in web check.",
+        "scope": "Five reviewed question dates; dated co-affiliation only."
+      }
+    },
+    {
+      "name": "Voces del Periodista",
+      "id": "voces del periodista",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "legal_name": "Voces del Periodista, S.A. de C.V.",
+        "founder_name": "Antonio Saenz de Miera",
+        "asociacion_name": "Club de Periodistas de Mexico, A.C.",
+        "type_media": "revista / digital",
+        "state": "Ciudad de Mexico",
+        "coverage_scope": "national",
+        "url": "https://vocesdelperiodista.com.mx/"
+      },
+      "sources": [
+        "https://vocesdelperiodista.com.mx/ants/161.pdf",
+        "https://vocesdelperiodista.com.mx/"
+      ],
+      "review_note": "",
+      "legal_entities": [
+        {
+          "name": "Voces del Periodista, S.A. de C.V.",
+          "source": "https://vocesdelperiodista.com.mx/ants/161.pdf",
+          "relationship": "publisher named in masthead"
+        }
+      ],
+      "missing_fields": [
+        "year_founded"
+      ],
+      "question_id": "voces del periodista",
+      "linkage_id": "voces del periodista",
+      "youtube_check_status": "not_identified"
+    },
+    {
+      "name": "Empuje Migrante",
+      "id": "empuje migrante",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "journalist": "Nancy Rodríguez"
+      },
+      "sources": [
+        "https://www.te.gob.mx/media/SentenciasN/pdf/especializada/SRE-PSC-0426-2024.pdf",
+        "https://www.gob.mx/amlo/articulos/version-estenografica-conferencia-de-prensa-del-presidente-andres-manuel-lopez-obrador-del-4-de-junio-de-2021"
+      ],
+      "review_note": "No reliable official website/legal identity found. No matching attendance label found. Nancy Rodríguez is documented with Oro Sólido and Empuje Migrante; channel is Oro Sólido, not a separate verified Empuje Migrante channel. Reporter co-affiliation with Oro Sólido documented; does not establish common ownership. Exact label occurs in AMLO questions and official introductions. AMIGO MIGRANTE, MITOTE MIGRANTE and CONEXION MIGRANTE are unverified attendance candidates, not accepted aliases.",
+      "legal_entities": [],
+      "missing_fields": [
+        "url",
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "empuje migrante",
+      "linkage_id": "empuje migrante",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCL4oM3s9E3fQn8UhEZHfv8w",
+        "channel_id": "UCL4oM3s9E3fQn8UhEZHfv8w",
+        "source": "https://www.te.gob.mx/media/SentenciasN/pdf/especializada/SRE-PSC-0426-2024.pdf",
+        "status": "related_reporter_channel",
+        "checked_at": "2026-10-16",
+        "original_url": null
+      },
+      "youtube_check_status": "related_reporter_channel",
+      "youtube_review_note": "Nancy Rodríguez is documented with Oro Sólido and Empuje Migrante; channel is Oro Sólido, not a separate verified Empuje Migrante channel."
+    },
+    {
+      "name": "Codice 21",
+      "id": "codice 21",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "digital",
+        "state": "Guerrero",
+        "municipality": "Acapulco de Juarez",
+        "coverage_scope": "state",
+        "url": "https://codice21.com.mx/",
+        "twitter_handle": "@Codice_21"
+      },
+      "sources": [
+        "https://codice21.com.mx/directorio",
+        "https://rebeldeguerrero.blogspot.com/2017/11/gracias-la-sociedad-codice-21-tiene.html",
+        "https://codice21.com.mx/"
+      ],
+      "review_note": "Guerrero news outlet; not codice21.net ebook publisher. Secondary two-year anniversary in November 2017 suggests 2015, withheld pending first-party confirmation.",
+      "legal_entities": [],
+      "missing_fields": [
+        "legal_name",
+        "year_founded",
+        "founder_name"
+      ],
+      "question_id": "codice 21",
+      "linkage_id": "codice 21",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCMiEBFbs0MYE7n5I94f1nNw",
+        "channel_id": "UCMiEBFbs0MYE7n5I94f1nNw",
+        "source": "https://www.youtube.com/@codice2118",
+        "status": "needs_identity_review",
+        "checked_at": "2026-10-16",
+        "original_url": null
+      },
+      "youtube_check_status": "needs_identity_review"
+    },
+    {
+      "name": "Codigo Rojo",
+      "id": "codigo rojo",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "digital",
+        "state": "Quintana Roo"
+      },
+      "sources": [
+        "https://www.teqroo.org.mx/np9/Estrados/2024/Agosto/resolucion/7_5.pdf",
+        "https://codigorojomx.com/"
+      ],
+      "review_note": "Attendance specifically CODIGO ROJO QUINTANA ROO. Court identifies CodigoRojoCancun Facebook page; codigorojomx.com is a regional candidate but not conclusively the same attending entity. Do not merge with Codigo Libre.",
+      "legal_entities": [],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UC8mq5e2VnMuTDWnBgRblu4Q",
+        "channel_id": "UC8mq5e2VnMuTDWnBgRblu4Q",
+        "source": "https://codigorojomx.com/",
+        "status": "needs_identity_review",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/channel/UC8mq5e2VnMuTDWnBgRblu4Q"
+      },
+      "missing_fields": [
+        "url",
+        "legal_name",
+        "year_founded",
+        "founder_name"
+      ],
+      "question_id": "codigo rojo",
+      "linkage_id": "codigo rojo",
+      "youtube_check_status": "needs_identity_review"
+    },
+    {
+      "name": "El Rotativo de Queretaro",
+      "id": "el rotativo de queretaro",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "year_founded": 1990,
+        "founder_name": "Martin Garcia Chavero",
+        "type_media": "periodico / digital",
+        "state": "Queretaro",
+        "municipality": "San Juan del Rio",
+        "coverage_scope": "regional",
+        "url": "https://rotativo.com.mx/",
+        "twitter_handle": "@diariorotativo"
+      },
+      "sources": [
+        "https://rotativo.com.mx/rotativo-agradecimiento-lectores",
+        "https://rotativo.com.mx/politica-de-privacidad",
+        "https://rotativo.com.mx/"
+      ],
+      "review_note": "DIARIO ROTATIVO attendance is a candidate without geographic qualifier; not automatically matched. DIARIO ROTATIVO has 1 eligible record (2019-10-18); SOS ROTATIVO is another candidate. Neither has enough reporter/location evidence for an automatic match.",
+      "legal_entities": [],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCNpPTTNxBS3IrCJBgfC6_5g",
+        "channel_id": "UCNpPTTNxBS3IrCJBgfC6_5g",
+        "source": "https://rotativo.com.mx/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/c/RotativodeQueretaro"
+      },
+      "missing_fields": [
+        "legal_name"
+      ],
+      "question_id": "rotativo de queretaro",
+      "linkage_id": "rotativo de queretaro",
+      "youtube_check_status": "verified_official_link"
+    },
+    {
+      "name": "Red Periodistica de Puerto Vallarta",
+      "id": "red periodistica de puerto vallarta",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "asociacion / digital",
+        "state": "Jalisco",
+        "municipality": "Puerto Vallarta",
+        "coverage_scope": "local",
+        "url": "https://redperiodisticapv.com/",
+        "journalist": "Susana Carreño"
+      },
+      "sources": [
+        "https://redperiodisticapv.com/Nosotros.html",
+        "https://urrutiacomunica.com/constituyen-legalmente-periodistica-vallarta/",
+        "https://redperiodisticapv.com/",
+        "https://www.gob.mx/amlo/articulos/version-estenografica-conferencia-de-prensa-del-presidente-andres-manuel-lopez-obrador-del-29-de-junio-de-2023?idiom=es",
+        "https://www.gob.mx/amlo/articulos/version-estenografica-conferencia-de-prensa-del-presidente-andres-manuel-lopez-obrador-del-8-de-mayo-de-2024?idiom=es"
+      ],
+      "review_note": "Susana Carreño identifies the Red Periodistica alongside Radio Universidad de Guadalajara / Canal 44 in official transcripts. Red de Periodistas de Puerto Vallarta is a confirmed question-label variant. Do not relabel all Radio Universidad attendance as the network. Mentioned as recently formed in June 2023; 2026-01-13 legal constitution report is not a verified project founding date.",
+      "legal_entities": [],
+      "missing_fields": [
+        "legal_name",
+        "year_founded",
+        "founder_name"
+      ],
+      "question_id": "red periodistica de puerto vallarta",
+      "linkage_id": "red periodistica de puerto vallarta",
+      "youtube_check_status": "not_identified"
+    },
+    {
+      "name": "Lord Molecula Oficial",
+      "id": "lord molecula oficial",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "digital / video",
+        "url": "https://lmnoticias.com.mx/"
+      },
+      "sources": [
+        "https://lmnoticias.com.mx/"
+      ],
+      "review_note": "LM Noticias website associated by user and official homepage channel links. Retain existing founding year of personal brand separately from unverified LM newspaper launch.",
+      "legal_entities": [],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UC0WxwnD6D67eYwmmRWQnOEg",
+        "channel_id": "UC0WxwnD6D67eYwmmRWQnOEg",
+        "source": "https://lmnoticias.com.mx/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@lordmoleculaoficial2563"
+      },
+      "missing_fields": [
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "lord molecula oficial",
+      "linkage_id": "lord molecula oficial",
+      "registry_row": 130,
+      "registry_youtube": "https://www.youtube.com/@lordmolecula",
+      "youtube_check_status": "verified_official_link"
+    },
+    {
+      "name": "PuenteLibreMX",
+      "id": "puentelibremx",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "year_founded": 2008,
+        "founding_date": "2008-06-16",
+        "legal_name": "Impresora Digital Puente Libre, S.A. de C.V.",
+        "type_media": "digital",
+        "state": "Chihuahua",
+        "municipality": "Juarez",
+        "coverage_scope": "regional",
+        "url": "https://puentelibre.mx/",
+        "twitter_handle": "@puentelibre"
+      },
+      "sources": [
+        "https://puentelibre.mx/",
+        "https://reposipot.imss.gob.mx/logistica/CABCS/2020/Adjudicaciones%204To%20Trim/AA-050GYR019-E165-2020/Anexo%202%20Justificacion_AA-E165.pdf"
+      ],
+      "review_note": "Homepage explicitly dates online launch 2008-06-16. IMSS provider list ties legal entity to domain. Attendance exact Puente Libre labels are separate from Movimiento Consciencia.",
+      "legal_entities": [
+        {
+          "name": "Impresora Digital Puente Libre, S.A. de C.V.",
+          "source": "https://reposipot.imss.gob.mx/logistica/CABCS/2020/Adjudicaciones%204To%20Trim/AA-050GYR019-E165-2020/Anexo%202%20Justificacion_AA-E165.pdf",
+          "relationship": "advertising provider explicitly tied to domain"
+        }
+      ],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UC6QXETt4OwSDIrebQLc_ohQ",
+        "channel_id": "UC6QXETt4OwSDIrebQLc_ohQ",
+        "source": "https://puentelibre.mx/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/user/puentelibremx"
+      },
+      "missing_fields": [
+        "founder_name"
+      ],
+      "question_id": "puente libre mx",
+      "linkage_id": "puente libre",
+      "registry_row": 230,
+      "registry_youtube": null,
+      "youtube_check_status": "verified_official_link"
+    },
+    {
+      "name": "Mexico Informa",
+      "id": "mexico informa",
+      "reviewed_at": "2026-10-16",
+      "fields": {},
+      "sources": [
+        "https://www.mexicoinforma.mx/wp-content/uploads/2024/10/REVISTA-MXINF-187-2.pdf",
+        "https://mexicoinforma.mx/wp-content/uploads/2025/11/REVISTA-MXINF-199-.pdf"
+      ],
+      "review_note": "Existing magazine metadata (Ediciones Kukulcancun) and attendance MEXICO INFORMA cannot be equated to Vittor Blogs based solely on name. Existing shared workbook attendance ID retained pending identity review; no automatic new linkage. Existing channel describes political videos but does not establish a link to the Ediciones Kukulcancun magazine. Keep separate from Vittor Blogs pending evidence.",
+      "legal_entities": [
+        {
+          "name": "Ediciones Kukulcancun, S.A. de C.V.",
+          "source": "https://mexicoinforma.mx/wp-content/uploads/2025/11/REVISTA-MXINF-199-.pdf",
+          "relationship": "publisher printed in official magazine masthead"
+        }
+      ],
+      "missing_fields": [
+        "url",
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "mexico informa",
+      "linkage_id": "mexico informa",
+      "registry_row": 76,
+      "registry_youtube": "https://www.youtube.com/@MEXICOINFORMA",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCPeRVvFzU1JCKKV5orBgfaA",
+        "channel_id": "UCPeRVvFzU1JCKKV5orBgfaA",
+        "source": "mexican_newspapers.xlsx",
+        "status": "needs_identity_review",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@MEXICOINFORMA"
+      },
+      "youtube_check_status": "needs_identity_review",
+      "youtube_review_note": "Existing channel describes political videos but does not establish a link to the Ediciones Kukulcancun magazine. Keep separate from Vittor Blogs pending evidence."
+    },
+    {
+      "name": "Vittor Blogs",
+      "id": "vittor blogs",
+      "reviewed_at": "2026-10-16",
+      "fields": {},
+      "sources": [],
+      "review_note": "Existing question grouping mexico informa is retained. Vittor/Victor Blogs raw labels form a personal-brand attendance ID; this does not prove association with the Mexico Informa magazine.",
+      "legal_entities": [],
+      "missing_fields": [
+        "url",
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "mexico informa",
+      "linkage_id": "vittor blogs",
+      "registry_row": 168,
+      "registry_youtube": "https://www.youtube.com/@VittorBlogs",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UClivsn4u-h1uJkORB6PD9SQ",
+        "channel_id": "UClivsn4u-h1uJkORB6PD9SQ",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@VittorBlogs"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved"
+    },
+    {
+      "name": "Frecuencia CAD",
+      "id": "frecuencia cad",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "year_founded": null
+      },
+      "sources": [
+        "https://mx.linkedin.com/in/alfredo-far%C3%ADas-42b2115"
+      ],
+      "review_note": "Alfredo Farias educational project is not proven equivalent to the asking journalist or Jaime Farias Informa. Existing group ID retained with warning. Prior 2019 founding value came from podcast activity, not verified founding; cleared. Channel identifies Centro de Estudios en Alta Dirección. Connection to Jaime Farias attendance ID remains unverified.",
+      "legal_entities": [],
+      "missing_fields": [
+        "url",
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "frecuencia cad",
+      "linkage_id": "frecuencia cad",
+      "registry_row": 219,
+      "registry_youtube": "https://www.youtube.com/@frecuenciacad",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCjDtc7TStZk3bwKEYgWyD5g",
+        "channel_id": "UCjDtc7TStZk3bwKEYgWyD5g",
+        "source": "mexican_newspapers.xlsx",
+        "status": "needs_identity_review",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@frecuenciacad"
+      },
+      "youtube_check_status": "needs_identity_review",
+      "youtube_review_note": "Channel identifies Centro de Estudios en Alta Dirección. Connection to Jaime Farias attendance ID remains unverified."
+    },
+    {
+      "name": "El Sur de Acapulco",
+      "id": "el sur de acapulco",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "url": "https://suracapulco.mx/"
+      },
+      "sources": [
+        "https://suracapulco.mx/archivoelsur/directorio",
+        "https://suracapulco.mx/"
+      ],
+      "review_note": "Unqualified PERIODICO EL SUR is ambiguous. Only geographic attendance labels EL SUR DE GUERRERO / EL SUR DE ACAPULCO are eligible for this ID; others remain unresolved.",
+      "legal_entities": [],
+      "missing_fields": [
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "el sur de acapulco",
+      "linkage_id": "el sur de acapulco",
+      "registry_row": 35,
+      "registry_youtube": "https://www.youtube.com/@periodicoelsur2920",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UC9r8lZRoztidDlGqWLmRLpA",
+        "channel_id": "UC9r8lZRoztidDlGqWLmRLpA",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@periodicoelsur2920"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved"
+    },
+    {
+      "name": "Once Noticias",
+      "id": "once noticias",
+      "reviewed_at": "2026-10-16",
+      "fields": {
+        "type_media": "digital / television",
+        "url": "https://oncenoticias.digital/",
+        "twitter_handle": "@OnceNoticiasTV"
+      },
+      "sources": [
+        "https://oncenoticias.digital/"
+      ],
+      "review_note": "Shared Canal Once ID retained per user; website/channel are Once Noticias. Do not substitute Canal Once 1959 broadcast launch for news portal founding.",
+      "legal_entities": [],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCM4vf-nmAxPq8Do0Xi3qXkg",
+        "channel_id": "UCM4vf-nmAxPq8Do0Xi3qXkg",
+        "source": "https://oncenoticias.digital/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@oncenoticias.digital"
+      },
+      "missing_fields": [
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "canal 11",
+      "linkage_id": "canal 11",
+      "registry_row": 247,
+      "registry_youtube": null,
+      "youtube_check_status": "verified_official_link"
+    },
+    {
+      "name": "Sin Puntos Ni Comas",
+      "id": "sin puntos ni comas",
+      "reviewed_at": "2026-10-16",
+      "fields": {},
+      "sources": [],
+      "review_note": "User-confirmed Julio Omar Gomez Sanchez association with Medios Digitales del Pacifico and Informando la Transformacion. No independently verified official URL or founding date found.",
+      "legal_entities": [],
+      "missing_fields": [
+        "url",
+        "legal_name",
+        "year_founded",
+        "founder_name",
+        "state"
+      ],
+      "question_id": "medios digitales del pacifico",
+      "linkage_id": "medios digitales del pacifico",
+      "registry_row": 246,
+      "registry_youtube": null,
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCAmhcXl_MpsZlS7RA-ISgdg",
+        "channel_id": "UCAmhcXl_MpsZlS7RA-ISgdg",
+        "source": "https://www.youtube.com/@sinpuntosnicomasinforma1405",
+        "status": "needs_identity_review",
+        "checked_at": "2026-10-16",
+        "original_url": null
+      },
+      "youtube_check_status": "needs_identity_review"
+    },
+    {
+      "name": "Imagen del Golfo",
+      "id": "imagen del golfo",
+      "fields": {
+        "url": "https://imagendelgolfo.mx/"
+      },
+      "registry_row": 60,
+      "question_id": "imagen del golfo",
+      "sources": [],
+      "linkage_id": "MMM IMAGEN DEL GOLFO",
+      "registry_youtube": "https://www.youtube.com/@ImagenGolfo",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCFysy9ZfrD0U82cztXfo_RQ",
+        "channel_id": "UCFysy9ZfrD0U82cztXfo_RQ",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@ImagenGolfo"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "Diario del Istmo",
+      "id": "diario del istmo",
+      "fields": {
+        "url": "https://diariodelistmo.com/"
+      },
+      "registry_row": 61,
+      "question_id": "imagen del golfo",
+      "sources": [],
+      "linkage_id": "MMM IMAGEN DEL GOLFO",
+      "registry_youtube": "https://www.youtube.com/@diariodelistmo-ny1vo",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCd9_rPOeanNaoqZsdaB9sYw",
+        "channel_id": "UCd9_rPOeanNaoqZsdaB9sYw",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@diariodelistmo-ny1vo"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "Imagen de Veracruz",
+      "id": "imagen de veracruz",
+      "fields": {
+        "url": "https://imagendeveracruz.mx/"
+      },
+      "registry_row": 62,
+      "question_id": "imagen del golfo",
+      "sources": [],
+      "linkage_id": "MMM IMAGEN DEL GOLFO",
+      "registry_youtube": null,
+      "youtube_check_status": "not_identified",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "Luces del Siglo",
+      "id": "luces del siglo",
+      "fields": {
+        "url": "https://lucesdelsiglo.com/"
+      },
+      "registry_row": 77,
+      "question_id": "LUCES DEL SIGLO",
+      "sources": [],
+      "linkage_id": "LUCES DEL SIGLO",
+      "registry_youtube": "https://www.youtube.com/@LucesdelSigloMultimedio",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCxwBUoA3HzZz2bC3T7uTFUA",
+        "channel_id": "UCxwBUoA3HzZz2bC3T7uTFUA",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@LucesdelSigloMultimedio"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "El Horizonte",
+      "id": "el horizonte",
+      "fields": {
+        "url": "https://www.elhorizonte.mx/"
+      },
+      "registry_row": 88,
+      "question_id": "el horizonte",
+      "sources": [],
+      "linkage_id": "EL HORIZONTE",
+      "registry_youtube": "https://www.youtube.com/@elhorizontemxoficial",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UC7JJNKg6kdeIOEnk_i6FRnA",
+        "channel_id": "UC7JJNKg6kdeIOEnk_i6FRnA",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@elhorizontemxoficial"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "Avan Noticias/ QUATRO MEDIA",
+      "id": "avan noticias quatro media",
+      "fields": {
+        "url": null
+      },
+      "registry_row": 121,
+      "question_id": "AVAN NOTICIAS",
+      "sources": [],
+      "linkage_id": "AVAN NOTICIAS",
+      "registry_youtube": "https://www.youtube.com/@Avanradiomedia",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UC3OO-2lDYUOvZqHQecDGqGw",
+        "channel_id": "UC3OO-2lDYUOvZqHQecDGqGw",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@Avanradiomedia"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "Relax 104 5 fm",
+      "id": "relax 104 5 fm",
+      "fields": {
+        "url": "https://www.relax1045.com/"
+      },
+      "registry_row": 142,
+      "question_id": "RELAX",
+      "sources": [],
+      "linkage_id": "RELAX",
+      "registry_youtube": null,
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCatnngc3e-pVuz_uqntX4fA",
+        "channel_id": "UCatnngc3e-pVuz_uqntX4fA",
+        "source": "https://www.youtube.com/@RELAXFM-ky8bu",
+        "status": "needs_identity_review",
+        "checked_at": "2026-10-16",
+        "original_url": null
+      },
+      "youtube_check_status": "needs_identity_review",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "Enfoque Noticias",
+      "id": "enfoque noticias",
+      "fields": {
+        "url": "https://enfoquenoticias.com.mx/"
+      },
+      "registry_row": 143,
+      "question_id": "enfoque noticias",
+      "sources": [],
+      "linkage_id": "ENFOQUE NOTICIAS",
+      "registry_youtube": "https://www.youtube.com/@EnfoqueNoticias.",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCVDUVEkJiXyxEQyqhNZEa-w",
+        "channel_id": "UCVDUVEkJiXyxEQyqhNZEa-w",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@EnfoqueNoticias."
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "Mexico al Minuto",
+      "id": "mexico al minuto",
+      "fields": {
+        "url": "https://mexicoalminuto.net/"
+      },
+      "registry_row": 158,
+      "question_id": "mexico al minuto",
+      "sources": [],
+      "linkage_id": "MEXICO AL MINUTO",
+      "registry_youtube": "https://www.youtube.com/@mexico_alminuto",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCJSfpz3dJAyaXykN0RG1bXA",
+        "channel_id": "UCJSfpz3dJAyaXykN0RG1bXA",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@mexico_alminuto"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "Noreste",
+      "id": "noreste",
+      "fields": {
+        "url": "https://noreste.net/"
+      },
+      "registry_row": 163,
+      "question_id": "noreste",
+      "sources": [],
+      "linkage_id": "NORESTE",
+      "registry_youtube": "https://www.youtube.com/@NorestePeriodico",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCtPweyMysoW052LPAic7bjQ",
+        "channel_id": "UCtPweyMysoW052LPAic7bjQ",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@NorestePeriodico"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "Luis Guillermo Hernandez (sexta w)",
+      "id": "luis guillermo hernandez sexta w",
+      "fields": {
+        "url": "https://sextaw.com.mx/"
+      },
+      "registry_row": 169,
+      "question_id": "luis guillermo hernandez sexta w",
+      "sources": [],
+      "linkage_id": "luis guillermo hernandez sexta w",
+      "registry_youtube": "https://www.youtube.com/@luisghernan-sextaw",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCnXlVR_Gq510pHKMU-kqjeg",
+        "channel_id": "UCnXlVR_Gq510pHKMU-kqjeg",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@luisghernan-sextaw"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "Medios Digitales del Pacifico",
+      "id": "medios digitales del pacifico",
+      "fields": {
+        "url": "https://mediosdigitalesdelpacifico.wordpress.com/"
+      },
+      "registry_row": 173,
+      "question_id": "medios digitales del pacifico",
+      "sources": [],
+      "linkage_id": "MEDIOS DIGITALES DEL PACIFICO",
+      "registry_youtube": null,
+      "youtube_check_status": "not_identified",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "Capital 21",
+      "id": "capital 21",
+      "fields": {
+        "url": "https://www.capital21.cdmx.gob.mx/"
+      },
+      "registry_row": 178,
+      "question_id": "capital 21",
+      "sources": [],
+      "linkage_id": "CAPITAL 21",
+      "registry_youtube": "https://www.youtube.com/@Capital21_Tv",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCHd0ByCTMXuTHvJb7XEidbw",
+        "channel_id": "UCHd0ByCTMXuTHvJb7XEidbw",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@Capital21_Tv"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "El Centinela Informa",
+      "id": "el centinela informa",
+      "fields": {
+        "url": null
+      },
+      "registry_row": 186,
+      "question_id": "el centinela informa",
+      "sources": [],
+      "linkage_id": "El Centinela Informa",
+      "registry_youtube": "https://www.youtube.com/@ElCentinelaInforma",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCOJaaPngqmtXJV8ujU2WEwA",
+        "channel_id": "UCOJaaPngqmtXJV8ujU2WEwA",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@ElCentinelaInforma"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "La Hoguera",
+      "id": "la hoguera",
+      "fields": {
+        "url": "https://lahoguera.mx/"
+      },
+      "registry_row": 191,
+      "question_id": "la hoguera",
+      "sources": [],
+      "linkage_id": "LA HOGUERA",
+      "registry_youtube": "https://www.youtube.com/@lahoguera_mx",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCrE4lHMdNOXKx4FU8N8x5Ng",
+        "channel_id": "UCrE4lHMdNOXKx4FU8N8x5Ng",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@lahoguera_mx"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "Bajo Palabra Noticias",
+      "id": "bajo palabra noticias",
+      "fields": {
+        "url": "https://www.bajopalabra.mx/"
+      },
+      "registry_row": 193,
+      "question_id": "bajo palabra",
+      "sources": [],
+      "linkage_id": "BAJO PALABRA",
+      "registry_youtube": "https://www.youtube.com/@bajopalabradigital",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCdADPdEVXg7L3Qji0c-tZZA",
+        "channel_id": "UCdADPdEVXg7L3Qji0c-tZZA",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@bajopalabradigital"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "Eli Televisión",
+      "id": "eli television",
+      "fields": {
+        "url": null
+      },
+      "registry_row": 198,
+      "question_id": "eli tv",
+      "sources": [],
+      "linkage_id": "ELI TELEVISION",
+      "registry_youtube": "https://www.youtube.com/@EliTvOficial",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCJL2rYbSTWNY6R_NVyfdeuA",
+        "channel_id": "UCJL2rYbSTWNY6R_NVyfdeuA",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@EliTvOficial"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "ae grupo informativo",
+      "id": "ae grupo informativo",
+      "fields": {
+        "url": "https://aegrupoinformativo.com/"
+      },
+      "registry_row": 200,
+      "question_id": "ae grupo informativo",
+      "sources": [],
+      "linkage_id": "AE GRUPO INFORMATIVO",
+      "registry_youtube": "https://www.youtube.com/@aegrupoinformativo7645",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCOBemRKzPkXsOh3LlgmpstQ",
+        "channel_id": "UCOBemRKzPkXsOh3LlgmpstQ",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@aegrupoinformativo7645"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "El Diario Plaza Juarez",
+      "id": "el diario plaza juarez",
+      "fields": {
+        "url": "https://plazajuarez.mx/"
+      },
+      "registry_row": 205,
+      "question_id": "diario plaza juarez",
+      "sources": [],
+      "linkage_id": "DIARIO PLAZA JUAREZ",
+      "registry_youtube": "https://www.youtube.com/@PlazaJu%C3%A1rezTV",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCyppUPnaluzDEXTryUXRXxg",
+        "channel_id": "UCyppUPnaluzDEXTryUXRXxg",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@PlazaJu%C3%A1rezTV"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "Noticieros el Reloj de la Tlaxiaqueña",
+      "id": "noticieros el reloj de la tlaxiaquena",
+      "fields": {
+        "url": "https://noticieroselreloj.com.mx/"
+      },
+      "registry_row": 210,
+      "question_id": "noticieros el reloj de la tlaxiaquena",
+      "sources": [],
+      "linkage_id": "noticieros el reloj de la tlaxiaquena",
+      "registry_youtube": "https://www.youtube.com/@NoticieroselRelojDeTlaxiaco",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCWJasIXNs1KW_yJajYIFxdQ",
+        "channel_id": "UCWJasIXNs1KW_yJajYIFxdQ",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@NoticieroselRelojDeTlaxiaco"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "Sin Embargo",
+      "id": "sin embargo",
+      "fields": {
+        "url": "https://www.sinembargo.mx/"
+      },
+      "registry_row": 217,
+      "question_id": "SIN EMBARGO",
+      "sources": [],
+      "linkage_id": "sin embargo",
+      "registry_youtube": "https://www.youtube.com/@SinEmbargoAlAire",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCt7k7y_xTkkc1Jeh7cdAjDQ",
+        "channel_id": "UCt7k7y_xTkkc1Jeh7cdAjDQ",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@SinEmbargoAlAire"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "Nacion 14",
+      "id": "nacion 14",
+      "fields": {
+        "url": "https://nacion14.com/"
+      },
+      "registry_row": 220,
+      "question_id": "Nacion 14",
+      "sources": [],
+      "linkage_id": "nacion 14",
+      "registry_youtube": null,
+      "youtube_check_status": "rejected_website_template_channel",
+      "youtube_review_note": "Website points to UCiSEZYAicvipL95JrvISyIw (Jegtheme), a theme vendor, not the outlet.",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "Informando la Transformación",
+      "id": "informando la transformacion",
+      "fields": {
+        "url": "https://julioomargs.com/"
+      },
+      "registry_row": 226,
+      "question_id": "medios digitales del pacifico",
+      "sources": [],
+      "linkage_id": "medios digitales del pacifico",
+      "registry_youtube": "https://www.youtube.com/@JulioOmarGS",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCfBdfH7hezJeP73sY8TINBA",
+        "channel_id": "UCfBdfH7hezJeP73sY8TINBA",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@JulioOmarGS"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    },
+    {
+      "name": "Marco Olvera Oficial",
+      "id": "marco olvera oficial",
+      "fields": {
+        "url": "http://olveranoticia.com/"
+      },
+      "registry_row": 231,
+      "question_id": "mexico news world",
+      "sources": [],
+      "linkage_id": "mexico news world",
+      "registry_youtube": "https://www.youtube.com/@MarcoOlveraOficial1",
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UCRnrpzWcc20-BHRtSdzdSuw",
+        "channel_id": "UCRnrpzWcc20-BHRtSdzdSuw",
+        "source": "mexican_newspapers.xlsx",
+        "status": "existing_registry_channel_resolved",
+        "checked_at": "2026-10-16",
+        "original_url": "https://www.youtube.com/@MarcoOlveraOficial1"
+      },
+      "youtube_check_status": "existing_registry_channel_resolved",
+      "reviewed_at": "2026-10-16"
+    }
+  ]
+}

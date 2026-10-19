@@ -1,0 +1,74 @@
+alias	canonical_id	status	reason	source
+ABC AUSTRALIA	abc australia	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://www.abc.net.au/about/about-the-abc; https://www.abc.net.au/listen/programs/conversations/conversations-abc-90-for-90/13945278
+ABC NEWS		needs_review	Cannot distinguish Australian and US broadcaster.	attendance_merged_dedup.xlsx
+AGUAQUEMADA	agua quemada	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://aguaquemada.mx/nosotros/; https://aguaquemada.mx/
+ALBAVISIÓN CANAL 13	albavision	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://es.wikipedia.org/wiki/Canal_13_(M%C3%A9xico); https://ift.org.mx/sites/all/themes/bootstrap/templates/ift-umca/files/pdfs/mpc/telsusa.pdf
+AUSTRALIAN BROADCASTING CORPORATION	abc australia	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://www.abc.net.au/about/about-the-abc; https://www.abc.net.au/listen/programs/conversations/conversations-abc-90-for-90/13945278
+CANAL 13 ALBAVISION	albavision	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://es.wikipedia.org/wiki/Canal_13_(M%C3%A9xico); https://ift.org.mx/sites/all/themes/bootstrap/templates/ift-umca/files/pdfs/mpc/telsusa.pdf
+CANAL 13 GRUPO ALBAVISIÓN MÉXICO	albavision	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://es.wikipedia.org/wiki/Canal_13_(M%C3%A9xico); https://ift.org.mx/sites/all/themes/bootstrap/templates/ift-umca/files/pdfs/mpc/telsusa.pdf
+CANAL 13 TAPACHULA, GRUPO ALBAVISIÓN, MÉXICO	albavision	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://es.wikipedia.org/wiki/Canal_13_(M%C3%A9xico); https://ift.org.mx/sites/all/themes/bootstrap/templates/ift-umca/files/pdfs/mpc/telsusa.pdf
+CANAL 44		needs_review	Cannot distinguish UDG from Intermedia without station/location.	attendance_merged_dedup.xlsx
+CANAL 44 DE LA UDG	canal 44 udg	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://www.gaceta.udg.mx/la-udeg-toma-la-television/; https://ww1.udg.mx/es/promociones/s-parte-la-comunidad-44
+CANAL 44 / XHIJ-TV / CD. JUÁREZ	grupo intermedia	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://www.te.gob.mx/EE/SG/2016/JRC/119/SG_2016_JRC_119-605436.pdf; https://canal44.com/
+CANAL13 TAPACHULA, GRUPO ALBAVISION MÉXICO	albavision	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://es.wikipedia.org/wiki/Canal_13_(M%C3%A9xico); https://ift.org.mx/sites/all/themes/bootstrap/templates/ift-umca/files/pdfs/mpc/telsusa.pdf
+CÓDICE 21	codice 21	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://codice21.com.mx/directorio; https://rebeldeguerrero.blogspot.com/2017/11/gracias-la-sociedad-codice-21-tiene.html
+CODIGO ROJO QUINTANA ROO	codigo rojo	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://www.teqroo.org.mx/np9/Estrados/2024/Agosto/resolucion/7_5.pdf; https://codigorojomx.com/
+CRITERIO Y RADIO MILED		needs_review	Two outlets on one attendance record.	attendance_merged_dedup.xlsx
+DER SPIEGEL	der spiegel	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://gruppe.spiegel.de/unternehmen/historie; https://gruppe.spiegel.de/impressum
+DIARIO RED	diario red latinoamerica	reviewed	User confirmed equivalence 2026-10-16; observed eligible records are September 2025.	user confirmation 2026-10-16
+DIARIO.RED, PIEDEPAGINA.MX		needs_review	Mixed affiliations before the Latin America edition launch; do not duplicate or transfer the full record.	attendance_merged_dedup.xlsx
+ECOS MEDIA MX	ecos media	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://ecosmediamx.com/
+EL SUR DE GUERRERO	el sur de acapulco	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://suracapulco.mx/archivoelsur/directorio; https://suracapulco.mx/
+ENFOQUE OPORTUNO	enfoque oportuno	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://enfoqueoportuno.com/
+ENLACE MEXAAMERICA		needs_review	Possible Enlace Mexamerica spelling; equivalence to requested Enlace Mesoamerica remains unverified.	https://enlacemexamerica.com/
+EXCLUSIVAS PUEBLA	exclusivas puebla	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://exclusivaspuebla.com.mx/lanzamiento-de-exclusivas-puebla-como-periodico-impreso/; https://exclusivaspuebla.com.mx/
+GRUPO SIETE 1440	grupo siete noticias	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://www.gruposiete.com.mx/contacto; https://www.gruposiete.com.mx/
+GRUPO SIETE NOTICIAS	grupo siete noticias	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://www.gruposiete.com.mx/contacto; https://www.gruposiete.com.mx/
+HELIOS COMUNICACIONES	helios comunicacion	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	attendance_merged_dedup.xlsx; user supplied outlet name
+HIDALGO NEWS	hidalgo news	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://hidalgonews.mx/
+IMAGEN - UNOTV		needs_review	Multiple affiliations or ambiguous station; no unique outlet linkage.	attendance_merged_dedup.xlsx
+INTERMEDIA CANAL 44	grupo intermedia	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://www.te.gob.mx/EE/SG/2016/JRC/119/SG_2016_JRC_119-605436.pdf; https://canal44.com/
+LA PANCARTA DE QUINTANA ROO, Y SABER P		needs_review	Two outlets on one attendance record.	attendance_merged_dedup.xlsx
+LABORATORIO DE PERIODISMO Y OPINIÓN PÚBLICA	poplab	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://poplab.mx/nosotros/; https://www.codegto.gob.mx/transparencia/Comunicacion_social/2024/T4/Facturas/F0000000326.pdf
+LM NOTICIAS LORD MOLECULA	lord molecula oficial	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://lmnoticias.com.mx/
+LORD MOLÉCULA OFICIAL	lord molecula oficial	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://lmnoticias.com.mx/
+LOS TUBOS	los tubos	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://lostubos.com/los-tubos/; https://lostubos.com/
+LOS TUBOS MONTERREY	los tubos	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://lostubos.com/los-tubos/; https://lostubos.com/
+MÁXIMA 969	maxima fm	reviewed	Reporter Jonathan Lozada identifies Maxima FM 96.9 and 97.9 on his own podcast page.	https://jonathanlozadaenlared.com/podcast/
+MÁXIMA 979 Y MÁXIMA 969	maxima fm	reviewed	Reporter Jonathan Lozada identifies Maxima FM 96.9 and 97.9 on his own podcast page.	https://jonathanlozadaenlared.com/podcast/
+MÁXIMA FM		needs_review	Multiple affiliations or ambiguous station; no unique outlet linkage.	attendance_merged_dedup.xlsx
+MAXIMA FM/ CUARTO PODER		needs_review	Multiple affiliations or ambiguous station; no unique outlet linkage.	attendance_merged_dedup.xlsx
+MÁXIMA FM. RADIOSA		needs_review	Multiple affiliations or ambiguous station; no unique outlet linkage.	attendance_merged_dedup.xlsx
+MÁXIMA NOTICIAS		needs_review	Multiple affiliations or ambiguous station; no unique outlet linkage.	attendance_merged_dedup.xlsx
+MÁXIMA TLAXIACO		needs_review	Multiple affiliations or ambiguous station; no unique outlet linkage.	attendance_merged_dedup.xlsx
+MAXIMAFM		needs_review	Multiple affiliations or ambiguous station; no unique outlet linkage.	attendance_merged_dedup.xlsx
+MILED	miled	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://miled.com/
+MILED RADIO	miled	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://miled.com/
+NOTICIAS DE FRENTE	noticias de frente	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://noticiasdefrente.com/2026/01/14/acerca-de-nosotros/; https://noticiasdefrente.com/
+PERIÓDICO EL SUR		needs_review	No geographic qualifier; cannot select Acapulco namesake.	attendance_merged_dedup.xlsx
+PERIODICO EL SUR DE GUERRERO	el sur de acapulco	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://suracapulco.mx/archivoelsur/directorio; https://suracapulco.mx/
+POSTA	posta	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://www.posta.com.mx/aviso-de-privacidad; https://www.posta.com.mx/
+POSTA MX	posta	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://www.posta.com.mx/aviso-de-privacidad; https://www.posta.com.mx/
+POSTDATA.NEWS	revista posdata	reviewed	User confirmed postdata.news as Revista Posdata.	user confirmation 2026-10-16 | https://postdata.news/
+PUENTE LIBRE	puente libre	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://puentelibre.mx/; https://reposipot.imss.gob.mx/logistica/CABCS/2020/Adjudicaciones%204To%20Trim/AA-050GYR019-E165-2020/Anexo%202%20Justificacion_AA-E165.pdf
+PUENTE LIBRE MX	puente libre	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://puentelibre.mx/; https://reposipot.imss.gob.mx/logistica/CABCS/2020/Adjudicaciones%204To%20Trim/AA-050GYR019-E165-2020/Anexo%202%20Justificacion_AA-E165.pdf
+PUNTOS SUSPENSIVOS RADIO	puntos suspensivos	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://fredalvarez.blogspot.com/2024/07/mananera-del-jueves-4-de-julio-de-2024.html?m=0
+RADIO MÁXIMA		needs_review	Multiple affiliations or ambiguous station; no unique outlet linkage.	attendance_merged_dedup.xlsx
+REVISTA FORTUNA	revista fortuna	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://revistafortuna.com.mx/aviso-de-privacidad/; https://www.consar.gob.mx/gobmx/general/obligaciones_transparencia/art70/Fraccion_XXIII/B/2024/CONTRATOS2024/CONSAR0852024_VLGLOBALSERVICESCONSULTING.pdf
+SEM MÉXICO	semmexico	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://semmexico.mx/somos/; https://redsemlac.com/semmexico/cierra-semmexico-uno-de-los-principales-portales-independientes-de-periodismo-feminista-en-mexico/
+SOY VITTOR BLOGS OFICIAL	vittor blogs	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	attendance_merged_dedup.xlsx; user supplied outlet name
+SUPER ESTERO MILED	miled	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://miled.com/
+TIEMPO.COM.MX Y PUENTELIBRE.M		needs_review	Two outlets on one attendance record.	attendance_merged_dedup.xlsx
+TRANSMITIENDO DESDE LA FRONTERA	desde la frontera	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://tdfnoticias.com.mx/; https://tdfnoticias.com.mx/aviso-legal/
+TRANSMITIENDO DESDE LA FRONTERA CON JUAN FELIPE PRADO	desde la frontera	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://tdfnoticias.com.mx/; https://tdfnoticias.com.mx/aviso-legal/
+TRIBU POLÍTICA		needs_review	No evidence linking this label to Grupo Tribu.	attendance_merged_dedup.xlsx
+UDG		needs_review	University label does not distinguish radio and television.	attendance_merged_dedup.xlsx
+UDG CANAL 44	canal 44 udg	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://www.gaceta.udg.mx/la-udeg-toma-la-television/; https://ww1.udg.mx/es/promociones/s-parte-la-comunidad-44
+UNIRADIO Y UNOTV		needs_review	Multiple affiliations or ambiguous station; no unique outlet linkage.	attendance_merged_dedup.xlsx
+UNO TV	unotv	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://www.unotv.com/acerca-de/quienes-somos/; https://www.unotv.com/acerca-de/aviso-de-privacidad/
+UNOTV	unotv	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://www.unotv.com/acerca-de/quienes-somos/; https://www.unotv.com/acerca-de/aviso-de-privacidad/
+UNOTV, IMAGEN, UNIVISION, TULUM FM 104.6		needs_review	Multiple affiliations or ambiguous station; no unique outlet linkage.	attendance_merged_dedup.xlsx
+UNOTV / UNIRADIO INFORMA		needs_review	Multiple affiliations or ambiguous station; no unique outlet linkage.	attendance_merged_dedup.xlsx
+VICTOR BLOGS	vittor blogs	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	attendance_merged_dedup.xlsx; user supplied outlet name
+VITTOR BLOGS	vittor blogs	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	attendance_merged_dedup.xlsx; user supplied outlet name
+VOCES DEL PERIODISTA	voces del periodista	reviewed	Exact reviewed label; entity identity does not imply ownership or an additional attendee.	https://vocesdelperiodista.com.mx/ants/161.pdf; https://vocesdelperiodista.com.mx/

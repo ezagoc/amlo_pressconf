@@ -3,10 +3,15 @@ library(arrow)
 library(stringi)
 library(stringr)
 
-if (requireNamespace("rstudioapi", quietly = TRUE)) {
+if (requireNamespace("rstudioapi", quietly = TRUE) && rstudioapi::isAvailable()) {
   setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+} else if (dir.exists(file.path(getwd(), "code", "05-press_conferences"))) {
+  setwd(file.path(getwd(), "code", "05-press_conferences"))
 }
 source("../../project_paths.R")
+source("../../src/attendance_coaffiliation.R")
+source("../../src/attendance_roles.R")
+source("../../src/reviewed_outlet_linkage.R")
 
 ## Read panel data 
 
@@ -16,10 +21,10 @@ df <- readxl::read_excel(media_path('data', '02-conferences', 'raw', 'attendance
 
 df_cargo <- df |> distinct(cargo) 
 
-## REMOVE: CAMARÓGRAFO, ESTUDIANTE, TÉCNICO, INGENIERO KU, FOTOGRAFO, AUDIO
+## Exclude camera/photo/technical roles regardless of accents or capitalization.
 
 df <- df %>%
-  filter(!str_detect(cargo, "CAMARÓGRAFO|ESTUDIANTE|TÉCNICO|INGENIERO KU|FOTOGRAFO|AUDIO"))
+  filter(keep_attendance_role(cargo))
 
 df <- df %>%
   mutate(
@@ -123,7 +128,7 @@ df <- df %>%
       str_detect(outlet_clean, "acir") ~ "acir",
       str_detect(outlet_clean, "imer") ~ "imer",
       str_detect(outlet_clean, "acir") ~ "acir",
-      str_detect(outlet_clean, "amarc") ~ "amarc",
+      str_detect(outlet_clean, "amarc|radio tepoztlan") ~ "amarc",
       str_detect(outlet_clean, "24 horas") ~ "diario 24 horas",
       str_detect(outlet_clean, "canal 13|trece") ~ "canal 13",
       str_detect(outlet_clean, "publimetro") ~ "publimetro",
@@ -152,7 +157,7 @@ df <- df %>%
       str_detect(outlet_clean, "a tiempotv|a tiempo") ~ "a tiempo tv",
       str_detect(outlet_clean, "pulsosaludable|pulso saludable") ~ "pulso saludable",
       str_detect(outlet_clean, "enfoque|enfoquenoticias") ~ "enfoque noticias",
-      str_detect(outlet_clean, "grupo sol|sol de campeche") ~ "grupo sol",
+      str_detect(outlet_clean, "grupo sol|sol (de )?(campeche|yucatan|quintana roo)") ~ "grupo sol",
       str_detect(outlet_clean, "sputnik") ~ "sputnik",
       str_detect(outlet_clean, "agencia efe|efe | efe |efe") ~ "agencia efe",
       str_detect(outlet_clean, "ombligo") ~ "ombligo",
@@ -169,6 +174,10 @@ df <- df %>%
       str_detect(outlet_clean, "quadratin") ~ "quadratin",
       str_detect(outlet_clean, "radiorama|radio rama") ~ "grupo radiorama",
       str_detect(outlet_clean, "radiocentro|radio centro") ~ "grupo radio centro",
+      str_detect(outlet_clean, "canal 11|canal once|once ?noticias") ~ "canal 11",
+      # Distinct brands: do not assign Olvera's News World to Meme Yamel.
+      str_detect(outlet_clean, "mexico news world|marco (antonio )?olvera") ~ "mexico news world",
+      str_detect(outlet_clean, "mexico news daily") ~ "mexico news daily",
       str_detect(outlet_clean, "mexico news|mexico newa") ~ "mexico news",
       str_detect(outlet_clean, "zmg") ~ "noticias zmg",
       str_detect(outlet_clean, "centinela") ~ "el centinela informa",
@@ -186,7 +195,7 @@ df <- df %>%
       str_detect(outlet_clean, "la hora de la ve") ~ "gaceta del aire",
       str_detect(outlet_clean, "diario la verdad|la verdad") ~ "diario la verdad",
       str_detect(outlet_clean, "on noticias|on notcias") ~ "on noticias",
-      str_detect(outlet_clean, "reportero urbano|reporte urbano") ~ "reportero urbano",
+      str_detect(outlet_clean, "reportero urbano|reporte urbano|medios digitales del pacifico|bcs") ~ "medios digitales del pacifico",
       str_detect(outlet_clean, "antitesis") ~ "antitesis",
       str_detect(outlet_clean, "xinhua") ~ "xinhua",
       str_detect(outlet_clean, "ae grupo informativo|ae informativo") ~ "ae grupo informativo",
@@ -197,8 +206,7 @@ df <- df %>%
       str_detect(outlet_clean, "desde la frontera") ~ "desde la frontera",
       str_detect(outlet_clean, "diario de juarez") ~ "el diario de juarez",
       str_detect(outlet_clean, "meridiano") ~ "meridiano",
-      str_detect(outlet_clean, "sonora power|sonorapower") ~ "sonora power",
-      str_detect(outlet_clean, "vigiliasonora|vigilia sonora") ~ "sonora power",
+      str_detect(outlet_clean, "sonora power|sonorapower|vigiliasonora|vigilia sonora|pxnweb|telemax|radio sonora") ~ "sonora power",
       str_detect(outlet_clean, "la prensa") ~ "la prensa",
       str_detect(outlet_clean, "audiorama") ~ "audiorama",
       str_detect(outlet_clean, "reforma|el norte|mural") ~ "reforma",
@@ -219,12 +227,10 @@ df <- df %>%
   )
 
 
-
 name_table <- df %>%
-  count(outlet_clean, sort = TRUE)
+  count(outlet_clean, sort = TRUE) 
 
-check <- name_table |> filter(str_detect(outlet_clean, "emb")) |>
-    count(outlet_clean, sort = TRUE)
+check <- name_table |> filter(str_detect(outlet_clean, "queretaro"))
 
 # Dictionary for weird cases:
 
@@ -270,7 +276,7 @@ dictionary_media <- list(
   "mmm otros" = c('mmm otros',
                   'diario de chiapas',
                   'diario de colima', 'el informador', 'imparoaxaca', 
-                  'novedades de yucatan', 'el debate', 'tribuna', 
+                  'el debate', 'tribuna', 
                   'el diario de sonora', 'avance tabasco', 
                   'dia a dia avance tabasco informa', 'el diario de juarez'
                   
@@ -284,10 +290,8 @@ dictionary_media <- list(
     "periodico noroeste", 'el siglo de durango', 'plaza de armas'
   ),
   "reporteros mx" = c(
-    "fotorreporteros mx", "reporteros mx", "fotoreporterosmx", "los reporteros mx"
-  ), 
-  "el quintana roo mx" = c(
-    "el quintana roo mx", "el quintana roo", "el quintanaroo"
+    "fotorreporteros mx", "reporteros mx", "fotoreporterosmx", "los reporteros mx", 
+    "el quintana roo mx", "el quintana", "el quintana roo", 'el quintanaroo'
   )
 )
 
@@ -303,10 +307,21 @@ df <- df %>%
   left_join(dictionary_tbl, by = c("outlet_clean" = "variant")) %>%
   mutate(outlet_final = coalesce(canonical_outlet, outlet_clean))
 
+# Review original labels after legacy rules so specific brands cannot be swallowed
+# by rules such as enfoque -> Enfoque Noticias or all Canal 44 -> one station.
+df <- apply_reviewed_attendance_linkage(
+  df, read_outlet_aliases("../../info_newspapers_gpt/attendance_aliases_20261016.tsv")
+)
+
 check <- df |> filter(str_detect(outlet_final, "contra")) |>
   count(outlet_final, sort = TRUE)
 
+# Assign one outlet attendance to The Mexico News on every Sin Censura date.
+# This is a flagged co-affiliation assumption, not an extra physical attendee.
+df <- add_mexico_news_coattendance(df)
+
 name_table <- df %>%
+  filter(!is.na(outlet_final)) %>%
   count(outlet_final, sort = TRUE)
 
 final_dedup <- name_table |> filter(n>4)
@@ -339,12 +354,17 @@ panel <- tidyr::crossing(final_dedup |> select(outlet_final), dates) |>
 # 3 Group the attendance on the outlet final (for merge) and on date
 
 df_g <- df |> mutate(
-  fecha = as.Date(fecha)) |> group_by(fecha, outlet_final) |> summarise(n_journalists = n()) |> 
+  fecha = as.Date(fecha)) |> group_by(fecha, outlet_final) |> summarise(
+    n_journalists = n(),
+    n_journalists_recorded = sum(!attendance_assumed),
+    n_journalists_assumed = sum(attendance_assumed)) |>
   ungroup()
 
 panel <- panel |> left_join(df_g, by = c('fecha', 'outlet_final')) |> 
   mutate(n_journalists = ifelse(is.na(n_journalists) == T, 0, n_journalists), 
-         attended = ifelse(n_journalists > 0, 1, 0))
+         attended = ifelse(n_journalists > 0, 1, 0),
+         n_journalists_recorded = coalesce(n_journalists_recorded, 0L),
+         n_journalists_assumed = coalesce(n_journalists_assumed, 0L))
 
 
 # Add covariates (media): total attendance before lottery, total attendance after, total attendance,
@@ -364,7 +384,7 @@ panel <- panel |> left_join(final_dedup) |> left_join(after) |> left_join(before
 
 # Add covariates (press conference): total number of journalists, camarographers, etc
 
-df_attendees <- df |> 
+df_attendees <- df |> filter(!attendance_assumed) |>
   mutate(cargos = case_when(str_detect(cargo, "REPORTERO|REPORTETO") ~ "reportero",
                             str_detect(cargo, "YOUTUBER") ~ "youtuber",
                             TRUE ~ 'otro')) |>

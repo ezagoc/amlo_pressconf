@@ -14,9 +14,13 @@
 pacman::p_load(tidyverse, arrow, patchwork, zoo, scales, xtable)
 
 rm(list = ls())
-rstudioapi::getActiveDocumentContext
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+if (requireNamespace("rstudioapi", quietly = TRUE) && rstudioapi::isAvailable()) {
+  setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+} else if (dir.exists(file.path(getwd(), "code", "03-cleaning_conf", "question_class"))) {
+  setwd(file.path(getwd(), "code", "03-cleaning_conf", "question_class"))
+}
 source("../../../project_paths.R")
+source("../../../src/reviewed_outlet_linkage.R")
 
 LOTTERY_DATE <- as.Date('2022-04-18')
 
@@ -35,6 +39,8 @@ df_rep_out <- df |> group_by(reporter_aux, outlet_aux) |> summarise(n_t = n()) |
 
 # Dedup code:
 
+df$outlet_label_before_dedup <- df$outlet_aux
+
 df <- df %>%
   mutate(
     outlet_aux = case_when(
@@ -48,10 +54,13 @@ df <- df %>%
       str_detect(outlet_aux, "contralinea") ~ "contralinea",
       str_detect(outlet_aux, "jornada") ~ "la jornada",
       str_detect(outlet_aux, "proceso") ~ "proceso",
-      str_detect(outlet_aux, "sdp|analisis economico") ~ "sdpnoticias",
+      str_detect(outlet_aux, "sdp") ~ "sdpnoticias",
       str_detect(outlet_aux, "formula") ~ "grupo formula",
       str_detect(outlet_aux, "ahora") ~ "es ahora am",
       str_detect(outlet_aux, "azteca|adn 40") ~ "tv azteca",
+      # These regional Sol titles belong to the audited Grupo Sol attendance ID.
+      # Match them before the broad OEM rule below.
+      str_detect(outlet_aux, "grupo sol|sol (de )?(campeche|yucatan|quintana roo)") ~ "grupo sol",
       str_detect(outlet_aux, "sol de|organizacion editorial") ~ "oem mexico",
       str_detect(outlet_aux, "elefante") ~ "elefante blanco",
       str_detect(outlet_aux, "sputnik") ~ "sputnik",
@@ -60,12 +69,12 @@ df <- df %>%
       str_detect(outlet_aux, "tiempotv|tiempo tv") ~ "a tiempo tv",
       str_detect(outlet_aux, "tiempocom") ~ "tiempo la noticia digital",
       str_detect(outlet_aux, "unomasuno|uno mas uno") ~ "uno mas uno",
+      str_detect(outlet_aux, "mexico news world|marco (antonio )?olvera") ~ "mexico news world",
+      str_detect(outlet_aux, "mexico news daily") ~ "mexico news daily",
       str_detect(outlet_aux, "mexico news") ~ "the mexico news",
-      str_detect(outlet_aux, "amarc|red de radios") ~ "amarc",
+      str_detect(outlet_aux, "amarc|red de radios|radio tepoztlan") ~ "amarc",
       str_detect(outlet_aux, "rock|politica") ~ "politica y rock radio",
-      str_detect(outlet_aux, "sonora power") ~ "sonora power",
-      str_detect(outlet_aux, "radio sonora") ~ "radio sonora",
-      str_detect(outlet_aux, "telemax") ~ "telemax",
+      str_detect(outlet_aux, "sonora power|radio sonora|telemax") ~ "sonora power",
       str_detect(outlet_aux, "proyecto puente") ~ "proyecto puente",
       str_detect(outlet_aux, "molecula") ~ "lord molecula oficial",
       str_detect(outlet_aux, "petroleo y energia|revista pe") ~ "petroleo y energia",
@@ -73,7 +82,8 @@ df <- df %>%
       str_detect(outlet_aux, "radiorama") ~ "grupo radiorama",
       str_detect(outlet_aux, "vanguardia") ~ "mmm vanguardia",
       str_detect(outlet_aux, "sin censura") ~ "sin censura",
-      str_detect(outlet_aux, "informando") ~ "informando la transformacion",
+      # Julio Omar Gomez's brands share the reviewed asking ID.
+      str_detect(outlet_aux, "informando|puntos[ ,]*ni comas|julio omar|julioomargs|juliomargs") ~ "medios digitales del pacifico",
       str_detect(outlet_aux, "abc") ~ "abc",
       str_detect(outlet_aux, "business") ~ "business energy",
       str_detect(outlet_aux, "sin linea|sinlinea") ~ "sin linea",
@@ -85,19 +95,18 @@ df <- df %>%
       str_detect(outlet_aux, "24 horas") ~ "diario 24 horas",
       str_detect(outlet_aux, "canal 73|cnr") ~ "cnr canal 73",
       str_detect(outlet_aux, "polemon") ~ "polemon",
-      str_detect(outlet_aux, "medios digitales") ~ "medios digitales del pacifico",
+      str_detect(outlet_aux, "medios digitales|reportero urbano|bcs") ~ "medios digitales del pacifico",
       str_detect(outlet_aux, "canal 14|spr") ~ "canal 14 spr",
       str_detect(outlet_aux, "codigo") ~ "codigo libre",
-      str_detect(outlet_aux, "quintana roo mx|quintanaroomx") ~ "quintana roo mx",
+      str_detect(outlet_aux, "quintana roo mx|quintanaroomx") ~ "losreporterosmx",
       str_detect(outlet_aux, "quadratin") ~ "quadratin",
       str_detect(outlet_aux, "zmg") ~ "trafico zmg",
-      str_detect(outlet_aux, "reportero urbano") ~ "reportero urbano",
       str_detect(outlet_aux, "noticias del movimiento") ~ "movimiento conciencia",
       str_detect(outlet_aux, "noticiero en redes|noticieros en redes") ~ "noticiero en redes",
       str_detect(outlet_aux, "bajo palabra") ~ "bajo palabra",
       str_detect(outlet_aux, "eli tv") ~ "eli tv",
       str_detect(outlet_aux, "puente libre|puentelibre") ~ "puente libre mx",
-      str_detect(outlet_aux, "marco olvera|canal de youtube") ~ "marco olvera oficial",
+      str_detect(outlet_aux, "canal de youtube") ~ "mexico news world",
       str_detect(outlet_aux, "revista en|enfasis") ~ "revista enfasis",
       str_detect(outlet_aux, "verdad noticias") ~ "verdad noticias",
       str_detect(outlet_aux, "defensor") ~ "el defensor de la verdad",
@@ -110,7 +119,7 @@ df <- df %>%
       str_detect(outlet_aux, "on noticias|onoticias|o noticias") ~ "on noticias",
       str_detect(outlet_aux, "sistema public|spr") ~ "canal 14 spr",
       str_detect(outlet_aux, "rompeviento") ~ "rompeviento tv",
-      str_detect(outlet_aux, "canal 11|canal once") ~ "canal 11",
+      str_detect(outlet_aux, "canal 11|canal once|once ?noticias") ~ "canal 11",
       str_detect(outlet_aux, "meganoticias") ~ "meganoticias",
       str_detect(outlet_aux, "reuters") ~ "reuters",
       str_detect(outlet_aux, "la mejor") ~ "la mejor noticias",
@@ -126,7 +135,10 @@ df <- df %>%
       str_detect(outlet_aux, "naturopatia") ~ "naturopatia",
       TRUE ~ outlet_aux
     ))
-  
+df$outlet_aux <- apply_reviewed_question_linkage(
+  df$outlet_label_before_dedup, df$outlet_aux,
+  read_outlet_aliases("../../../info_newspapers_gpt/question_aliases_20261016.tsv")
+)
 
 df <- df %>%
   mutate(
@@ -155,7 +167,7 @@ df <- df %>%
     outlet_aux = ifelse(str_detect(reporter_aux, "juan hernandez") == T, 
                         'grupo canton', outlet_aux),
     outlet_aux = ifelse(str_detect(reporter_aux, "amir ibrahim") == T, 
-                        'quintana roo mx', outlet_aux),
+                        'losreporterosmx', outlet_aux),
     outlet_aux = ifelse(str_detect(reporter_aux, "maria luisa estrada") == T, 
                         'la grillotina', outlet_aux),
     outlet_aux = ifelse(str_detect(reporter_aux, "elianne") == T, 
@@ -202,7 +214,7 @@ df <- df %>%
   mutate(
     outlet_aux = ifelse(str_detect(reporter_aux, "olvera") == T & 
                           outlet_aux == '', 
-                        'marco olvera oficial', outlet_aux)
+                        'mexico news world', outlet_aux)
   )
 
 df_rep_out <- df |> group_by(reporter_aux, outlet_aux) |> summarise(n_t = n()) |>
@@ -238,4 +250,3 @@ check <- name_table |> filter(str_detect(outlet_aux, "ahora")) |>
 
 check2 <- name_table |>  filter(str_detect(reporter_aux, "alberto")) |>
   count(outlet_aux, reporter_aux, sort = TRUE)
-

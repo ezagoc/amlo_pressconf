@@ -58,6 +58,14 @@ code/**/*.pdf
 !**/requirements.txt
 !*.example
 !presentations/**/*.pdf
+!info_newspapers_gpt/outlet_expansion_20261016.json
+!info_newspapers_gpt/outlet_review_20261016/youtube_extraction_manifest.json
+!info_newspapers_gpt/outlet_review_20261016/youtube_review.csv
+!info_newspapers_gpt/outlet_review_20261016/alias_followup_review.csv
+!info_newspapers_gpt/outlet_review_20261016/affiliation_transcript_evidence.csv
+!info_newspapers_gpt/outlet_review_20261016/sheinbaum_date_matches/reviewed_date_crosswalk.csv
+!info_newspapers_gpt/outlet_review_20261016/sheinbaum_date_matches/reviewed_question_dates.csv
+!info_newspapers_gpt/outlet_review_20261016/sheinbaum_date_matches/reviewed_summary.csv
 
 # OS files
 .DS_Store
