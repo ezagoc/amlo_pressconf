@@ -1,0 +1,15 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{booktabs,lmodern}
+\usepackage[T1]{fontenc}
+\pagestyle{empty}\setlength{\parindent}{0pt}
+\begin{document}
+{\large\bfseries Table 1. Daily effect of asking a question}\par\vspace{8pt}
+\input{daily_main_regression.tex}
+\vspace{5pt}{\footnotesize Outlet-clustered standard errors in parentheses. Outcomes are $\log(1+y)$ of total likes, comments, and views on videos published that day, without winsorization. The sample contains directly recorded attendees from April 19, 2022 to September 27, 2024.}\par
+\vspace{18pt}
+{\large\bfseries Table 2. Daily effects by outlet alignment}\par\vspace{8pt}
+\input{daily_interaction_regression.tex}
+\vspace{5pt}{\footnotesize The reference group is Opp. + Independent. Asked $\times$ Aligned reports the difference between Aligned and the reference group, not the total Aligned effect. La Jornada's shared source ID is excluded because its metadata affiliations conflict; dates without remaining treatment variation and singletons are removed.}\par
+\vspace{7pt}{\footnotesize Both tables use outlet and shared date fixed effects. Even-numbered columns add the pre-lottery 12-month questions/recorded-attendance ratio and its missingness indicator, each interacted with quarter. Clustered $p$-values use outlet-clustered inference; wild $p$-values use two-sided, null-imposed outlet WCR11 bootstrap-$t$ tests with 9,999 Rademacher draws. No multiplicity adjustment. Engagement is measured at the saved snapshot, not as same-day engagement received.}
+\end{document}

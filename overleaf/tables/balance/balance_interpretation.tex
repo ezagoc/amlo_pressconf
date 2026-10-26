@@ -1,0 +1,39 @@
+Among outlets recorded as attending the same press conference, those that ask
+a question have higher pre-lottery ratios of questions to recorded attendance.
+The estimated differences range from 0.152 to 0.185 questions per attendance
+record across the four historical windows; the individual 95\% confidence
+intervals exclude zero in every window. These associations are consistent with
+persistent differences in engagement with the question-and-answer process.
+One possible explanation is that some outlets attend primarily to seek an
+opportunity to question the president, whereas others attend primarily to
+cover the proceedings. The data do not directly measure these intentions,
+however, and prior participation may also reflect differences in access,
+resources, or editorial practices.
+
+The joint tests provide a complementary diagnostic. Conditional on conference-day
+fixed effects and indicators for unavailable histories, the twelve historical
+measures jointly predict questioning for the preceding 18- and 24-month windows,
+with Holm-adjusted $p$-values of 0.014 and 0.002. The tests for the preceding
+12 months and the full pre-lottery period do not reject at the 5\% level.
+These omnibus results cannot be attributed specifically to participation
+history, because the tested set also includes contracts and YouTube measures.
+They are descriptive diagnostics: YouTube engagement is measured from saved
+snapshots of videos published before the lottery, not necessarily from counts
+collected before the lottery itself.
+
+Taken together, these patterns motivate an outcome analysis that accounts for
+pre-lottery participation histories rather than treating access to questions
+as unconditionally random. Such adjustment can allow outlets with different
+prior engagement to have different untreated outcome paths. It does not, by
+itself, establish that question access is conditionally random or remove
+selection on unobserved characteristics. A conditional causal interpretation
+therefore requires additional identifying assumptions and supporting diagnostics.
+
+% Implementation reminder (not typeset): frozen outlet histories are absorbed
+% by outlet fixed effects in the existing FEct specification. Simply adding
+% their levels does not adjust the model further. A prespecified interaction
+% with calendar time, or another explicit adjustment design, must be agreed
+% before re-estimation. Do not use snapshot engagement as a verified baseline.
+% Individual tests use available-history samples; the joint tests instead
+% retain all 81 outlet units using missingness indicators. Participation-ratio
+% confidence intervals are individual, not simultaneous/multiplicity-adjusted.

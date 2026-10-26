@@ -61,4 +61,23 @@ class ExtractorTests(unittest.TestCase):
         self.assertEqual([r for r,p in api.calls],["channels"])
         db.close()
 
+    def test_end_of_pagination_flags_apparent_upload_limit(self):
+        import csv
+        with tempfile.TemporaryDirectory() as folder:
+            db=module.open_db(":memory:");module.extract_entry(FakeAPI(),db,ENTRY)
+            payload=json.loads(db.execute("SELECT payload FROM channels").fetchone()[0])
+            payload["statistics"]["videoCount"]="100000"
+            db.execute("UPDATE channels SET payload=?",(json.dumps(payload),))
+            db.execute("UPDATE progress SET complete=1,pages=400")
+            module.export(db,Path(folder))
+            with (Path(folder)/"youtube_channels.csv").open() as f: row=next(csv.DictReader(f))
+            self.assertEqual(row["uploads_complete"],"True")
+            self.assertEqual(row["coverage_status"],"api_limit_suspected")
+            self.assertEqual(row["saved_video_count"],"3")
+            db.execute("UPDATE progress SET complete=0")
+            module.export(db,Path(folder))
+            with (Path(folder)/"youtube_channels.csv").open() as f: row=next(csv.DictReader(f))
+            self.assertEqual(row["coverage_status"],"in_progress")
+            db.close()
+
 if __name__=="__main__":unittest.main()

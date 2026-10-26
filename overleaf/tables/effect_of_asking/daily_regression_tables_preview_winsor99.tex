@@ -1,0 +1,16 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{booktabs,lmodern}
+\usepackage[T1]{fontenc}
+\pagestyle{empty}\setlength{\parindent}{0pt}
+\begin{document}
+{\normalsize\bfseries Table 1. Daily effect of asking a question --- Log(1+y)}\par\vspace{8pt}
+\input{daily_main_regression_winsor99.tex}
+\vspace{7pt}{\scriptsize Outlet-clustered standard errors in parentheses; $p$-values in square brackets below the coefficient-block rule. Each raw daily outcome is capped at its pooled-sample 99th percentile, then transformed using $\log(1+y)$. Common cutoffs apply to both tables; the lower tail is unchanged. Total interactions = likes + comments; mean interactions per video = raw interactions/raw video count (zero for no-video days), computed before capping. Even-numbered columns add the pre-lottery 12-month questions/recorded-attendance ratio and its missingness indicator, each interacted with quarter. Wild $p$-values: two-sided null-imposed outlet WCR11 bootstrap-$t$, 9,999 Rademacher draws; no multiplicity adjustment.}\par
+\vspace{5pt}{\scriptsize Directly recorded attendees, April 19, 2022--September 27, 2024. Outcomes refer to videos published that day; engagement is measured at the saved snapshot, not as engagement received that day.}\par
+\newpage
+{\normalsize\bfseries Table 2. Daily effects by outlet alignment --- Log(1+y)}\par\vspace{8pt}
+\input{daily_interaction_regression_winsor99.tex}
+\vspace{7pt}{\scriptsize Outlet-clustered standard errors in parentheses; $p$-values in square brackets below the coefficient-block rule. Each raw daily outcome is capped at its pooled-sample 99th percentile, then transformed using $\log(1+y)$. Common cutoffs apply to both tables; the lower tail is unchanged. Total interactions = likes + comments; mean interactions per video = raw interactions/raw video count (zero for no-video days), computed before capping. Even-numbered columns add the pre-lottery 12-month questions/recorded-attendance ratio and its missingness indicator, each interacted with quarter. Wild $p$-values: two-sided null-imposed outlet WCR11 bootstrap-$t$, 9,999 Rademacher draws; no multiplicity adjustment.}\par
+\vspace{5pt}{\scriptsize Reference group: Opp. + Independent. Asked $\times$ Aligned is the Aligned-minus-reference difference, not the total Aligned effect. The sample excludes La Jornada's conflicting metadata affiliation and dates without remaining treatment variation; fixed-effect singletons are removed.}\par
+\end{document}

@@ -1,0 +1,94 @@
+% Preview standalone, or include unchanged with \input in the paper.
+\newif\ifBalanceHistoriesStandalone
+\makeatletter
+\ifx\documentclass\@twoclasseserror
+  \BalanceHistoriesStandalonefalse
+\else
+  \BalanceHistoriesStandalonetrue
+\fi
+\makeatother
+\ifBalanceHistoriesStandalone
+  \documentclass[10pt]{article}
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+  \usepackage[letterpaper,margin=0.85in]{geometry}
+  \usepackage{booktabs}
+  \pagestyle{empty}
+  \begin{document}
+\fi
+\begingroup
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.12}
+\noindent
+\begin{tabular}{@{}lccc@{}}
+\toprule
+ & \multicolumn{3}{c}{Full post-lottery sample: recorded attendees} \\
+\cmidrule(l){2-4}
+Characteristic & \shortstack{Day-FE difference\\Asking $-$ nonasking} & 95\% CI & $p$-value \\
+\midrule
+\addlinespace[3pt]
+\multicolumn{4}{@{}l}{\textbf{A. Histories: 12 months before the lottery}} \\
+\addlinespace[5pt]
+\multicolumn{4}{@{}l}{\textit{Participation history}\quad Raw ratio} \\
+\multicolumn{4}{@{}l}{7,441 outlet-days; 71 outlets; 305 conference dates} \\
+\addlinespace[3pt]
+Questions / recorded attendance & $0.152$ & $[0.055,\ 0.249]$ & 0.0026 \\
+\addlinespace[6pt]
+\multicolumn{4}{@{}l}{\textit{Contract histories}\quad $\log(1+x)$} \\
+\multicolumn{4}{@{}l}{3,925 outlet-days; 46 outlets; 224 conference dates} \\
+\addlinespace[3pt]
+Contract value (MXN) & $-1.979$ & $[-5.266,\ 1.308]$ & 0.2316 \\
+Contracts received & $-0.447$ & $[-1.120,\ 0.226]$ & 0.1880 \\
+\addlinespace[6pt]
+\multicolumn{4}{@{}l}{\textit{YouTube histories}\quad $\log(1+x)$} \\
+\multicolumn{4}{@{}l}{5,308 outlet-days; 60 outlets; 258 conference dates} \\
+\addlinespace[3pt]
+Videos published & $-0.255$ & $[-0.995,\ 0.485]$ & 0.4932 \\
+Total views & $-0.249$ & $[-1.766,\ 1.268]$ & 0.7435 \\
+Total likes & $0.326$ & $[-1.128,\ 1.780]$ & 0.6556 \\
+Total comments & $0.062$ & $[-1.203,\ 1.327]$ & 0.9220 \\
+Total interactions & $0.285$ & $[-1.158,\ 1.728]$ & 0.6941 \\
+\addlinespace[3pt]
+Views per video & $-0.015$ & $[-0.855,\ 0.826]$ & 0.9724 \\
+Likes per video & $0.555$ & $[-0.233,\ 1.343]$ & 0.1642 \\
+Comments per video & $0.212$ & $[-0.318,\ 0.742]$ & 0.4270 \\
+Interactions per video & $0.514$ & $[-0.264,\ 1.292]$ & 0.1915 \\
+\midrule
+\addlinespace[3pt]
+\multicolumn{4}{@{}l}{\textbf{B. Metadata}\quad Binary indicators} \\
+\multicolumn{4}{@{}l}{7,976 outlet-days; 81 outlets; 318 conference dates} \\
+\addlinespace[5pt]
+\multicolumn{4}{@{}l}{\textit{Media format}} \\
+\addlinespace[3pt]
+Print / newspaper & $-0.150$ & $[-0.276,\ -0.023]$ & 0.0210 \\
+Digital & $-0.028$ & $[-0.132,\ 0.075]$ & 0.5865 \\
+Social media & $0.001$ & $[-0.093,\ 0.096]$ & 0.9752 \\
+Radio & $0.000$ & $[-0.098,\ 0.098]$ & 0.9988 \\
+Television & $-0.020$ & $[-0.118,\ 0.077]$ & 0.6806 \\
+\addlinespace[6pt]
+\multicolumn{4}{@{}l}{\textit{Coverage and location}} \\
+\addlinespace[3pt]
+National coverage & $0.015$ & $[-0.076,\ 0.106]$ & 0.7459 \\
+State coverage & $-0.042$ & $[-0.158,\ 0.074]$ & 0.4708 \\
+Mexico City outlet & $-0.080$ & $[-0.215,\ 0.056]$ & 0.2451 \\
+Metropolitan-area outlet & $-0.003$ & $[-0.011,\ 0.005]$ & 0.4014 \\
+\midrule
+Conference-day fixed effects & \multicolumn{3}{c}{Yes} \\
+SE clustering & \multicolumn{3}{c}{Outlet} \\
+\midrule
+\multicolumn{4}{@{}l}{\textbf{Separate joint tests}} \\
+\multicolumn{4}{@{}l}{7,976 outlet-days; 81 outlets; 318 conference dates} \\
+\addlinespace[3pt]
+All historical covariates & \multicolumn{2}{c}{$F(12,80)=1.496$} & 0.1430 \\
+All metadata covariates & \multicolumn{2}{c}{$F(9,80)=2.992$} & 0.0040 \\
+\bottomrule
+\end{tabular}\par
+\endgroup
+\ifBalanceHistoriesStandalone
+  \def\BalanceHistoriesEnd{\end{document}}
+\else
+  \let\BalanceHistoriesEnd\relax
+\fi
+\BalanceHistoriesEnd

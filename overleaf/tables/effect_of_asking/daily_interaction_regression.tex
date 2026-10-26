@@ -1,0 +1,31 @@
+% Requires \usepackage{booktabs}; generated from saved daily fits.
+\begingroup\centering\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.05}
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrrrrr@{}}
+\toprule
+ & \multicolumn{2}{c}{Likes} & \multicolumn{2}{c}{Comments} & \multicolumn{2}{c}{Views} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(l){6-7}
+ & (1) & (2) & (3) & (4) & (5) & (6) \\
+\midrule
+Asked a question & 0.014 & 0.007 & 0.045 & 0.033 & 0.204 & 0.214 \\
+ & (0.123) & (0.124) & (0.091) & (0.096) & (0.161) & (0.166) \\
+Clustered $p$-value & 0.907 & 0.955 & 0.622 & 0.733 & 0.211 & 0.203 \\
+Wild-bootstrap $p$-value & 0.914 & 0.957 & 0.632 & 0.744 & 0.247 & 0.223 \\
+\addlinespace[5pt]
+Asked $\times$ Aligned & 0.030 & 0.050 & 0.032 & 0.045 & -0.126 & -0.115 \\
+ & (0.181) & (0.180) & (0.190) & (0.192) & (0.230) & (0.228) \\
+Clustered $p$-value & 0.868 & 0.782 & 0.868 & 0.816 & 0.586 & 0.617 \\
+Wild-bootstrap $p$-value & 0.875 & 0.791 & 0.884 & 0.841 & 0.610 & 0.639 \\
+\midrule
+Outlet fixed effects & Yes & Yes & Yes & Yes & Yes & Yes \\
+Date fixed effects & Yes & Yes & Yes & Yes & Yes & Yes \\
+Prior history $\times$ quarter & No & Yes & No & Yes & No & Yes \\
+\addlinespace[3pt]
+Observations & 4,979 & 4,979 & 4,979 & 4,979 & 4,979 & 4,979 \\
+Outlets (clusters) & 54 & 54 & 54 & 54 & 54 & 54 \\
+Conference dates & 253 & 253 & 253 & 253 & 253 & 253 \\
+Within $R^2$ & 0.0000 & 0.0098 & 0.0002 & 0.0074 & 0.0003 & 0.0092 \\
+Bootstrap replications & 9,999 & 9,999 & 9,999 & 9,999 & 9,999 & 9,999 \\
+\bottomrule
+\end{tabular*}\par\endgroup

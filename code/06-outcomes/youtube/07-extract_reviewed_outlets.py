@@ -165,9 +165,18 @@ def number(stats, key):
 def export(db, directory, since=None, until=None, parquet=False, linkage=None):
     linkage = linkage or {}
     channels, videos = [], []
+    saved_counts = dict(db.execute("SELECT channel_id,COUNT(*) FROM videos GROUP BY channel_id"))
     for outlet_id, name, source, cid, payload, retrieved in db.execute("SELECT * FROM channels ORDER BY outlet_id"):
         c = json.loads(payload);s = c.get("snippet", {});st = c.get("statistics", {})
         complete, pages = db.execute("SELECT complete,pages FROM progress WHERE channel_id=?", (cid,)).fetchone()
+        saved = saved_counts.get(cid, 0)
+        reported = number(st, "videoCount")
+        # Observed API-key scans can end after 400 pages of 50 items even when
+        # the channel reports many more uploads. End-of-pagination is not proof
+        # of historical completeness. Keep the cursor state, but expose this gap.
+        capped = bool(complete and pages == 400 and reported is not None
+                      and reported > 20000)
+        coverage = "api_limit_suspected" if capped else "pagination_complete" if complete else "in_progress"
         identity = linkage.get(outlet_id, {})
         channels.append({"outlet_id": outlet_id, "name.page": name,
           "names.conference": identity.get("linkage_id"), "names.transcripts": identity.get("question_id"), "youtube.channel": source,
@@ -176,7 +185,9 @@ def export(db, directory, since=None, until=None, parquet=False, linkage=None):
           "yt_description": s.get("description"), "yt_subscriberCount": None if st.get("hiddenSubscriberCount") else number(st,"subscriberCount"),
           "yt_hiddenSubs": st.get("hiddenSubscriberCount"), "yt_videoCount": number(st,"videoCount"),
           "yt_viewCount": number(st,"viewCount"), "retrieved_at": retrieved,
-          "uploads_complete": bool(complete), "pages_fetched": pages})
+          "uploads_complete": bool(complete), "pages_fetched": pages,
+          "saved_video_count": saved, "coverage_status": coverage,
+          "reported_minus_saved": reported - saved if reported is not None else None})
     for vid, cid, payload, availability, retrieved in db.execute("SELECT * FROM videos ORDER BY channel_id,video_id"):
         v = json.loads(payload) if payload else {};s = v.get("snippet", {});st = v.get("statistics", {})
         published = s.get("publishedAt");day = date.fromisoformat(published[:10]) if published else None
@@ -190,7 +201,7 @@ def export(db, directory, since=None, until=None, parquet=False, linkage=None):
     for name, rows in [("youtube_channels",channels),("youtube_videos",videos)]:
         target = directory / (name + ".csv");tmp = target.with_suffix(".csv.tmp")
         # Explicit columns prevent empty runs from leaving stale exports.
-        fields = list(rows[0]) if rows else (["outlet_id","name.page","names.conference","names.transcripts","youtube.channel","channelId","yt_title","yt_customUrl","yt_country","yt_createdAt","yt_description","yt_subscriberCount","yt_hiddenSubs","yt_videoCount","yt_viewCount","retrieved_at","uploads_complete","pages_fetched"] if name.endswith("channels") else ["videoId","channel_id","publishedAt_dt","title","description","viewCount","likeCount","commentCount","availability","retrieved_at"])
+        fields = list(rows[0]) if rows else (["outlet_id","name.page","names.conference","names.transcripts","youtube.channel","channelId","yt_title","yt_customUrl","yt_country","yt_createdAt","yt_description","yt_subscriberCount","yt_hiddenSubs","yt_videoCount","yt_viewCount","retrieved_at","uploads_complete","pages_fetched","saved_video_count","coverage_status","reported_minus_saved"] if name.endswith("channels") else ["videoId","channel_id","publishedAt_dt","title","description","viewCount","likeCount","commentCount","availability","retrieved_at"])
         with tmp.open("w",encoding="utf-8",newline="") as f:
             writer = csv.DictWriter(f,fieldnames=fields);writer.writeheader();writer.writerows(rows)
         tmp.replace(target)
