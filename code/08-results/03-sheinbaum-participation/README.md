@@ -89,3 +89,27 @@ also retains sparse-roster cases with their flag. No attendance after September
 Next work is to review residual matches/metadata and specify a participation
 model. Actual question counts, presidential response style, and evidence of
 preparation require completing and reviewing the separate transcript analysis.
+
+## Cargo audit
+
+Run `Rscript code/08-results/03-sheinbaum-participation/02-prepare-role-audit.R`
+followed by `.venv/bin/python code/08-results/03-sheinbaum-participation/03-cargo-audit.py`.
+The first step applies the production outlet cleaner to all original cargos,
+without role/government exclusions or co-attendance imputation, and writes an
+audit copy only. The second compares exact outlet/date and approved dated links
+against transcript identities. Results and the HTML report are under
+`outputs/sheinbaum-cargo-audit-20261026/`. Production inputs remain unchanged.
+
+In the Sheinbaum attendance window, the original merged roster has 13,235
+REPORTERO, 42 YOUTUBER, 1,269 FOTÓGRAFO, and 29 CAMARÓGRAFO rows. The retained
+physical attendance multiset exactly matches the first two cargos. All YOUTUBER
+rows belong to Lord Molécula Oficial during October–December 2024.
+
+On the 239 common usable dates, the 1,608 identified outlet-days divide into
+1,420 with REPORTERO (22 also have support roles), five with YOUTUBER but no
+REPORTERO, one with only an excluded support role, and 182 unmatched. The lone
+support-only case is El Financiero on June 3, 2025: its photographer entry is
+excluded from attendance, while Angélica Guerrero explicitly introduces herself
+and asks a question in the transcript. This is a roster-role discrepancy, not
+evidence that a photographer asked the question. Attendance has no person names,
+so roles cannot be assigned to individual speakers from outlet matching alone.
