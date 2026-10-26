@@ -1,9 +1,31 @@
-# AMLO Press Conference Media Code
+# AMLO and Sheinbaum Press Conference Media Code
 
-This repository is for code, notes, and reproducible workflows. The media data itself stays in Dropbox at:
+## Project status and workflow map
+
+The [October 26, 2026 project recap](docs/PROJECT_STATUS_2026-10-26.md)
+records completed extraction and outlet reconciliation, dataset definitions,
+validation, and pending work. The current Sheinbaum archive contains 503
+conferences through October 15, 2026; later dates have not been collected.
+
+- [Sheinbaum preprocessing](code/03-cleaning_conf/question_class/sheinbaum/README.md): official transcripts, journalist/outlet extraction, and manual harmonization.
+- [Speaker and question–answer pilot](code/03-cleaning_conf/question_class/sheinbaum/transcript_pilot/README.md): text units, linking, and alignment review.
+- [AMLO official archive](code/03-cleaning_conf/official_amlo/README.md): scraping, source comparison, and remaining date gaps.
+- [Outlet migration scripts](scripts/README.md): dated reconciliation tools and local input requirements.
+- `code/07-final_panel/`: panel assembly, descriptive statistics, and earlier estimation workflows.
+- [Effect-of-asking handoff](code/08-results/01-effect-of-asking/HANDOFF.md): current YouTube specifications and run status.
+- [Balance specifications](code/08-results/balance/BALANCE_TESTING_SPEC_DRAFT.md) and [variable dictionary](code/08-results/balance/VARIABLE_DICTIONARY.md).
+
+Code, reviewed alias/evidence tables, and selected publication figures/tables
+are versioned here. Raw transcripts, model checkpoints, bulk datasets, and
+local recovery backups are not. The latest outlet changes have not yet been
+propagated through a fresh panel/model rebuild.
+
+This repository is for code, notes, and reproducible workflows. The media data
+stays in Dropbox. Configure the path for the current machine, for example:
 
 ```text
 C:\Users\Dell\Dropbox\Media
+/Users/ezagoc/Dropbox/Media
 ```
 
 The working rule is: code lives in this Git repository, while inputs and outputs continue to use the same folder structure under `MEDIA_ROOT`.

@@ -1,0 +1,2 @@
+# A trailing TSV delimiter represents a missing final field, not stray whitespace.
+*.tsv whitespace=-blank-at-eol

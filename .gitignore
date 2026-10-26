@@ -33,6 +33,8 @@ logs/
 tmp/
 temp/
 *.log
+recovery/
+Rplots.pdf
 
 # Local data mirrors or accidental Dropbox copies
 Media/
@@ -66,6 +68,16 @@ code/**/*.pdf
 !info_newspapers_gpt/outlet_review_20261016/sheinbaum_date_matches/reviewed_date_crosswalk.csv
 !info_newspapers_gpt/outlet_review_20261016/sheinbaum_date_matches/reviewed_question_dates.csv
 !info_newspapers_gpt/outlet_review_20261016/sheinbaum_date_matches/reviewed_summary.csv
+!info_newspapers_gpt/outlet_review_20261019/ahora_aci_transcript_evidence.csv
+!info_newspapers_gpt/outlet_review_20261019/outlet_summary.csv
+!info_newspapers_gpt/outlet_review_20261019/attendance_review.csv
+!info_newspapers_gpt/outlet_review_20261019/comsoc_matches.csv
+!info_newspapers_gpt/outlet_review_20261019/review.json
+!info_newspapers_gpt/outlet_review_20261019/audit_inputs.json
+!info_newspapers_gpt/outlet_review_20261026/review_results.json
+!info_newspapers_gpt/outlet_review_20261026/decisions.json
+!info_newspapers_gpt/outlet_review_20261026/reviewed_question_dates.csv
+!info_newspapers_gpt/outlet_review_20261026/dated_question_attendance_links.csv
 
 # OS files
 .DS_Store
