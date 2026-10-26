@@ -1,5 +1,18 @@
 # Initialization Handoff
 
+## Attendance eligibility tightened — October 26, 2026
+
+User confirmed keeping REPORTERO and YOUTUBER only (clear variants and REPORTETO
+typo allowed), excluding all other cargos. Shared policy is in
+`src/attendance_roles.R`; attendance role counts use the same grouping helper.
+The restriction removes 1,142 earlier physical rows; Sheinbaum's 13,277 eligible
+rows and transcript participation remain unchanged. Actual speaking evidence
+must not be deleted based on an outlet-level roster role. See the
+[participation workflow](code/08-results/03-sheinbaum-participation/README.md)
+for role details and validation. All affected panels were rebuilt and validated
+in `outputs/panel-rebuild-20261026T211402Z/`; original derived files are backed up
+under the matching `recovery/` directory. Historical models have not been refit.
+
 ## Panel rebuild completed — October 26, 2026
 
 The user subsequently authorized rebuilding panels and starting analysis.

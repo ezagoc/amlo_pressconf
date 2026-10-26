@@ -49,3 +49,33 @@ descriptive, not causal estimates or question-tone classifications. Full-corpus
 question counts and presidential-response analyses remain pending completion of
 the separate question–answer extraction. Historical model/balance estimates were
 not re-estimated by this rebuild and must not be described as refreshed results.
+
+## Subsequent attendance-role restriction
+
+The user then requested keeping REPORTERO and YOUTUBER while excluding other
+cargos, including COLUMNISTA, CORRESPONSAL, and AUDIO. The shared filter now
+uses exact normalized eligibility, including reporter gender/plural variants,
+YOUTUBERS, and the observed REPORTETO typo. Missing and mixed-role labels are
+excluded. Original raw rosters and transcript speaking evidence are preserved.
+
+All panels were rebuilt again and validated with
+`validate_rebuild.py --apply-current-role-filter`. Physical attendance declined
+from 60,384 to 59,242 rows; all 1,142 removals precede Sheinbaum (2.42% of the
+earlier 47,107 rows). The 364 flagged co-affiliation assumptions were regenerated
+and unchanged. Metadata IDs, retained outlet assignments, panel keys, and source
+coverage missingness passed validation; panel dimensions in the table above
+remain unchanged. Regression estimates were not refit.
+
+Sheinbaum's 13,277 physical rows are identical across every column. Its refreshed
+participation parquet and statistical tables are unchanged; audit fingerprints
+now reflect the revised full-history attendance file. The cargo report explains
+the approved REPORTERO/YOUTUBER pool.
+
+- Manifest: `outputs/panel-rebuild-20261026T211402Z/manifest.json`
+- Checks: `outputs/panel-rebuild-20261026T211402Z/validation.json`
+- Removed rows: `outputs/panel-rebuild-20261026T211402Z/excluded_attendance_rows.csv`
+- Original derived files: `recovery/panel-rebuild-20261026T211402Z/`
+
+Role-filter regression tests, seven Sheinbaum participation/cargo tests, and
+reviewed-outlet linkage tests passed. Full-record comparison against the old
+physical rows filtered through the production R helper also passed.

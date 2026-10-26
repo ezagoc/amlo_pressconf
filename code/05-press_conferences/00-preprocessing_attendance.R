@@ -385,9 +385,7 @@ panel <- panel |> left_join(final_dedup) |> left_join(after) |> left_join(before
 # Add covariates (press conference): total number of journalists, camarographers, etc
 
 df_attendees <- df |> filter(!attendance_assumed) |>
-  mutate(cargos = case_when(str_detect(cargo, "REPORTERO|REPORTETO") ~ "reportero",
-                            str_detect(cargo, "YOUTUBER") ~ "youtuber",
-                            TRUE ~ 'otro')) |>
+  mutate(cargos = attendance_role_group(cargo)) |>
   fastDummies::dummy_cols(
     select_columns = "cargos",
     remove_first_dummy = FALSE,

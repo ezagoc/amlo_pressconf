@@ -24,6 +24,12 @@ rerun extraction or estimation. Metadata geocoding reuses the cache and queries
 only uncached addresses. The historical builders retain their 2012–2025 window
 and AMLO question source; they do not add Sheinbaum identities as question items.
 
+When intentionally restricting attendance roles, add `--apply-current-role-filter`
+to the validator. It applies the production R policy to backed-up physical rows,
+regenerates flagged co-affiliation assumptions, and checks the resulting records
+and outlet labels against the rebuilt output. It exports removed records beside
+the manifest. Without this option, validation requires attendance to be unchanged.
+
 The separate Sheinbaum panel is saved under
 `MEDIA_ROOT/data/02-conferences-sheinbaum/participation_panel/through-2026-10-15/`.
 The analysis report, chart previews, CSV tables, and audit are under
@@ -91,6 +97,21 @@ model. Actual question counts, presidential response style, and evidence of
 preparation require completing and reviewing the separate transcript analysis.
 
 ## Cargo audit
+
+The user confirmed REPORTERO and YOUTUBER as the only eligible attendance cargos
+on October 26, 2026. `src/attendance_roles.R` uses exact normalized matching,
+allowing gender/plural variants and the observed REPORTETO typo. All other roles,
+including COLUMNISTA, CORRESPONSAL, ASISTENTE, AUDIO, missing values, and mixed
+job labels, are excluded. Original roster files retain every role. This policy
+restricts the attendance pool; it does not delete transcript speaking evidence.
+
+Relative to the previous filter, 1,142 physical rows are removed, all before the
+Sheinbaum period: 774 ASISTENTE, 189 CORRESPONSAL, one CORRESPONSAL Y, 88 COLUMNISTA,
+42 POOL, 22 OTRO (ESPECIFICA, 21 INVITADO, two SUBDIRECTOR ED, and one each DIRECTOR,
+PRODUCCIÓN, and TITULAR DEL NOT. This is 2.42% of the earlier 47,107 physical rows.
+Audio, technical, camera, photographer, and student entries were already excluded.
+Sheinbaum's 13,277 eligible rows and participation statistics are unchanged.
+Historical estimates have not been refit for this revised attendance denominator.
 
 Run `Rscript code/08-results/03-sheinbaum-participation/02-prepare-role-audit.R`
 followed by `.venv/bin/python code/08-results/03-sheinbaum-participation/03-cargo-audit.py`.

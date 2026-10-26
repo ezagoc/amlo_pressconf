@@ -69,7 +69,8 @@ def main():
     manifest = {
         "started_utc": run_id, "backup_dir": str(backup), "complete": False,
         "input_sha256": {p: digest(media_path(p)) for p in INPUTS},
-        "code_sha256": {p: digest(ROOT / p) for p in STEPS},
+        "code_sha256": {p: digest(ROOT / p) for p in STEPS + ["src/attendance_roles.R", "src/attendance_coaffiliation.R",
+                                                  "src/reviewed_outlet_linkage.R"]},
         "before": {}, "steps": [],
     }
     for relative in OUTPUTS:
