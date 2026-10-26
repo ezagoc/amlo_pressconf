@@ -1,0 +1,127 @@
+{
+  "reviewed_at": "2026-10-19",
+  "entries": [
+    {
+      "name": "Ahora Tabasco",
+      "id": "ahora tabasco",
+      "linkage_id": "ahora tabasco",
+      "question_id": "ahora tabasco",
+      "registry_row": 243,
+      "reviewed_at": "2026-10-19",
+      "aliases": [
+        "Ahora Noticias",
+        "Ahora Tabasco Noticias"
+      ],
+      "fields": {
+        "url": "https://ahoratabasco.com/",
+        "additional_url": "https://ahoranoticias.com.mx/",
+        "state": "Tabasco",
+        "municipality": "Centro / Villahermosa",
+        "year_founded": 2011,
+        "founding_date": "2011-11-19",
+        "founder_name": "Alejandro Carlos Tovar Domínguez",
+        "type_media": "periodico impreso / radio / digital",
+        "coverage_scope": "state / regional / national"
+      },
+      "sources": [
+        "https://ahoranoticias.com.mx/",
+        "https://ahoranoticias.com.mx/directorio/",
+        "https://ahoratabasco.com/directorio/",
+        "https://www.europapress.es/comunicados/internacional-00907/noticia-comunicado-intrahistoria-alejandro-carlos-tovar-dominguez-ahora-tabasco-20220509143152.html"
+      ],
+      "review_note": "Reviewed 2026-10-19. Ahora Noticias (https://ahoranoticias.com.mx/) is the affiliated national brand: both directories publish the same leadership, reserve certificate 04-2019-061312223500-101 and title/content certificate 16675. Retain existing ahora tabasco linkage ID without adding a duplicate entity. National office: Balboa 407, Portales Norte, C.P. 03300, Benito Juarez, Ciudad de Mexico. Alejandro Tovar Dominguez is president; Gabriel Aysa Marin is director general, not confirmed owner. The 2011-11-19 founding date and founder Alejandro Carlos Tovar Dominguez refer to Ahora Tabasco, per a 2022 press release; national-brand launch remains unverified. Existing legal name retained, not newly verified; no exact normalized beneficiary-name match in ComSoc 2012-2024. Sources: https://ahoranoticias.com.mx/; https://ahoranoticias.com.mx/directorio/; https://ahoratabasco.com/directorio/; https://www.europapress.es/comunicados/internacional-00907/noticia-comunicado-intrahistoria-alejandro-carlos-tovar-dominguez-ahora-tabasco-20220509143152.html",
+      "legal_entities": [
+        {
+          "name": "A Diario Tabasco, S. de R.L. de C.V.",
+          "source": "newspaper_metadata.xlsx#Hoja1!K244",
+          "relationship": "existing metadata legal name; not independently reverified",
+          "status": "existing_metadata_unverified"
+        }
+      ],
+      "youtube": {
+        "url": "https://www.youtube.com/@AhoraNoticiasMexico",
+        "channel_id": null,
+        "source": "https://ahoranoticias.com.mx/directorio/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-19"
+      },
+      "youtube_check_status": "verified_official_link"
+    },
+    {
+      "name": "ACI de Hidalgo",
+      "id": "aci de hidalgo",
+      "linkage_id": "aci de hidalgo",
+      "question_id": "aci de hidalgo",
+      "registry_row": 288,
+      "reviewed_at": "2026-10-19",
+      "aliases": [
+        "ACI México",
+        "ACI de México",
+        "ACI Hidalgo",
+        "ACIDEHIDALGO",
+        "ACIMEXICO"
+      ],
+      "fields": {
+        "url": "https://www.acidehidalgo.com/",
+        "state": "Hidalgo",
+        "type_media": "digital / video",
+        "coverage_scope": "state / regional / national"
+      },
+      "sources": [
+        "https://www.acidehidalgo.com/",
+        "https://www.acidehidalgo.com/2026/06/cdmx-pueblo-da-su-respaldo-presidenta.html",
+        "https://pulsosur.com/entrevista-con-camila-martinez-secretaria-nacional-de-comunicacion-difusion-y-propaganda-de-morena/",
+        "https://www.gob.mx/presidencia/articulos/version-estenografica-conferencia-de-prensa-de-la-presidenta-claudia-sheinbaum-pardo-del-26-de-junio-de-2026?idiom=es"
+      ],
+      "review_note": "Reviewed 2026-10-19. ACI de Hidalgo and ACI Mexico are jointly identified by the official site and presidential introductions. Journalists: Hector Herrera Ocampo and Ines Arroyo. Pulso Sur identifies Hector Herrera Ocampo as director of ACI de Hidalgo and Mally Arroyo as director of ACI Mexico, not legal owners. Hidalgo is the regional association; headquarters/address, founding date, founder, legal name and ownership are unverified. ComSoc linkage unresolved without a verified legal entity. Official-site YouTube link verified; API metadata not collected. ACIDEHIDALGO has 23 eligible attendance records; two ACI NOTICIAS records in Oaxaca remain ambiguous. Do not merge Pulso Sur or American Concrete Institute namesakes. Sources: https://www.acidehidalgo.com/; https://www.acidehidalgo.com/2026/06/cdmx-pueblo-da-su-respaldo-presidenta.html; https://pulsosur.com/entrevista-con-camila-martinez-secretaria-nacional-de-comunicacion-difusion-y-propaganda-de-morena/; https://www.gob.mx/presidencia/articulos/version-estenografica-conferencia-de-prensa-de-la-presidenta-claudia-sheinbaum-pardo-del-26-de-junio-de-2026?idiom=es",
+      "legal_entities": [],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UC-ItI0iYn1RE4LIx63F8gxg",
+        "channel_id": "UC-ItI0iYn1RE4LIx63F8gxg",
+        "source": "https://www.acidehidalgo.com/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-19"
+      },
+      "youtube_check_status": "verified_official_link"
+    }
+  ],
+  "workbook_changes": {
+    "mexican_newspapers.xlsx": {
+      "S243": "Ahora Noticias",
+      "G243": "ahora tabasco",
+      "H243": "https://x.com/ahoranoticiamx",
+      "I243": "https://www.youtube.com/@AhoraNoticiasMexico",
+      "K243": "Tabasco",
+      "L243": "Centro / Villahermosa",
+      "M243": 27,
+      "R243": 2011,
+      "Z243": "periodico impreso / radio / digital",
+      "AA243": "Graciela Bravata",
+      "E288": "ACI de Hidalgo",
+      "F288": "aci de hidalgo",
+      "G288": "aci de hidalgo",
+      "I288": "https://www.youtube.com/channel/UC-ItI0iYn1RE4LIx63F8gxg",
+      "J288": "https://www.acidehidalgo.com/",
+      "K288": "Hidalgo",
+      "M288": 13,
+      "S288": "ACI México",
+      "Z288": "digital / video",
+      "AA288": "Héctor Herrera Ocampo; Inés Arroyo"
+    },
+    "newspaper_metadata.xlsx": {
+      "G244": "state / regional / national (Ahora Noticias)",
+      "L244": "Alejandro Tovar Domínguez (president; ownership unverified)",
+      "R244": "Alejandro Carlos Tovar Domínguez",
+      "AC244": "yes",
+      "AD244": "Reviewed 2026-10-19. Ahora Noticias (https://ahoranoticias.com.mx/) is the affiliated national brand: both directories publish the same leadership, reserve certificate 04-2019-061312223500-101 and title/content certificate 16675. Retain existing ahora tabasco linkage ID without adding a duplicate entity. National office: Balboa 407, Portales Norte, C.P. 03300, Benito Juarez, Ciudad de Mexico. Alejandro Tovar Dominguez is president; Gabriel Aysa Marin is director general, not confirmed owner. The 2011-11-19 founding date and founder Alejandro Carlos Tovar Dominguez refer to Ahora Tabasco, per a 2022 press release; national-brand launch remains unverified. Existing legal name retained, not newly verified; no exact normalized beneficiary-name match in ComSoc 2012-2024. Sources: https://ahoranoticias.com.mx/; https://ahoranoticias.com.mx/directorio/; https://ahoratabasco.com/directorio/; https://www.europapress.es/comunicados/internacional-00907/noticia-comunicado-intrahistoria-alejandro-carlos-tovar-dominguez-ahora-tabasco-20220509143152.html",
+      "A289": "ACI de Hidalgo",
+      "B289": "https://www.acidehidalgo.com/",
+      "C289": "Hidalgo",
+      "E289": 13,
+      "G289": "state / regional / national",
+      "AB289": "digital / video",
+      "AC289": "yes",
+      "AD289": "Reviewed 2026-10-19. ACI de Hidalgo and ACI Mexico are jointly identified by the official site and presidential introductions. Journalists: Hector Herrera Ocampo and Ines Arroyo. Pulso Sur identifies Hector Herrera Ocampo as director of ACI de Hidalgo and Mally Arroyo as director of ACI Mexico, not legal owners. Hidalgo is the regional association; headquarters/address, founding date, founder, legal name and ownership are unverified. ComSoc linkage unresolved without a verified legal entity. Official-site YouTube link verified; API metadata not collected. ACIDEHIDALGO has 23 eligible attendance records; two ACI NOTICIAS records in Oaxaca remain ambiguous. Do not merge Pulso Sur or American Concrete Institute namesakes. Sources: https://www.acidehidalgo.com/; https://www.acidehidalgo.com/2026/06/cdmx-pueblo-da-su-respaldo-presidenta.html; https://pulsosur.com/entrevista-con-camila-martinez-secretaria-nacional-de-comunicacion-difusion-y-propaganda-de-morena/; https://www.gob.mx/presidencia/articulos/version-estenografica-conferencia-de-prensa-de-la-presidenta-claudia-sheinbaum-pardo-del-26-de-junio-de-2026?idiom=es"
+    }
+  }
+}

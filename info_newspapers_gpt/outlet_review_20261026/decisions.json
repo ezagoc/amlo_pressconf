@@ -1,0 +1,421 @@
+{
+  "groups": [
+    {
+      "canonical": "medios digitales del pacifico",
+      "brands": [
+        "sin puntos ni comas",
+        "medios digitales del pacifico"
+      ],
+      "metadata_names": [
+        "Sin Puntos Ni Comas",
+        "Medios Digitales del Pacifico",
+        "Informando la Transformación"
+      ],
+      "basis": "User approved 2026-10-26; Julio Omar Gomez jointly identifies both; 8/8 Sin Puntos dates match."
+    },
+    {
+      "canonical": "movimiento conciencia",
+      "brands": [
+        "movimiento conciencia",
+        "animales con derechos",
+        "sendero de la luna"
+      ],
+      "metadata_names": [
+        "Movimiento Consciencia",
+        "Animales con Derechos",
+        "Iztaccihuatl en el sendero de la luna"
+      ],
+      "basis": "User approved 2026-10-26; Elideth Fernandez joint introductions; 5/6 covered dates match, 2024-11-08 unmatched."
+    },
+    {
+      "canonical": "sonora power",
+      "brands": [
+        "sonora power",
+        "lobos cadena 7"
+      ],
+      "metadata_names": [
+        "Sonora Power",
+        "Lobos Cadena 7"
+      ],
+      "basis": "User approved 2026-10-26; Demian Duarte joint introductions; 5/5 Lobos dates match."
+    },
+    {
+      "canonical": "comunicante mx",
+      "brands": [
+        "comunicante mx",
+        "alerta multimedia"
+      ],
+      "metadata_names": [
+        "Comunicante MX",
+        "Alerta Multimedia"
+      ],
+      "basis": "User approved 2026-10-26; Gustavo/Gus Garcia joint introductions; 5/5 Alerta dates match."
+    },
+    {
+      "canonical": "agua quemada",
+      "brands": [
+        "agua quemada",
+        "los tubos",
+        "revista posdata",
+        "el portal del noreste"
+      ],
+      "metadata_names": [
+        "Agua Quemada",
+        "Los Tubos",
+        "Revista Posdata",
+        "El Portal del Noreste"
+      ],
+      "basis": "User approved 2026-10-26; joint introductions by Luz Irene Castellanos and Claudia Reina/Reyna; 5/5 covered dates match AGUAQUEMADA."
+    },
+    {
+      "canonical": "grupo tribu",
+      "brands": [
+        "grupo tribu",
+        "cultura colectiva",
+        "ecosfera",
+        "el fildeo"
+      ],
+      "metadata_names": [
+        "Grupo Tribu",
+        "Cultura Colectiva",
+        "Ecosfera",
+        "El Fildeo"
+      ],
+      "basis": "User approved 2026-10-26; Cristian Galarza joint introductions; 3/4 covered dates match CULTURA COLECTIVA; 2025-03-31 has no attendance roster."
+    },
+    {
+      "canonical": "grupo imagen",
+      "brands": [
+        "grupo imagen",
+        "excelsior"
+      ],
+      "metadata_names": [
+        "Imagen Digital",
+        "Excelsior"
+      ],
+      "basis": "User approved 2026-10-26; Arturo Paramo Imagen/Excelsior introductions; 23/23 dates within coverage match Grupo Imagen."
+    },
+    {
+      "canonical": "global energy",
+      "brands": [
+        "poder mexico",
+        "global energy"
+      ],
+      "metadata_names": [
+        "Poder México",
+        "Global Energy"
+      ],
+      "basis": "User approved 2026-10-26; Daniela Caballero/Wendy Fernandez joint introductions; 6/6 covered Poder dates match Global Energy."
+    },
+    {
+      "canonical": "efecto colateral",
+      "brands": [
+        "efecto colateral",
+        "el chapucero"
+      ],
+      "metadata_names": [
+        "Efectos Colaterales El Chapucero",
+        "Efecto Colateral"
+      ],
+      "basis": "User approved 2026-10-26; Arturo Pavon jointly names both; combined attendance label. Existing Chiwas News grouping retained."
+    },
+    {
+      "canonical": "universidad de guadalajara",
+      "brands": [
+        "universidad de guadalajara",
+        "red periodistica de puerto vallarta"
+      ],
+      "metadata_names": [
+        "Canal Universidad de Guadalajara",
+        "Red Periodistica de Puerto Vallarta"
+      ],
+      "basis": "User approved 2026-10-26; Susana Carreno joint introductions; use explicit UDG/Puerto Vallarta labels only, not generic CANAL 44."
+    },
+    {
+      "canonical": "amarc",
+      "brands": [
+        "amarc",
+        "politica y rock radio"
+      ],
+      "metadata_names": [
+        "AMARC (Red de radios comunitarias de México)",
+        "Politica y Rock and Roll Radio"
+      ],
+      "basis": "User approved 2026-10-26; Alejandro Cabral jointly identifies both; 4/4 covered Politica y Rock dates match the combined AMARC attendance label. Retain separate brands."
+    },
+    {
+      "canonical": "alcanzando el conocimiento",
+      "brands": [
+        "alcanzando el conocimiento",
+        "el regreso de donald trump"
+      ],
+      "metadata_names": [
+        "Alcanzando el Conocimiento",
+        "El Regreso de Donald Trump"
+      ],
+      "basis": "User approved 2026-10-26; Bertha Alicia Galindo joint introductions; 2/2 covered program dates match Alcanzando el Conocimiento. Retain separate brands."
+    },
+    {
+      "canonical": "nopal times",
+      "brands": [
+        "nopal times",
+        "el charro politico"
+      ],
+      "metadata_names": [
+        "Nopal Times",
+        "El Charro Politico"
+      ],
+      "basis": "User approved 2026-10-26; Saul Soltero jointly identifies both; 3/3 covered Charro dates match Nopal Times. Retain separate brands."
+    },
+    {
+      "canonical": "el financiero",
+      "brands": [
+        "el financiero",
+        "bloomberg news",
+        "bloomberg linea"
+      ],
+      "metadata_names": [
+        "El Financiero",
+        "Bloomberg News",
+        "Bloomberg Línea"
+      ],
+      "basis": "User approved 2026-10-26: combine El Financiero, Bloomberg News and Bloomberg Linea conference records while retaining all three brands."
+    },
+    {
+      "canonical": "audiorama",
+      "brands": [
+        "asi lo dice la mont",
+        "abc radio",
+        "audiorama",
+        "grupo audiorama comunicaciones"
+      ],
+      "metadata_names": [
+        "Asi lo dice La Mont",
+        "ABC Radio",
+        "Grupo Audiorama"
+      ],
+      "basis": "User approved 2026-10-26: combine Asi lo dice La Mont, ABC Radio and Audiorama conference records; preserve separate brands. ABC RADIO 760 AM appears on all six covered La Mont dates. Exclude unrelated ABC outlets."
+    }
+  ],
+  "aliases": {
+    "medios digitales del pacifico": [
+      "Sin Puntos ni Comas",
+      "Sin puntos, ni comas",
+      "Medios Digitales del Pacifico"
+    ],
+    "movimiento conciencia": [
+      "Movimiento Consciencia",
+      "Movimiento Conciencia",
+      "Noticias del Movimiento Consciencia",
+      "NOTICIAS DEL MOVIMIENTO CONSCIENCIA E IZTACC",
+      "NOTICIAS DEL MOVIMIENTO CONSCIENCIA E",
+      "Animales con Derechos",
+      "Sendero de la Luna",
+      "Iztaccihuatl en el Sendero de la Luna"
+    ],
+    "sonora power": [
+      "Sonora Power",
+      "Lobos Cadena 7"
+    ],
+    "comunicante mx": [
+      "Comunicante MX",
+      "Alerta Multimedia"
+    ],
+    "grupo formula": [
+      "GRUPO FÓRMULA",
+      "GRUPO FÓRMULA TV",
+      "RADIO FÓRMULA",
+      "RADIOFORMULA"
+    ],
+    "milenio": [
+      "GRUPO MILENIO",
+      "GRUPO MILENIO MULTIMEDIOS",
+      "MILENIO"
+    ],
+    "avan noticias": [
+      "QATROMEDIA TELECOMUNICACIONES",
+      "QUATROMEDIA TELECOMUNICACIONES",
+      "CUATROMEDIA TELECOMUNICACIONES",
+      "Avan Noticias"
+    ],
+    "el heraldo": [
+      "EL HERALDO DE MÉXICO",
+      "EL HERALDO",
+      "El Heraldo Media Group"
+    ],
+    "noticieros hctv": [
+      "HCTV",
+      "HCTV Noticias",
+      "Noticieros HCTV"
+    ],
+    "subjetivo mx": [
+      "SUBJETIVO",
+      "EL SUBJETIVO",
+      "SUBJETIVO 1",
+      "Subjetivo MX"
+    ],
+    "enlace 13 television": [
+      "ENLACE 13",
+      "ENLACE 13 COAHUILA",
+      "ELACE 13 TELEVISIÓN",
+      "ENLACE 13 TELEVISIÓN"
+    ],
+    "noticias el reloj de la tlaxiaquena": [
+      "NOTICIEROS EL RELOJ DE LA TLAXIAQUEÑA 91.5",
+      "NOTICIEROS EL RELOJ DE LA TLAXIAQUEÑA 9",
+      "NT EL RELOJ DE LA TLAXIAQUEÑA 91.5",
+      "Noticieros el Reloj de la Tlaxiaqueña"
+    ],
+    "canal 22": [
+      "Canal 22"
+    ],
+    "universidad de guadalajara": [
+      "CANAL 44 DE LA UDG",
+      "UDG CANAL 44",
+      "RADIO UNIVERSIDAD DE GUADALAJARA EN PUERTO VALLARTA",
+      "RADIO UNIVERSIDAD DE GUADALAJARA EN P",
+      "Red Periodistica de Puerto Vallarta",
+      "Red de Periodistas de Puerto Vallarta"
+    ],
+    "tv baja": [
+      "TV BAJA"
+    ],
+    "quequi": [
+      "QUEQUI NOTICIAS",
+      "QUEQUI CDMX",
+      "QUEQUI"
+    ],
+    "somos mas": [
+      "SOMOS MAS NOTICIAS",
+      "SOMOS MAS"
+    ],
+    "nopal times": [
+      "EL NOPAL TIMES",
+      "NOPAL TIMES",
+      "El Charro Politico"
+    ],
+    "la orquesta mx": [
+      "LA ORQUESTA",
+      "LA ORQUESTA MX"
+    ],
+    "enprivadoveracruzcommx": [
+      "EN PRIVADO VERACRUZ",
+      "enprivadoveracruz.com.mx"
+    ],
+    "bctneus": [
+      "BCT NEUS",
+      "BCT NEWS",
+      "BCTneus"
+    ],
+    "cnr canal 73": [
+      "LÁNZATE CNR C. 73 CABLE BAJA CALIF. MÉXICO",
+      "LÁNZATE CNR C. 73 CABLE BAJA CALI",
+      "LÁNZATE CANAL 73 CNR CABLE IZZI BAJA CALIFORNIA MÉXICO",
+      "LÁNZATE CANAL 73"
+    ],
+    "radio tosepan limakxtum": [
+      "RADIO TOSEPAN",
+      "LA RADIO TOSEPAN LIMAKXTUM",
+      "RADIO TOSEPAN LIMAKXTUM"
+    ],
+    "noticias el agro": [
+      "NOTICIAS EL AGRO",
+      "EL AGRO"
+    ],
+    "capital puebla": [
+      "CAPITAL PUEBLA"
+    ],
+    "fusion latina chicago": [
+      "FUSIÓN LATINA",
+      "FUSIÓN LATINA CHICAGO"
+    ],
+    "ap noticias": [
+      "AP NOTICIAS"
+    ],
+    "agua quemada": [
+      "Agua Quemada",
+      "AGUAQUEMADA",
+      "Los Tubos",
+      "Los Tubos Monterrey",
+      "Revista Posdata",
+      "Postdata.news",
+      "El Portal del Noreste"
+    ],
+    "grupo tribu": [
+      "Grupo Tribu",
+      "Grupo La Tribu",
+      "Cultura Colectiva",
+      "Ecosfera",
+      "El Fildeo"
+    ],
+    "grupo imagen": [
+      "Grupo Imagen",
+      "GRUPO IMAGEN TV",
+      "Imagen Television",
+      "Imagen Radio",
+      "Imagen Radio Mexicali",
+      "Excelsior"
+    ],
+    "global energy": [
+      "Global Energy",
+      "Poder Mexico"
+    ],
+    "efecto colateral": [
+      "EL CHAPUCERO",
+      "EFECTO COLATERAL / EL CHAPUCERO",
+      "Efecto Colateral",
+      "Chiwas News"
+    ],
+    "amarc": [
+      "AMARC",
+      "AMARC MÉXICO V POLÍTICA Y ROCK AND ROLL RADIO",
+      "Política y Rock and Roll Radio",
+      "Politica y Rock Radio"
+    ],
+    "alcanzando el conocimiento": [
+      "Alcanzando el Conocimiento",
+      "El Regreso de Donald Trump"
+    ],
+    "bloomberg": [
+      "Bloomberg"
+    ],
+    "reyna haydee (independiente)": [
+      "REYNA HAYDEE RAMÍREZ HERNÁNDEZ"
+    ],
+    "el financiero": [
+      "El Financiero",
+      "El Financiero Bloomberg",
+      "El Financiero Bloomberg Television",
+      "Bloomberg News",
+      "Bloomberg Linea"
+    ],
+    "audiorama": [
+      "Asi lo dice La Mont",
+      "Asi lo dice Lamont",
+      "ABC RADIO",
+      "ABC RADIO 760 AM",
+      "ABC RADIO XEABC-AM 760 KHZ",
+      "AUDIORAMA",
+      "GRUPO AUDIORAMA COMUNICACIONES",
+      "AUDIORAMA COMUNICACIONES",
+      "GRUPO AUDIORAMA COMUNICACIO",
+      "INFORME 24 GUERRERO AUDIORAMA"
+    ]
+  },
+  "notes": {
+    "capital": "Abel Cuapa explicitly says Capital in Puebla. Publisher confirms his role: https://capitalpuebla.com/2023/10/22/un-ano-de-capital/. Use capital puebla; do not match Capital 21 or generic Portal Capital.",
+    "fusion latina chicago": "Reporter and platform verified by official bio https://www.fusionlatinachicago.org/about-8 and 2025-02-14 introduction. FUSION LATINA is the shortened same-day roster label.",
+    "noticias el agro": "Publisher author page confirms Luis Flores: https://elagro.com.mx/author/lonazkuo/. EL AGRO and NOTICIAS EL AGRO are full/short labels.",
+    "radio tosepan limakxtum": "Official station website confirms full/short name and Cuetzalan location: https://radio.tosepan.coop/escucha/.",
+    "associated press": "Separate Alejandro Perez AP Noticias (2026-03-13) from Associated Press. Fabiola Sanchez and Maria Verza retain Associated Press. Do not use bare AP attendance to identify AP Noticias.",
+    "agora digital": "Separate Gabriela Montejano Agora in Celaya (2026-02-20) from Gerardo Romo Agora Digital (2026-09-04). Preserve raw names. Both are outside attendance coverage.",
+    "lja": "Retain separately. Historical La Jornada Aguascalientes name does not establish current group membership.",
+    "reyna haydee (independiente)": "Keep independent journalist category. Only exact reporter-name attendance can match; never assign generic INDEPENDIENTE.",
+    "miled": "User approved 2026-10-26: keep Miled and Perspectivas separate; use only Judith Sanchez Reyes verified dated joint introductions. Other Miled reporters are not reassigned.",
+    "tv migrante": "User selected the other program pair for grouping; keep TV Migrante separate from Canal 14 SPR; retain verified dated Aurora Castillejos joint introductions only.",
+    "sandraaguileracom": "User selected the other pair for grouping; keep SandraAguilera.com separate from Grupo Larsa Comunicaciones; retain verified dated joint introductions only.",
+    "el financiero": "User approved grouping Bloomberg News AND Bloomberg Linea with El Financiero. Bare Bloomberg remains unspecified.",
+    "bloomberg linea": "User approved 2026-10-26: combine El Financiero, Bloomberg News and Bloomberg Linea conference records while retaining all three brands.",
+    "asi lo dice la mont": "Approved shared conference key audiorama. Current program affiliation: https://www.audiorama.mx/estacion/buenisima-valle-de-mexico-1590-am . Historical ABC Radio affiliation: https://gaceta.diputados.gob.mx/PDF/InfoDip/64/1052-20210817-I-II-III.pdf . Exact ABC 760 attendance matches all six covered asking dates."
+  }
+}

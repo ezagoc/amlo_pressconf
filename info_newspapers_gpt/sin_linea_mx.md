@@ -2,6 +2,18 @@
 
 Research date: 2026-09-16
 
+Analysis grouping approved by the user on 2026-10-26: Sin Línea and El Político
+en las Redes use the canonical ID `sin linea` in transcripts, attendance, and
+analysis metadata. El Político's original metadata row remains as provenance,
+with `analysis_merged_into = sin linea`. Seguridad Informa retains its earlier
+approved assignment to this same outlet. Introductions naming both brands count
+once per date and harmonized reporter. Raw introductions remain unchanged.
+Manuel Galeazzi Ramírez is the principal shared reporter; the three introductions
+transcribed as Manuel Alexis Ramírez or Mario Valencia Ramírez remain unresolved.
+Político.mx, Animal Político, El Charro Político and Galeazzi News are not aliases
+under this decision. Earlier instructions to retain separate analysis IDs for
+El Político are superseded; brand-specific corporate details remain distinct.
+
 ## Proposed metadata
 
 | Field | Proposed value |

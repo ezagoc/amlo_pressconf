@@ -90,7 +90,7 @@ df <- df %>%
       str_detect(outlet_clean, "7 24|siete24|siete 24|724") ~ "siete24 noticias",
       str_detect(outlet_clean, "business energy|bussiness energy") ~ "business energy",
       str_detect(outlet_clean, "acustik") ~ "acustik noticias",
-      str_detect(outlet_clean, "adn|adn40|ad notcias") ~ "adn 40",
+      str_detect(outlet_clean, "adn|adn40|ad noti") ~ "tv azteca",
       str_detect(outlet_clean, "abc") ~ "abc",
       str_detect(outlet_clean, "telemundo") ~ "telemundo",
       str_detect(outlet_clean, "canton") ~ "grupo canton",

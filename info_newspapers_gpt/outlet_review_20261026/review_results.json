@@ -1,0 +1,4264 @@
+[
+  {
+    "outlet": "mexico news world",
+    "attendance_row": 22,
+    "canonical_ids": [
+      "mexico news world"
+    ],
+    "transcript_dates": 38,
+    "in_period": 24,
+    "matches": 23,
+    "unmatched": [],
+    "coverage_gaps": [
+      "2025-03-04"
+    ],
+    "metadata_names": [
+      "Mexico News World"
+    ],
+    "attendance_labels": [
+      "HIDALGO NEWS"
+    ],
+    "reporters": [
+      "marco antonio olvera"
+    ],
+    "canonical_id": "mexico news world",
+    "dated_matches": [],
+    "status": "Matched except roster gaps",
+    "note": "Missing/sparse rosters: 2025-03-04.",
+    "recorded_attendance_dates": 85,
+    "all_attendance_dates": 133,
+    "after_coverage": 14,
+    "first_date": "2024-10-22",
+    "last_date": "2026-10-07"
+  },
+  {
+    "outlet": "el politico en las redes",
+    "attendance_row": 23,
+    "canonical_ids": [
+      "sin linea"
+    ],
+    "transcript_dates": 35,
+    "in_period": 18,
+    "matches": 18,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Sin Linea MX",
+      "El Politico en las Redes"
+    ],
+    "attendance_labels": [
+      "SIN LÍNEA MX"
+    ],
+    "reporters": [
+      "jennifer barba",
+      "manuel alexis ramirez",
+      "manuel galeazzi ramirez",
+      "mario valencia ramirez"
+    ],
+    "canonical_id": "sin linea",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 59,
+    "all_attendance_dates": 272,
+    "after_coverage": 17,
+    "first_date": "2024-10-08",
+    "last_date": "2026-10-14"
+  },
+  {
+    "outlet": "puente libre mx",
+    "attendance_row": 24,
+    "canonical_ids": [
+      "tiempo la noticia digital"
+    ],
+    "transcript_dates": 25,
+    "in_period": 15,
+    "matches": 15,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Tiempo La Noticia Digital",
+      "Tiempo La Noticia Digital",
+      "PuenteLibreMX"
+    ],
+    "attendance_labels": [
+      "TIEMPO LA NOTICIA DIGITAL"
+    ],
+    "reporters": [
+      "juan fierro",
+      "liliana pina"
+    ],
+    "canonical_id": "tiempo la noticia digital",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 197,
+    "all_attendance_dates": 1041,
+    "after_coverage": 10,
+    "first_date": "2024-10-21",
+    "last_date": "2026-09-29"
+  },
+  {
+    "outlet": "teleurban",
+    "attendance_row": 25,
+    "roster_row": 19,
+    "canonical_ids": [
+      "w radio"
+    ],
+    "transcript_dates": 15,
+    "in_period": 13,
+    "matches": 12,
+    "unmatched": [
+      "2025-02-24"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "W Radio"
+    ],
+    "attendance_labels": [
+      "RADIOPOLIS"
+    ],
+    "reporters": [
+      "rocio jardinez"
+    ],
+    "canonical_id": "w radio",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2025-02-24. Do not infer absence.",
+    "recorded_attendance_dates": 66,
+    "all_attendance_dates": 431,
+    "after_coverage": 2,
+    "first_date": "2024-10-09",
+    "last_date": "2026-06-23"
+  },
+  {
+    "outlet": "w radio",
+    "attendance_row": 26,
+    "canonical_ids": [
+      "w radio"
+    ],
+    "transcript_dates": 15,
+    "in_period": 13,
+    "matches": 12,
+    "unmatched": [
+      "2025-02-24"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "W Radio"
+    ],
+    "attendance_labels": [
+      "RADIOPOLIS"
+    ],
+    "reporters": [
+      "rocio jardinez"
+    ],
+    "canonical_id": "w radio",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2025-02-24. Do not infer absence.",
+    "recorded_attendance_dates": 66,
+    "all_attendance_dates": 431,
+    "after_coverage": 2,
+    "first_date": "2024-10-09",
+    "last_date": "2026-06-23"
+  },
+  {
+    "outlet": "frecuencia cad",
+    "attendance_row": 27,
+    "canonical_ids": [
+      "jaime farias informa"
+    ],
+    "transcript_dates": 21,
+    "in_period": 11,
+    "matches": 10,
+    "unmatched": [
+      "2024-11-06"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Jaime Farias Informa",
+      "Es Ahora AM",
+      "Frecuencia CAD"
+    ],
+    "attendance_labels": [
+      "ES AHORA AM NOTICIAS",
+      "JF INFORMA",
+      "JF INFORMA DESDE CANCÚN Y ESAHORAAM DE QUERÉTARO"
+    ],
+    "reporters": [
+      "alberto marroquin espinoza",
+      "maximiliano macotela"
+    ],
+    "canonical_id": "jaime farias informa",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2024-11-06. Do not infer absence.",
+    "recorded_attendance_dates": 50,
+    "all_attendance_dates": 352,
+    "after_coverage": 10,
+    "first_date": "2024-10-23",
+    "last_date": "2026-09-03"
+  },
+  {
+    "outlet": "empuje migrante",
+    "attendance_row": 28,
+    "canonical_ids": [
+      "oro solido"
+    ],
+    "transcript_dates": 13,
+    "in_period": 8,
+    "matches": 6,
+    "unmatched": [
+      "2025-05-06"
+    ],
+    "coverage_gaps": [
+      "2025-03-04"
+    ],
+    "metadata_names": [
+      "Oro Solido",
+      "Empuje Migrante"
+    ],
+    "attendance_labels": [
+      "ORO SOLIDO",
+      "ORO SÓLIDO"
+    ],
+    "reporters": [
+      "nancy rodriguez"
+    ],
+    "canonical_id": "oro solido",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "Missing/sparse rosters: 2025-03-04. No verified label on: 2025-05-06. Do not infer absence.",
+    "recorded_attendance_dates": 32,
+    "all_attendance_dates": 606,
+    "after_coverage": 5,
+    "first_date": "2024-11-26",
+    "last_date": "2026-08-18"
+  },
+  {
+    "outlet": "sin puntos ni comas",
+    "attendance_row": 29,
+    "canonical_ids": [
+      "sin puntos ni comas"
+    ],
+    "transcript_dates": 28,
+    "in_period": 19,
+    "matches": 19,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Sin Puntos Ni Comas"
+    ],
+    "attendance_labels": [
+      "EL INFORMANTE BCS",
+      "MEDIOS DIGITALES DEL PACIFICO",
+      "MEDIOS DIGITALES DEL PACÍFICO",
+      "MONITORBCS",
+      "NBCS NOTICIAS",
+      "RADIO Y TV DE BCS",
+      "REPORTERO URBANO"
+    ],
+    "reporters": [
+      "alejandro patron",
+      "julio omar gomez"
+    ],
+    "canonical_id": "medios digitales del pacifico",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "User approved 2026-10-26; Julio Omar Gomez jointly identifies both; 8/8 Sin Puntos dates match.",
+    "recorded_attendance_dates": 175,
+    "all_attendance_dates": 285,
+    "after_coverage": 9,
+    "first_date": "2024-10-16",
+    "last_date": "2026-09-03"
+  },
+  {
+    "outlet": "animales con derechos",
+    "attendance_row": 30,
+    "canonical_ids": [
+      "animales con derechos"
+    ],
+    "transcript_dates": 13,
+    "in_period": 6,
+    "matches": 5,
+    "unmatched": [
+      "2024-11-08"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Animales con Derechos"
+    ],
+    "attendance_labels": [
+      "NOTICIAS DEL MOVIMIENTO CONSCIENCIA E",
+      "NOTICIAS DEL MOVIMIENTO CONSCIENCIA E IZTACC"
+    ],
+    "reporters": [
+      "elideth fernandez"
+    ],
+    "canonical_id": "movimiento conciencia",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "User approved 2026-10-26; Elideth Fernandez joint introductions; 5/6 covered dates match, 2024-11-08 unmatched. No verified label on: 2024-11-08. Do not infer absence.",
+    "recorded_attendance_dates": 11,
+    "all_attendance_dates": 51,
+    "after_coverage": 7,
+    "first_date": "2024-11-08",
+    "last_date": "2026-07-30"
+  },
+  {
+    "outlet": "excelsior",
+    "attendance_row": 31,
+    "canonical_ids": [
+      "excelsior"
+    ],
+    "transcript_dates": 48,
+    "in_period": 23,
+    "matches": 23,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Excelsior"
+    ],
+    "attendance_labels": [
+      "GRUPO IMAGEN",
+      "GRUPO IMAGEN TV",
+      "IMAGEN RADIO",
+      "IMAGEN RADIO MEXICALI"
+    ],
+    "reporters": [
+      "arturo paramo",
+      "ivan cadena",
+      "rosa leon",
+      "ximena mejia"
+    ],
+    "canonical_id": "grupo imagen",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "User approved 2026-10-26; Arturo Paramo Imagen/Excelsior introductions; 23/23 dates within coverage match Grupo Imagen.",
+    "recorded_attendance_dates": 188,
+    "all_attendance_dates": 591,
+    "after_coverage": 25,
+    "first_date": "2024-10-24",
+    "last_date": "2026-10-14"
+  },
+  {
+    "outlet": "movimiento conciencia",
+    "attendance_row": 32,
+    "canonical_ids": [
+      "movimiento conciencia"
+    ],
+    "transcript_dates": 13,
+    "in_period": 6,
+    "matches": 5,
+    "unmatched": [
+      "2024-11-08"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Movimiento Consciencia"
+    ],
+    "attendance_labels": [
+      "NOTICIAS DEL MOVIMIENTO CONSCIENCIA E",
+      "NOTICIAS DEL MOVIMIENTO CONSCIENCIA E IZTACC"
+    ],
+    "reporters": [
+      "elideth fernandez"
+    ],
+    "canonical_id": "movimiento conciencia",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "User approved 2026-10-26; Elideth Fernandez joint introductions; 5/6 covered dates match, 2024-11-08 unmatched. No verified label on: 2024-11-08. Do not infer absence.",
+    "recorded_attendance_dates": 11,
+    "all_attendance_dates": 51,
+    "after_coverage": 7,
+    "first_date": "2024-11-08",
+    "last_date": "2026-07-30"
+  },
+  {
+    "outlet": "asi lo dice la mont",
+    "attendance_row": 33,
+    "canonical_ids": [
+      "asi lo dice la mont"
+    ],
+    "transcript_dates": 13,
+    "in_period": 6,
+    "matches": 6,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Asi lo dice La Mont"
+    ],
+    "attendance_labels": [
+      "ABC RADIO 760 AM"
+    ],
+    "reporters": [
+      "federico la mont",
+      "federico lamont",
+      "francisco buenrostro",
+      "la mont",
+      "lamont"
+    ],
+    "canonical_id": "audiorama",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "User approved 2026-10-26: combine Asi lo dice La Mont, ABC Radio and Audiorama conference records; preserve separate brands. ABC RADIO 760 AM appears on all six covered La Mont dates. Exclude unrelated ABC outlets. Approved shared conference key audiorama. Current program affiliation: https://www.audiorama.mx/estacion/buenisima-valle-de-mexico-1590-am . Historical ABC Radio affiliation: https://gaceta.diputados.gob.mx/PDF/InfoDip/64/1052-20210817-I-II-III.pdf . Exact ABC 760 attendance matches all six covered asking dates.",
+    "recorded_attendance_dates": 57,
+    "all_attendance_dates": 450,
+    "after_coverage": 7,
+    "first_date": "2024-11-13",
+    "last_date": "2026-10-08"
+  },
+  {
+    "outlet": "poder mexico",
+    "attendance_row": 34,
+    "roster_row": 25,
+    "canonical_ids": [
+      "poder mexico"
+    ],
+    "transcript_dates": 9,
+    "in_period": 6,
+    "matches": 6,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "GLOBAL ENERGY"
+    ],
+    "reporters": [
+      "daniela caballero",
+      "wendy fernandez"
+    ],
+    "canonical_id": "global energy",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "User approved 2026-10-26; Daniela Caballero/Wendy Fernandez joint introductions; 6/6 covered Poder dates match Global Energy.",
+    "recorded_attendance_dates": 55,
+    "all_attendance_dates": 59,
+    "after_coverage": 3,
+    "first_date": "2025-03-03",
+    "last_date": "2026-08-27"
+  },
+  {
+    "outlet": "sendero de la luna",
+    "attendance_row": 35,
+    "canonical_ids": [
+      "sendero de la luna"
+    ],
+    "transcript_dates": 13,
+    "in_period": 6,
+    "matches": 5,
+    "unmatched": [
+      "2024-11-08"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Iztaccihuatl en el sendero de la luna"
+    ],
+    "attendance_labels": [
+      "NOTICIAS DEL MOVIMIENTO CONSCIENCIA E",
+      "NOTICIAS DEL MOVIMIENTO CONSCIENCIA E IZTACC"
+    ],
+    "reporters": [
+      "elideth fernandez"
+    ],
+    "canonical_id": "movimiento conciencia",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "User approved 2026-10-26; Elideth Fernandez joint introductions; 5/6 covered dates match, 2024-11-08 unmatched. No verified label on: 2024-11-08. Do not infer absence.",
+    "recorded_attendance_dates": 11,
+    "all_attendance_dates": 51,
+    "after_coverage": 7,
+    "first_date": "2024-11-08",
+    "last_date": "2026-07-30"
+  },
+  {
+    "outlet": "los tubos",
+    "attendance_row": 36,
+    "canonical_ids": [
+      "los tubos"
+    ],
+    "transcript_dates": 6,
+    "in_period": 5,
+    "matches": 5,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Los Tubos"
+    ],
+    "attendance_labels": [
+      "AGUAQUEMADA"
+    ],
+    "reporters": [
+      "claudia reina",
+      "claudia reyna",
+      "luz irene castellano",
+      "luz irene castellanos"
+    ],
+    "canonical_id": "agua quemada",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "User approved 2026-10-26; joint introductions by Luz Irene Castellanos and Claudia Reina/Reyna; 5/5 covered dates match AGUAQUEMADA.",
+    "recorded_attendance_dates": 52,
+    "all_attendance_dates": 56,
+    "after_coverage": 1,
+    "first_date": "2025-07-11",
+    "last_date": "2025-10-09"
+  },
+  {
+    "outlet": "revista posdata",
+    "attendance_row": 37,
+    "canonical_ids": [
+      "revista posdata"
+    ],
+    "transcript_dates": 6,
+    "in_period": 5,
+    "matches": 5,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Revista Posdata"
+    ],
+    "attendance_labels": [
+      "AGUAQUEMADA"
+    ],
+    "reporters": [
+      "claudia reina",
+      "claudia reyna",
+      "luz irene castellano",
+      "luz irene castellanos"
+    ],
+    "canonical_id": "agua quemada",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "User approved 2026-10-26; joint introductions by Luz Irene Castellanos and Claudia Reina/Reyna; 5/5 covered dates match AGUAQUEMADA.",
+    "recorded_attendance_dates": 52,
+    "all_attendance_dates": 56,
+    "after_coverage": 1,
+    "first_date": "2025-07-11",
+    "last_date": "2025-10-09"
+  },
+  {
+    "outlet": "alerta multimedia",
+    "attendance_row": 38,
+    "roster_row": 31,
+    "canonical_ids": [
+      "alerta multimedia"
+    ],
+    "transcript_dates": 6,
+    "in_period": 6,
+    "matches": 6,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "COMUNICANTE MX"
+    ],
+    "reporters": [
+      "gus garcia",
+      "gustavo garcia"
+    ],
+    "canonical_id": "comunicante mx",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "User approved 2026-10-26; Gustavo/Gus Garcia joint introductions; 5/5 Alerta dates match.",
+    "recorded_attendance_dates": 20,
+    "all_attendance_dates": 74,
+    "after_coverage": 0,
+    "first_date": "2024-10-31",
+    "last_date": "2025-04-16"
+  },
+  {
+    "outlet": "lobos cadena 7",
+    "attendance_row": 39,
+    "roster_row": 34,
+    "canonical_ids": [
+      "lobos cadena 7"
+    ],
+    "transcript_dates": 47,
+    "in_period": 26,
+    "matches": 26,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "SONORA POWER",
+      "TELEMAX"
+    ],
+    "reporters": [
+      "demian",
+      "demian duarte",
+      "julian mazoy"
+    ],
+    "canonical_id": "sonora power",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "User approved 2026-10-26; Demian Duarte joint introductions; 5/5 Lobos dates match.",
+    "recorded_attendance_dates": 151,
+    "all_attendance_dates": 390,
+    "after_coverage": 21,
+    "first_date": "2024-10-02",
+    "last_date": "2026-10-01"
+  },
+  {
+    "outlet": "politica y rock radio",
+    "attendance_row": 40,
+    "canonical_ids": [
+      "politica y rock radio"
+    ],
+    "transcript_dates": 15,
+    "in_period": 5,
+    "matches": 5,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Politica y Rock and Roll Radio "
+    ],
+    "attendance_labels": [
+      "AMARC MÉXICO V POLÍTICA Y ROCK AND ROLL RADIO",
+      "RADIO TEPOZTLÁN"
+    ],
+    "reporters": [
+      "alejandro cabral",
+      "raul benet"
+    ],
+    "canonical_id": "amarc",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "User approved 2026-10-26; Alejandro Cabral jointly identifies both; 4/4 covered Politica y Rock dates match the combined AMARC attendance label. Retain separate brands.",
+    "recorded_attendance_dates": 28,
+    "all_attendance_dates": 67,
+    "after_coverage": 10,
+    "first_date": "2024-12-13",
+    "last_date": "2026-10-07"
+  },
+  {
+    "outlet": "canal 5 tv cozumel",
+    "attendance_row": 41,
+    "roster_row": 27,
+    "canonical_ids": [
+      "canal 5 tv cozumel"
+    ],
+    "transcript_dates": 7,
+    "in_period": 3,
+    "matches": 0,
+    "unmatched": [
+      "2024-11-05",
+      "2024-12-03",
+      "2025-08-07"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [],
+    "reporters": [
+      "sandy gonzalez"
+    ],
+    "canonical_id": "canal 5 tv cozumel",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2024-11-05, 2024-12-03, 2025-08-07. Do not infer absence.",
+    "recorded_attendance_dates": 0,
+    "all_attendance_dates": 2,
+    "after_coverage": 4,
+    "first_date": "2024-11-05",
+    "last_date": "2026-08-19"
+  },
+  {
+    "outlet": "red periodistica de puerto vallarta",
+    "attendance_row": 42,
+    "canonical_ids": [
+      "red periodistica de puerto vallarta"
+    ],
+    "transcript_dates": 10,
+    "in_period": 5,
+    "matches": 4,
+    "unmatched": [],
+    "coverage_gaps": [
+      "2024-11-04"
+    ],
+    "metadata_names": [
+      "Red Periodistica de Puerto Vallarta"
+    ],
+    "attendance_labels": [
+      "RADIO UNIVERSIDAD DE GUADALAJARA EN P",
+      "RADIO UNIVERSIDAD DE GUADALAJARA EN PUERTO VALLARTA"
+    ],
+    "reporters": [
+      "susana carreno"
+    ],
+    "canonical_id": "universidad de guadalajara",
+    "dated_matches": [],
+    "status": "Matched except roster gaps",
+    "note": "User approved 2026-10-26; Susana Carreno joint introductions; use explicit UDG/Puerto Vallarta labels only, not generic CANAL 44. Missing/sparse rosters: 2024-11-04.",
+    "recorded_attendance_dates": 8,
+    "all_attendance_dates": 21,
+    "after_coverage": 5,
+    "first_date": "2024-11-04",
+    "last_date": "2026-08-26"
+  },
+  {
+    "outlet": "el charro politico",
+    "attendance_row": 43,
+    "canonical_ids": [
+      "el charro politico"
+    ],
+    "transcript_dates": 3,
+    "in_period": 3,
+    "matches": 3,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "El Charro Politico"
+    ],
+    "attendance_labels": [
+      "EL NOPAL TIMES",
+      "NOPAL TIMES"
+    ],
+    "reporters": [
+      "saul armando soltero",
+      "saul soltero"
+    ],
+    "canonical_id": "nopal times",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "User approved 2026-10-26; Saul Soltero jointly identifies both; 3/3 covered Charro dates match Nopal Times. Retain separate brands.",
+    "recorded_attendance_dates": 6,
+    "all_attendance_dates": 30,
+    "after_coverage": 0,
+    "first_date": "2024-10-30",
+    "last_date": "2025-07-09"
+  },
+  {
+    "outlet": "somos mas",
+    "attendance_row": 44,
+    "roster_row": 51,
+    "canonical_ids": [
+      "somos mas"
+    ],
+    "transcript_dates": 3,
+    "in_period": 3,
+    "matches": 3,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "SOMOS MAS NOTICIAS"
+    ],
+    "reporters": [
+      "alejandra tornes",
+      "alejandra tornez"
+    ],
+    "canonical_id": "somos mas",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 32,
+    "all_attendance_dates": 94,
+    "after_coverage": 0,
+    "first_date": "2024-10-16",
+    "last_date": "2025-01-13"
+  },
+  {
+    "outlet": "sputnik",
+    "attendance_row": 45,
+    "canonical_ids": [
+      "sputnik"
+    ],
+    "transcript_dates": 3,
+    "in_period": 3,
+    "matches": 2,
+    "unmatched": [],
+    "coverage_gaps": [
+      "2024-11-04"
+    ],
+    "metadata_names": [
+      "Sputnik"
+    ],
+    "attendance_labels": [
+      "AGENCIA INTERNACIONAL SPUTNIK"
+    ],
+    "reporters": [
+      "daniela diaz"
+    ],
+    "canonical_id": "sputnik",
+    "dated_matches": [],
+    "status": "Matched except roster gaps",
+    "note": "Missing/sparse rosters: 2024-11-04.",
+    "recorded_attendance_dates": 13,
+    "all_attendance_dates": 242,
+    "after_coverage": 0,
+    "first_date": "2024-11-04",
+    "last_date": "2025-06-10"
+  },
+  {
+    "outlet": "10 am mx",
+    "attendance_row": 46,
+    "roster_row": 20,
+    "canonical_ids": [
+      "10 am mx"
+    ],
+    "transcript_dates": 11,
+    "in_period": 2,
+    "matches": 2,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "ES AHORA AM NOTICIAS"
+    ],
+    "reporters": [
+      "alberto marroquin espinoza"
+    ],
+    "canonical_id": "10 am mx",
+    "dated_matches": [
+      "2025-09-05",
+      "2025-09-25"
+    ],
+    "status": "Resolved",
+    "note": "Dated co-affiliation links used without globally merging the other outlet.",
+    "recorded_attendance_dates": 2,
+    "all_attendance_dates": 2,
+    "after_coverage": 9,
+    "first_date": "2025-09-05",
+    "last_date": "2026-09-03"
+  },
+  {
+    "outlet": "enlace mesoamerica",
+    "attendance_row": 47,
+    "canonical_ids": [
+      "diario plaza juarez",
+      "enlace mesoamerica"
+    ],
+    "transcript_dates": 11,
+    "in_period": 2,
+    "matches": 2,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "El Diario Plaza Juarez",
+      "Enlace Mesoamerica"
+    ],
+    "attendance_labels": [
+      "DIARIO PLAZA JUÁREZ"
+    ],
+    "reporters": [
+      "alejandro aleman",
+      "roberto morales"
+    ],
+    "canonical_id": "enlace mesoamerica",
+    "dated_matches": [
+      "2025-06-17",
+      "2025-09-08"
+    ],
+    "status": "Resolved",
+    "note": "Dated co-affiliation links used without globally merging the other outlet.",
+    "recorded_attendance_dates": 2,
+    "all_attendance_dates": 2,
+    "after_coverage": 9,
+    "first_date": "2025-06-17",
+    "last_date": "2026-10-12"
+  },
+  {
+    "outlet": "el regreso de donald trump",
+    "attendance_row": 48,
+    "roster_row": 72,
+    "canonical_ids": [
+      "el regreso de donald trump"
+    ],
+    "transcript_dates": 28,
+    "in_period": 6,
+    "matches": 6,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "ALCANZANDO EL CONOCIMIENTO"
+    ],
+    "reporters": [
+      "bertha alicia",
+      "bertha alicia galindo"
+    ],
+    "canonical_id": "alcanzando el conocimiento",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "User approved 2026-10-26; Bertha Alicia Galindo joint introductions; 2/2 covered program dates match Alcanzando el Conocimiento. Retain separate brands.",
+    "recorded_attendance_dates": 112,
+    "all_attendance_dates": 138,
+    "after_coverage": 22,
+    "first_date": "2025-03-10",
+    "last_date": "2026-10-05"
+  },
+  {
+    "outlet": "capital",
+    "attendance_row": 49,
+    "roster_row": 55,
+    "canonical_ids": [
+      "capital"
+    ],
+    "transcript_dates": 2,
+    "in_period": 2,
+    "matches": 1,
+    "unmatched": [
+      "2025-05-06"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "CAPITAL PUEBLA"
+    ],
+    "reporters": [
+      "abel cuapa"
+    ],
+    "canonical_id": "capital puebla",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "Abel Cuapa explicitly says Capital in Puebla. Publisher confirms his role: https://capitalpuebla.com/2023/10/22/un-ano-de-capital/. Use capital puebla; do not match Capital 21 or generic Portal Capital. No verified label on: 2025-05-06. Do not infer absence.",
+    "recorded_attendance_dates": 15,
+    "all_attendance_dates": 30,
+    "after_coverage": 0,
+    "first_date": "2025-03-10",
+    "last_date": "2025-05-06"
+  },
+  {
+    "outlet": "ecosfera",
+    "attendance_row": 50,
+    "canonical_ids": [
+      "ecosfera"
+    ],
+    "transcript_dates": 7,
+    "in_period": 4,
+    "matches": 3,
+    "unmatched": [],
+    "coverage_gaps": [
+      "2025-03-31"
+    ],
+    "metadata_names": [
+      "Ecosfera"
+    ],
+    "attendance_labels": [
+      "CULTURA COLECTIVA"
+    ],
+    "reporters": [
+      "cristian galarza"
+    ],
+    "canonical_id": "grupo tribu",
+    "dated_matches": [],
+    "status": "Matched except roster gaps",
+    "note": "User approved 2026-10-26; Cristian Galarza joint introductions; 3/4 covered dates match CULTURA COLECTIVA; 2025-03-31 has no attendance roster. Missing/sparse rosters: 2025-03-31.",
+    "recorded_attendance_dates": 118,
+    "all_attendance_dates": 118,
+    "after_coverage": 3,
+    "first_date": "2025-02-21",
+    "last_date": "2026-08-31"
+  },
+  {
+    "outlet": "el fildeo",
+    "attendance_row": 51,
+    "roster_row": 74,
+    "canonical_ids": [
+      "el fildeo"
+    ],
+    "transcript_dates": 7,
+    "in_period": 4,
+    "matches": 3,
+    "unmatched": [],
+    "coverage_gaps": [
+      "2025-03-31"
+    ],
+    "metadata_names": [],
+    "attendance_labels": [
+      "CULTURA COLECTIVA"
+    ],
+    "reporters": [
+      "cristian galarza"
+    ],
+    "canonical_id": "grupo tribu",
+    "dated_matches": [],
+    "status": "Matched except roster gaps",
+    "note": "User approved 2026-10-26; Cristian Galarza joint introductions; 3/4 covered dates match CULTURA COLECTIVA; 2025-03-31 has no attendance roster. Missing/sparse rosters: 2025-03-31.",
+    "recorded_attendance_dates": 118,
+    "all_attendance_dates": 118,
+    "after_coverage": 3,
+    "first_date": "2025-02-21",
+    "last_date": "2026-08-31"
+  },
+  {
+    "outlet": "el portal del noreste",
+    "attendance_row": 52,
+    "roster_row": 58,
+    "canonical_ids": [
+      "el portal del noreste"
+    ],
+    "transcript_dates": 6,
+    "in_period": 5,
+    "matches": 5,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "AGUAQUEMADA"
+    ],
+    "reporters": [
+      "claudia reina",
+      "claudia reyna",
+      "luz irene castellano",
+      "luz irene castellanos"
+    ],
+    "canonical_id": "agua quemada",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "User approved 2026-10-26; joint introductions by Luz Irene Castellanos and Claudia Reina/Reyna; 5/5 covered dates match AGUAQUEMADA.",
+    "recorded_attendance_dates": 52,
+    "all_attendance_dates": 56,
+    "after_coverage": 1,
+    "first_date": "2025-07-11",
+    "last_date": "2025-10-09"
+  },
+  {
+    "outlet": "expansion",
+    "attendance_row": 53,
+    "canonical_ids": [
+      "expansion"
+    ],
+    "transcript_dates": 2,
+    "in_period": 2,
+    "matches": 2,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Expansión"
+    ],
+    "attendance_labels": [
+      "GRUPO EXPANSIÓN"
+    ],
+    "reporters": [
+      "ana luisa gutierrez",
+      "erendira reyes"
+    ],
+    "canonical_id": "expansion",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 6,
+    "all_attendance_dates": 178,
+    "after_coverage": 0,
+    "first_date": "2025-01-14",
+    "last_date": "2025-02-20"
+  },
+  {
+    "outlet": "grupo tribu",
+    "attendance_row": 54,
+    "canonical_ids": [
+      "grupo tribu"
+    ],
+    "transcript_dates": 7,
+    "in_period": 4,
+    "matches": 3,
+    "unmatched": [],
+    "coverage_gaps": [
+      "2025-03-31"
+    ],
+    "metadata_names": [
+      "Grupo Tribu"
+    ],
+    "attendance_labels": [
+      "CULTURA COLECTIVA"
+    ],
+    "reporters": [
+      "cristian galarza"
+    ],
+    "canonical_id": "grupo tribu",
+    "dated_matches": [],
+    "status": "Matched except roster gaps",
+    "note": "User approved 2026-10-26; Cristian Galarza joint introductions; 3/4 covered dates match CULTURA COLECTIVA; 2025-03-31 has no attendance roster. Missing/sparse rosters: 2025-03-31.",
+    "recorded_attendance_dates": 118,
+    "all_attendance_dates": 118,
+    "after_coverage": 3,
+    "first_date": "2025-02-21",
+    "last_date": "2026-08-31"
+  },
+  {
+    "outlet": "periodistas del sur",
+    "attendance_row": 55,
+    "roster_row": 64,
+    "canonical_ids": [
+      "periodistas del sur"
+    ],
+    "transcript_dates": 2,
+    "in_period": 2,
+    "matches": 0,
+    "unmatched": [
+      "2024-12-03",
+      "2025-08-07"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [],
+    "reporters": [
+      "sandy gonzalez"
+    ],
+    "canonical_id": "periodistas del sur",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2024-12-03, 2025-08-07. Do not infer absence.",
+    "recorded_attendance_dates": 0,
+    "all_attendance_dates": 0,
+    "after_coverage": 0,
+    "first_date": "2024-12-03",
+    "last_date": "2025-08-07"
+  },
+  {
+    "outlet": "sandraaguileracom",
+    "attendance_row": 56,
+    "roster_row": 68,
+    "canonical_ids": [
+      "sandraaguileracom"
+    ],
+    "transcript_dates": 2,
+    "in_period": 2,
+    "matches": 2,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "GRUPO LARSA COMUNICACIONES"
+    ],
+    "reporters": [
+      "sandra aguilera"
+    ],
+    "canonical_id": "sandraaguileracom",
+    "dated_matches": [
+      "2024-10-23",
+      "2024-12-02"
+    ],
+    "status": "Resolved",
+    "note": "User selected the other pair for grouping; keep SandraAguilera.com separate from Grupo Larsa Comunicaciones; retain verified dated joint introductions only. Dated co-affiliation links used without globally merging the other outlet.",
+    "recorded_attendance_dates": 2,
+    "all_attendance_dates": 2,
+    "after_coverage": 0,
+    "first_date": "2024-10-23",
+    "last_date": "2024-12-02"
+  },
+  {
+    "outlet": "tv migrante",
+    "attendance_row": 57,
+    "roster_row": 76,
+    "canonical_ids": [
+      "tv migrante"
+    ],
+    "transcript_dates": 2,
+    "in_period": 2,
+    "matches": 2,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "SPR CANAL 14"
+    ],
+    "reporters": [
+      "aurora castillejos"
+    ],
+    "canonical_id": "tv migrante",
+    "dated_matches": [
+      "2025-05-22",
+      "2025-07-30"
+    ],
+    "status": "Resolved",
+    "note": "User selected the other program pair for grouping; keep TV Migrante separate from Canal 14 SPR; retain verified dated Aurora Castillejos joint introductions only. Dated co-affiliation links used without globally merging the other outlet.",
+    "recorded_attendance_dates": 2,
+    "all_attendance_dates": 2,
+    "after_coverage": 0,
+    "first_date": "2025-05-22",
+    "last_date": "2025-07-30"
+  },
+  {
+    "outlet": "contralinea",
+    "attendance_row": 58,
+    "canonical_ids": [
+      "contralinea"
+    ],
+    "transcript_dates": 72,
+    "in_period": 33,
+    "matches": 32,
+    "unmatched": [
+      "2025-01-07"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Contralínea"
+    ],
+    "attendance_labels": [
+      "CONTRALINEA. PERIODISMO DE INVESTIGACION"
+    ],
+    "reporters": [
+      "darylh rodriguez",
+      "nancy flores"
+    ],
+    "canonical_id": "contralinea",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2025-01-07. Do not infer absence.",
+    "recorded_attendance_dates": 40,
+    "all_attendance_dates": 482,
+    "after_coverage": 39,
+    "first_date": "2024-10-04",
+    "last_date": "2026-10-06"
+  },
+  {
+    "outlet": "avan noticias",
+    "attendance_row": 59,
+    "canonical_ids": [
+      "avan noticias"
+    ],
+    "transcript_dates": 59,
+    "in_period": 31,
+    "matches": 30,
+    "unmatched": [
+      "2025-09-04"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Avan Noticias/ QUATRO MEDIA"
+    ],
+    "attendance_labels": [
+      "QATROMEDIA TELECOMUNICACIONES"
+    ],
+    "reporters": [
+      "carlos guzman"
+    ],
+    "canonical_id": "avan noticias",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2025-09-04. Do not infer absence.",
+    "recorded_attendance_dates": 216,
+    "all_attendance_dates": 1063,
+    "after_coverage": 28,
+    "first_date": "2024-10-07",
+    "last_date": "2026-10-02"
+  },
+  {
+    "outlet": "revista fortuna",
+    "attendance_row": 60,
+    "canonical_ids": [
+      "revista fortuna"
+    ],
+    "transcript_dates": 69,
+    "in_period": 28,
+    "matches": 25,
+    "unmatched": [
+      "2024-12-30"
+    ],
+    "coverage_gaps": [
+      "2025-03-28",
+      "2025-04-14"
+    ],
+    "metadata_names": [
+      "Revista Fortuna"
+    ],
+    "attendance_labels": [
+      "REVISTA FORTUNA"
+    ],
+    "reporters": [
+      "yareth arcinaga",
+      "yareth arciniega",
+      "yarteh arciniega"
+    ],
+    "canonical_id": "revista fortuna",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "Missing/sparse rosters: 2025-03-28, 2025-04-14. No verified label on: 2024-12-30. Do not infer absence.",
+    "recorded_attendance_dates": 167,
+    "all_attendance_dates": 170,
+    "after_coverage": 41,
+    "first_date": "2024-10-16",
+    "last_date": "2026-10-15"
+  },
+  {
+    "outlet": "efecto colateral",
+    "attendance_row": 61,
+    "roster_row": 10,
+    "canonical_ids": [
+      "efecto colateral"
+    ],
+    "transcript_dates": 63,
+    "in_period": 29,
+    "matches": 27,
+    "unmatched": [
+      "2025-02-03"
+    ],
+    "coverage_gaps": [
+      "2025-03-04"
+    ],
+    "metadata_names": [],
+    "attendance_labels": [
+      "CHIWAS NEWS",
+      "EFECTO COLATERAL / EL CHAPUCERO",
+      "EL CHAPUCERO"
+    ],
+    "reporters": [
+      "aaron aragon",
+      "aaron diaz",
+      "arturo pavon",
+      "nacho rodriguez"
+    ],
+    "canonical_id": "efecto colateral",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "User approved 2026-10-26; Arturo Pavon jointly names both; combined attendance label. Existing Chiwas News grouping retained. Missing/sparse rosters: 2025-03-04. No verified label on: 2025-02-03. Do not infer absence.",
+    "recorded_attendance_dates": 205,
+    "all_attendance_dates": 534,
+    "after_coverage": 34,
+    "first_date": "2024-10-03",
+    "last_date": "2026-10-12"
+  },
+  {
+    "outlet": "el chapucero",
+    "attendance_row": 62,
+    "canonical_ids": [
+      "el chapucero"
+    ],
+    "transcript_dates": 63,
+    "in_period": 29,
+    "matches": 27,
+    "unmatched": [
+      "2025-02-03"
+    ],
+    "coverage_gaps": [
+      "2025-03-04"
+    ],
+    "metadata_names": [
+      "Efectos Colaterales El Chapucero"
+    ],
+    "attendance_labels": [
+      "CHIWAS NEWS",
+      "EFECTO COLATERAL / EL CHAPUCERO",
+      "EL CHAPUCERO"
+    ],
+    "reporters": [
+      "aaron aragon",
+      "aaron diaz",
+      "arturo pavon",
+      "nacho rodriguez"
+    ],
+    "canonical_id": "efecto colateral",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "User approved 2026-10-26; Arturo Pavon jointly names both; combined attendance label. Existing Chiwas News grouping retained. Missing/sparse rosters: 2025-03-04. No verified label on: 2025-02-03. Do not infer absence.",
+    "recorded_attendance_dates": 205,
+    "all_attendance_dates": 534,
+    "after_coverage": 34,
+    "first_date": "2024-10-03",
+    "last_date": "2026-10-12"
+  },
+  {
+    "outlet": "capital 21",
+    "attendance_row": 63,
+    "canonical_ids": [
+      "capital 21"
+    ],
+    "transcript_dates": 44,
+    "in_period": 26,
+    "matches": 21,
+    "unmatched": [
+      "2024-10-11",
+      "2024-10-29",
+      "2024-11-12",
+      "2024-12-06"
+    ],
+    "coverage_gaps": [
+      "2025-04-07"
+    ],
+    "metadata_names": [
+      "Capital 21"
+    ],
+    "attendance_labels": [
+      "CAPITAL 21"
+    ],
+    "reporters": [
+      "ana grimaldo",
+      "berenice rodriguez",
+      "enrique muniz",
+      "jose manuel fuentes"
+    ],
+    "canonical_id": "capital 21",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "Missing/sparse rosters: 2025-04-07. No verified label on: 2024-10-11, 2024-10-29, 2024-11-12, 2024-12-06. Do not infer absence.",
+    "recorded_attendance_dates": 134,
+    "all_attendance_dates": 506,
+    "after_coverage": 18,
+    "first_date": "2024-10-11",
+    "last_date": "2026-08-13"
+  },
+  {
+    "outlet": "el financiero",
+    "attendance_row": 64,
+    "canonical_ids": [
+      "el financiero"
+    ],
+    "transcript_dates": 42,
+    "in_period": 24,
+    "matches": 22,
+    "unmatched": [
+      "2025-06-03"
+    ],
+    "coverage_gaps": [
+      "2025-04-14"
+    ],
+    "metadata_names": [
+      "El Financiero"
+    ],
+    "attendance_labels": [
+      "BLOOMBERG LÍNEA",
+      "BLOOMBERG NEWS",
+      "EL FINANCIERO",
+      "EL FINANCIERO TV"
+    ],
+    "reporters": [
+      "angelica guerrero",
+      "arturo solis",
+      "diana benitez",
+      "eduardo ortega",
+      "fernando merino",
+      "maya averbuch",
+      "zenyazen flores"
+    ],
+    "canonical_id": "el financiero",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "User approved 2026-10-26: combine El Financiero, Bloomberg News and Bloomberg Linea conference records while retaining all three brands. User approved grouping Bloomberg News AND Bloomberg Linea with El Financiero. Bare Bloomberg remains unspecified. Missing/sparse rosters: 2025-04-14. No verified label on: 2025-06-03. Do not infer absence.",
+    "recorded_attendance_dates": 139,
+    "all_attendance_dates": 788,
+    "after_coverage": 18,
+    "first_date": "2024-10-10",
+    "last_date": "2026-10-05"
+  },
+  {
+    "outlet": "canal 14 spr",
+    "attendance_row": 65,
+    "canonical_ids": [
+      "canal 14 spr"
+    ],
+    "transcript_dates": 43,
+    "in_period": 24,
+    "matches": 22,
+    "unmatched": [],
+    "coverage_gaps": [
+      "2025-03-04",
+      "2025-03-28"
+    ],
+    "metadata_names": [
+      "Canal 14 SPR"
+    ],
+    "attendance_labels": [
+      "SPR CANAL 14"
+    ],
+    "reporters": [
+      "aurora castillejos",
+      "miguel hernandez"
+    ],
+    "canonical_id": "canal 14 spr",
+    "dated_matches": [],
+    "status": "Matched except roster gaps",
+    "note": "Missing/sparse rosters: 2025-03-04, 2025-03-28.",
+    "recorded_attendance_dates": 238,
+    "all_attendance_dates": 1336,
+    "after_coverage": 19,
+    "first_date": "2024-10-03",
+    "last_date": "2026-09-24"
+  },
+  {
+    "outlet": "hidalgo news",
+    "attendance_row": 66,
+    "canonical_ids": [
+      "mexico news world"
+    ],
+    "transcript_dates": 38,
+    "in_period": 24,
+    "matches": 23,
+    "unmatched": [],
+    "coverage_gaps": [
+      "2025-03-04"
+    ],
+    "metadata_names": [
+      "Mexico News World",
+      "Hidalgo News"
+    ],
+    "attendance_labels": [
+      "HIDALGO NEWS"
+    ],
+    "reporters": [
+      "marco antonio olvera"
+    ],
+    "canonical_id": "mexico news world",
+    "dated_matches": [],
+    "status": "Matched except roster gaps",
+    "note": "Missing/sparse rosters: 2025-03-04.",
+    "recorded_attendance_dates": 85,
+    "all_attendance_dates": 133,
+    "after_coverage": 14,
+    "first_date": "2024-10-22",
+    "last_date": "2026-10-07"
+  },
+  {
+    "outlet": "losreporterosmx",
+    "attendance_row": 67,
+    "canonical_ids": [
+      "losreporterosmx"
+    ],
+    "transcript_dates": 47,
+    "in_period": 21,
+    "matches": 19,
+    "unmatched": [
+      "2024-11-13"
+    ],
+    "coverage_gaps": [
+      "2025-03-04"
+    ],
+    "metadata_names": [
+      "Los Reporteros MX",
+      "El Quintana Roo MX"
+    ],
+    "attendance_labels": [
+      "EL QUINTANA ROO MX",
+      "LOS REPORTEROS MX"
+    ],
+    "reporters": [
+      "amir ibrahim",
+      "luis pina",
+      "manuel pedrero",
+      "sofia otero"
+    ],
+    "canonical_id": "losreporterosmx",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "Missing/sparse rosters: 2025-03-04. No verified label on: 2024-11-13. Do not infer absence.",
+    "recorded_attendance_dates": 101,
+    "all_attendance_dates": 289,
+    "after_coverage": 26,
+    "first_date": "2024-10-03",
+    "last_date": "2026-10-12"
+  },
+  {
+    "outlet": "grupo imagen",
+    "attendance_row": 68,
+    "canonical_ids": [
+      "grupo imagen"
+    ],
+    "transcript_dates": 48,
+    "in_period": 23,
+    "matches": 23,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Imagen Digital"
+    ],
+    "attendance_labels": [
+      "GRUPO IMAGEN",
+      "GRUPO IMAGEN TV",
+      "IMAGEN RADIO",
+      "IMAGEN RADIO MEXICALI"
+    ],
+    "reporters": [
+      "arturo paramo",
+      "ivan cadena",
+      "rosa leon",
+      "ximena mejia"
+    ],
+    "canonical_id": "grupo imagen",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "User approved 2026-10-26; Arturo Paramo Imagen/Excelsior introductions; 23/23 dates within coverage match Grupo Imagen.",
+    "recorded_attendance_dates": 188,
+    "all_attendance_dates": 591,
+    "after_coverage": 25,
+    "first_date": "2024-10-24",
+    "last_date": "2026-10-14"
+  },
+  {
+    "outlet": "nx noticias",
+    "attendance_row": 69,
+    "canonical_ids": [
+      "nx noticias"
+    ],
+    "transcript_dates": 37,
+    "in_period": 21,
+    "matches": 19,
+    "unmatched": [
+      "2025-05-09"
+    ],
+    "coverage_gaps": [
+      "2025-04-08"
+    ],
+    "metadata_names": [
+      "NX Noticias"
+    ],
+    "attendance_labels": [
+      "NX NOTICIAS"
+    ],
+    "reporters": [
+      "aura velatti",
+      "eunice cruz",
+      "rodrigo munoz",
+      "samuel caamal"
+    ],
+    "canonical_id": "nx noticias",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "Missing/sparse rosters: 2025-04-08. No verified label on: 2025-05-09. Do not infer absence.",
+    "recorded_attendance_dates": 220,
+    "all_attendance_dates": 220,
+    "after_coverage": 16,
+    "first_date": "2024-10-07",
+    "last_date": "2026-10-09"
+  },
+  {
+    "outlet": "milenio",
+    "attendance_row": 70,
+    "canonical_ids": [
+      "milenio"
+    ],
+    "transcript_dates": 46,
+    "in_period": 19,
+    "matches": 19,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Milenio"
+    ],
+    "attendance_labels": [
+      "GRUPO MILENIO",
+      "GRUPO MILENIO MULTIMEDIOS"
+    ],
+    "reporters": [
+      "armando martinez",
+      "edgardo rodriguez",
+      "gaspar vela",
+      "rafael montes",
+      "rocio hernandez"
+    ],
+    "canonical_id": "milenio",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 223,
+    "all_attendance_dates": 1328,
+    "after_coverage": 27,
+    "first_date": "2024-10-25",
+    "last_date": "2026-10-13"
+  },
+  {
+    "outlet": "proceso",
+    "attendance_row": 71,
+    "canonical_ids": [
+      "proceso"
+    ],
+    "transcript_dates": 39,
+    "in_period": 19,
+    "matches": 17,
+    "unmatched": [
+      "2025-01-16"
+    ],
+    "coverage_gaps": [
+      "2025-03-31"
+    ],
+    "metadata_names": [
+      "Proceso"
+    ],
+    "attendance_labels": [
+      "PROCESO"
+    ],
+    "reporters": [
+      "carmen pizano",
+      "dalila escobar",
+      "elizabeth rivera",
+      "sara pantoja",
+      "veronica espinosa"
+    ],
+    "canonical_id": "proceso",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "Missing/sparse rosters: 2025-03-31. No verified label on: 2025-01-16. Do not infer absence.",
+    "recorded_attendance_dates": 155,
+    "all_attendance_dates": 692,
+    "after_coverage": 20,
+    "first_date": "2024-10-02",
+    "last_date": "2026-09-21"
+  },
+  {
+    "outlet": "grupo acir",
+    "attendance_row": 72,
+    "canonical_ids": [
+      "grupo acir"
+    ],
+    "transcript_dates": 33,
+    "in_period": 18,
+    "matches": 16,
+    "unmatched": [
+      "2025-05-20"
+    ],
+    "coverage_gaps": [
+      "2025-04-14"
+    ],
+    "metadata_names": [
+      "Grupo ACIR"
+    ],
+    "attendance_labels": [
+      "GRUPO ACIR"
+    ],
+    "reporters": [
+      "arturo sanguino",
+      "ivonne menchaca",
+      "joanna flores"
+    ],
+    "canonical_id": "grupo acir",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "Missing/sparse rosters: 2025-04-14. No verified label on: 2025-05-20. Do not infer absence.",
+    "recorded_attendance_dates": 170,
+    "all_attendance_dates": 765,
+    "after_coverage": 15,
+    "first_date": "2024-10-28",
+    "last_date": "2026-08-12"
+  },
+  {
+    "outlet": "medios digitales del pacifico",
+    "attendance_row": 73,
+    "canonical_ids": [
+      "medios digitales del pacifico"
+    ],
+    "transcript_dates": 28,
+    "in_period": 19,
+    "matches": 19,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Medios Digitales del Pacifico",
+      "Informando la Transformación",
+      "Sin Puntos Ni Comas"
+    ],
+    "attendance_labels": [
+      "EL INFORMANTE BCS",
+      "MEDIOS DIGITALES DEL PACIFICO",
+      "MEDIOS DIGITALES DEL PACÍFICO",
+      "MONITORBCS",
+      "NBCS NOTICIAS",
+      "RADIO Y TV DE BCS",
+      "REPORTERO URBANO"
+    ],
+    "reporters": [
+      "alejandro patron",
+      "julio omar gomez"
+    ],
+    "canonical_id": "medios digitales del pacifico",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "User approved 2026-10-26; Julio Omar Gomez jointly identifies both; 8/8 Sin Puntos dates match.",
+    "recorded_attendance_dates": 175,
+    "all_attendance_dates": 285,
+    "after_coverage": 9,
+    "first_date": "2024-10-16",
+    "last_date": "2026-09-03"
+  },
+  {
+    "outlet": "radio resultados",
+    "attendance_row": 74,
+    "roster_row": 17,
+    "canonical_ids": [
+      "radio resultados"
+    ],
+    "transcript_dates": 19,
+    "in_period": 18,
+    "matches": 15,
+    "unmatched": [
+      "2024-10-30",
+      "2025-06-06"
+    ],
+    "coverage_gaps": [
+      "2025-03-04"
+    ],
+    "metadata_names": [],
+    "attendance_labels": [
+      "RADIO RESULTADOS"
+    ],
+    "reporters": [
+      "luis angel marin",
+      "soledad castro"
+    ],
+    "canonical_id": "radio resultados",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "Missing/sparse rosters: 2025-03-04. No verified label on: 2024-10-30, 2025-06-06. Do not infer absence.",
+    "recorded_attendance_dates": 90,
+    "all_attendance_dates": 90,
+    "after_coverage": 1,
+    "first_date": "2024-10-15",
+    "last_date": "2026-03-13"
+  },
+  {
+    "outlet": "perspectivas",
+    "attendance_row": 75,
+    "canonical_ids": [
+      "perspectivas"
+    ],
+    "transcript_dates": 31,
+    "in_period": 17,
+    "matches": 15,
+    "unmatched": [
+      "2024-12-30"
+    ],
+    "coverage_gaps": [
+      "2025-04-08"
+    ],
+    "metadata_names": [
+      "Perspectivas MX"
+    ],
+    "attendance_labels": [
+      "PERSPECTIVAS",
+      "PERSPECTIVASMX"
+    ],
+    "reporters": [
+      "judith sanchez reyes"
+    ],
+    "canonical_id": "perspectivas",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "Missing/sparse rosters: 2025-04-08. No verified label on: 2024-12-30. Do not infer absence.",
+    "recorded_attendance_dates": 70,
+    "all_attendance_dates": 136,
+    "after_coverage": 14,
+    "first_date": "2024-10-11",
+    "last_date": "2026-08-26"
+  },
+  {
+    "outlet": "miled",
+    "attendance_row": 76,
+    "canonical_ids": [
+      "miled"
+    ],
+    "transcript_dates": 30,
+    "in_period": 17,
+    "matches": 16,
+    "unmatched": [],
+    "coverage_gaps": [
+      "2025-04-08"
+    ],
+    "metadata_names": [
+      "Miled"
+    ],
+    "attendance_labels": [
+      "MILED",
+      "PERSPECTIVAS"
+    ],
+    "reporters": [
+      "judith sanchez reyes",
+      "norma ramirez"
+    ],
+    "canonical_id": "miled",
+    "dated_matches": [
+      "2025-03-25",
+      "2025-04-24",
+      "2025-05-19",
+      "2025-06-02",
+      "2025-06-10",
+      "2025-07-04",
+      "2025-08-04",
+      "2025-08-14",
+      "2025-08-29",
+      "2025-09-12",
+      "2025-09-30"
+    ],
+    "status": "Matched except roster gaps",
+    "note": "User approved 2026-10-26: keep Miled and Perspectivas separate; use only Judith Sanchez Reyes verified dated joint introductions. Other Miled reporters are not reassigned. Dated co-affiliation links used without globally merging the other outlet. Missing/sparse rosters: 2025-04-08.",
+    "recorded_attendance_dates": 78,
+    "all_attendance_dates": 79,
+    "after_coverage": 13,
+    "first_date": "2024-11-15",
+    "last_date": "2026-08-26"
+  },
+  {
+    "outlet": "mmm vanguardia",
+    "attendance_row": 77,
+    "canonical_ids": [
+      "mmm vanguardia"
+    ],
+    "transcript_dates": 19,
+    "in_period": 16,
+    "matches": 16,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Vanguardia"
+    ],
+    "attendance_labels": [
+      "VANGUARDIA DE VERACRUZ",
+      "VANGUARDIA VERACRUZ"
+    ],
+    "reporters": [
+      "andres salomon",
+      "esteban duran"
+    ],
+    "canonical_id": "mmm vanguardia",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 219,
+    "all_attendance_dates": 896,
+    "after_coverage": 3,
+    "first_date": "2024-10-08",
+    "last_date": "2026-09-02"
+  },
+  {
+    "outlet": "la hoguera",
+    "attendance_row": 78,
+    "canonical_ids": [
+      "la hoguera"
+    ],
+    "transcript_dates": 29,
+    "in_period": 14,
+    "matches": 13,
+    "unmatched": [
+      "2024-10-03"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "La Hoguera"
+    ],
+    "attendance_labels": [
+      "LA HOGUERA MX"
+    ],
+    "reporters": [
+      "elia cruz"
+    ],
+    "canonical_id": "la hoguera",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2024-10-03. Do not infer absence.",
+    "recorded_attendance_dates": 149,
+    "all_attendance_dates": 403,
+    "after_coverage": 15,
+    "first_date": "2024-10-03",
+    "last_date": "2026-10-05"
+  },
+  {
+    "outlet": "grupo formula",
+    "attendance_row": 79,
+    "canonical_ids": [
+      "grupo formula"
+    ],
+    "transcript_dates": 44,
+    "in_period": 13,
+    "matches": 13,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Formula"
+    ],
+    "attendance_labels": [
+      "GRUPO FÓRMULA TV"
+    ],
+    "reporters": [
+      "carlos rosanoff",
+      "david galvan",
+      "edgardo rodriguez",
+      "israel aldave",
+      "naomi carmona",
+      "veronica bacaz"
+    ],
+    "canonical_id": "grupo formula",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 237,
+    "all_attendance_dates": 1197,
+    "after_coverage": 31,
+    "first_date": "2025-04-01",
+    "last_date": "2026-10-15"
+  },
+  {
+    "outlet": "ecos media",
+    "attendance_row": 80,
+    "canonical_ids": [
+      "ecos media"
+    ],
+    "transcript_dates": 14,
+    "in_period": 13,
+    "matches": 12,
+    "unmatched": [],
+    "coverage_gaps": [
+      "2025-03-28"
+    ],
+    "metadata_names": [
+      "Ecos Media"
+    ],
+    "attendance_labels": [
+      "ECOS MEDIA MX",
+      "LUCES DEL SIGLO"
+    ],
+    "reporters": [
+      "santiago de llano",
+      "santiago de llano nieves"
+    ],
+    "canonical_id": "ecos media",
+    "dated_matches": [
+      "2024-10-15"
+    ],
+    "status": "Matched except roster gaps",
+    "note": "Dated co-affiliation links used without globally merging the other outlet. Missing/sparse rosters: 2025-03-28.",
+    "recorded_attendance_dates": 50,
+    "all_attendance_dates": 51,
+    "after_coverage": 1,
+    "first_date": "2024-10-15",
+    "last_date": "2025-10-27"
+  },
+  {
+    "outlet": "noticias el reloj de la tlaxiaquena",
+    "attendance_row": 81,
+    "canonical_ids": [
+      "noticias el reloj de la tlaxiaquena"
+    ],
+    "transcript_dates": 17,
+    "in_period": 12,
+    "matches": 11,
+    "unmatched": [
+      "2024-12-30"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Noticieros el Reloj de la Tlaxiaqueña"
+    ],
+    "attendance_labels": [
+      "NOTICIEROS EL RELOJ DE LA TLAXIAQUEÑA 9",
+      "NOTICIEROS EL RELOJ DE LA TLAXIAQUEÑA 91.5",
+      "NT EL RELOJ DE LA TLAXIAQUEÑA 91.5"
+    ],
+    "reporters": [
+      "ramon ramirez gutierrez"
+    ],
+    "canonical_id": "noticias el reloj de la tlaxiaquena",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2024-12-30. Do not infer absence.",
+    "recorded_attendance_dates": 26,
+    "all_attendance_dates": 74,
+    "after_coverage": 5,
+    "first_date": "2024-11-06",
+    "last_date": "2026-08-28"
+  },
+  {
+    "outlet": "domo de cristal",
+    "attendance_row": 82,
+    "roster_row": 11,
+    "canonical_ids": [
+      "domo de cristal"
+    ],
+    "transcript_dates": 35,
+    "in_period": 10,
+    "matches": 9,
+    "unmatched": [
+      "2024-12-04"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "DOMO DE CRISTAL"
+    ],
+    "reporters": [
+      "eduardo esquivel ancona"
+    ],
+    "canonical_id": "domo de cristal",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2024-12-04. Do not infer absence.",
+    "recorded_attendance_dates": 16,
+    "all_attendance_dates": 16,
+    "after_coverage": 25,
+    "first_date": "2024-12-04",
+    "last_date": "2026-10-07"
+  },
+  {
+    "outlet": "es ahora am",
+    "attendance_row": 83,
+    "canonical_ids": [
+      "jaime farias informa"
+    ],
+    "transcript_dates": 21,
+    "in_period": 11,
+    "matches": 10,
+    "unmatched": [
+      "2024-11-06"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Jaime Farias Informa",
+      "Es Ahora AM",
+      "Frecuencia CAD"
+    ],
+    "attendance_labels": [
+      "ES AHORA AM NOTICIAS",
+      "JF INFORMA",
+      "JF INFORMA DESDE CANCÚN Y ESAHORAAM DE QUERÉTARO"
+    ],
+    "reporters": [
+      "alberto marroquin espinoza",
+      "maximiliano macotela"
+    ],
+    "canonical_id": "jaime farias informa",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2024-11-06. Do not infer absence.",
+    "recorded_attendance_dates": 50,
+    "all_attendance_dates": 352,
+    "after_coverage": 10,
+    "first_date": "2024-10-23",
+    "last_date": "2026-09-03"
+  },
+  {
+    "outlet": "business energy",
+    "attendance_row": 84,
+    "canonical_ids": [
+      "business energy"
+    ],
+    "transcript_dates": 20,
+    "in_period": 9,
+    "matches": 9,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Gaceta Business Energy"
+    ],
+    "attendance_labels": [
+      "BUSINESS ENERGY GACETA PETROLERA",
+      "GACETA BUSSINESS ENERGY"
+    ],
+    "reporters": [
+      "yesenia peralta"
+    ],
+    "canonical_id": "business energy",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 46,
+    "all_attendance_dates": 228,
+    "after_coverage": 11,
+    "first_date": "2024-11-11",
+    "last_date": "2026-08-25"
+  },
+  {
+    "outlet": "jaime farias informa",
+    "attendance_row": 85,
+    "canonical_ids": [
+      "jaime farias informa"
+    ],
+    "transcript_dates": 21,
+    "in_period": 11,
+    "matches": 10,
+    "unmatched": [
+      "2024-11-06"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Jaime Farias Informa",
+      "Es Ahora AM",
+      "Frecuencia CAD"
+    ],
+    "attendance_labels": [
+      "ES AHORA AM NOTICIAS",
+      "JF INFORMA",
+      "JF INFORMA DESDE CANCÚN Y ESAHORAAM DE QUERÉTARO"
+    ],
+    "reporters": [
+      "alberto marroquin espinoza",
+      "maximiliano macotela"
+    ],
+    "canonical_id": "jaime farias informa",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2024-11-06. Do not infer absence.",
+    "recorded_attendance_dates": 50,
+    "all_attendance_dates": 352,
+    "after_coverage": 10,
+    "first_date": "2024-10-23",
+    "last_date": "2026-09-03"
+  },
+  {
+    "outlet": "oro solido",
+    "attendance_row": 86,
+    "canonical_ids": [
+      "oro solido"
+    ],
+    "transcript_dates": 13,
+    "in_period": 8,
+    "matches": 6,
+    "unmatched": [
+      "2025-05-06"
+    ],
+    "coverage_gaps": [
+      "2025-03-04"
+    ],
+    "metadata_names": [
+      "Oro Solido",
+      "Empuje Migrante"
+    ],
+    "attendance_labels": [
+      "ORO SOLIDO",
+      "ORO SÓLIDO"
+    ],
+    "reporters": [
+      "nancy rodriguez"
+    ],
+    "canonical_id": "oro solido",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "Missing/sparse rosters: 2025-03-04. No verified label on: 2025-05-06. Do not infer absence.",
+    "recorded_attendance_dates": 32,
+    "all_attendance_dates": 606,
+    "after_coverage": 5,
+    "first_date": "2024-11-26",
+    "last_date": "2026-08-18"
+  },
+  {
+    "outlet": "diario imagen",
+    "attendance_row": 87,
+    "canonical_ids": [
+      "diario imagen"
+    ],
+    "transcript_dates": 15,
+    "in_period": 7,
+    "matches": 6,
+    "unmatched": [
+      "2025-03-05"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Diario Imagen"
+    ],
+    "attendance_labels": [
+      "DIARIO IMAGEN"
+    ],
+    "reporters": [
+      "gloria carpio"
+    ],
+    "canonical_id": "diario imagen",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2025-03-05. Do not infer absence.",
+    "recorded_attendance_dates": 79,
+    "all_attendance_dates": 79,
+    "after_coverage": 8,
+    "first_date": "2024-10-14",
+    "last_date": "2026-09-28"
+  },
+  {
+    "outlet": "radio educacion",
+    "attendance_row": 88,
+    "roster_row": 21,
+    "canonical_ids": [
+      "radio educacion"
+    ],
+    "transcript_dates": 11,
+    "in_period": 7,
+    "matches": 6,
+    "unmatched": [],
+    "coverage_gaps": [
+      "2025-04-08"
+    ],
+    "metadata_names": [],
+    "attendance_labels": [
+      "RADIO EDUCACIÓN",
+      "RADIO TEPOZTLÁN"
+    ],
+    "reporters": [
+      "carlos calzada",
+      "raul benet",
+      "victor barcenas"
+    ],
+    "canonical_id": "radio educacion",
+    "dated_matches": [
+      "2025-08-22"
+    ],
+    "status": "Matched except roster gaps",
+    "note": "Dated co-affiliation links used without globally merging the other outlet. Missing/sparse rosters: 2025-04-08.",
+    "recorded_attendance_dates": 62,
+    "all_attendance_dates": 456,
+    "after_coverage": 4,
+    "first_date": "2024-10-04",
+    "last_date": "2026-09-07"
+  },
+  {
+    "outlet": "el soberano",
+    "attendance_row": 89,
+    "canonical_ids": [
+      "el soberano"
+    ],
+    "transcript_dates": 18,
+    "in_period": 6,
+    "matches": 5,
+    "unmatched": [
+      "2025-05-14"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "El Soberano"
+    ],
+    "attendance_labels": [
+      "EL SOBERANO"
+    ],
+    "reporters": [
+      "adriana santos",
+      "maximo allende"
+    ],
+    "canonical_id": "el soberano",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2025-05-14. Do not infer absence.",
+    "recorded_attendance_dates": 28,
+    "all_attendance_dates": 57,
+    "after_coverage": 12,
+    "first_date": "2025-02-13",
+    "last_date": "2026-10-15"
+  },
+  {
+    "outlet": "imer",
+    "attendance_row": 90,
+    "canonical_ids": [
+      "imer"
+    ],
+    "transcript_dates": 9,
+    "in_period": 6,
+    "matches": 6,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "IMER"
+    ],
+    "attendance_labels": [
+      "IMER NOTICIAS",
+      "RADIO TEPOZTLÁN"
+    ],
+    "reporters": [
+      "aabye vargas",
+      "adriana esthela flores",
+      "natalia matamoros",
+      "raul benet"
+    ],
+    "canonical_id": "imer",
+    "dated_matches": [
+      "2025-08-22"
+    ],
+    "status": "Resolved",
+    "note": "Dated co-affiliation links used without globally merging the other outlet.",
+    "recorded_attendance_dates": 48,
+    "all_attendance_dates": 554,
+    "after_coverage": 3,
+    "first_date": "2024-10-11",
+    "last_date": "2026-02-18"
+  },
+  {
+    "outlet": "relax",
+    "attendance_row": 91,
+    "canonical_ids": [
+      "relax"
+    ],
+    "transcript_dates": 8,
+    "in_period": 6,
+    "matches": 5,
+    "unmatched": [
+      "2025-05-06"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Relax 104 5 fm"
+    ],
+    "attendance_labels": [
+      "RELAX 104.5 FM"
+    ],
+    "reporters": [
+      "oscar gonzalez",
+      "ricardo felipe ramirez"
+    ],
+    "canonical_id": "relax",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2025-05-06. Do not infer absence.",
+    "recorded_attendance_dates": 188,
+    "all_attendance_dates": 606,
+    "after_coverage": 2,
+    "first_date": "2024-10-14",
+    "last_date": "2026-06-22"
+  },
+  {
+    "outlet": "grupo intermedia",
+    "attendance_row": 92,
+    "canonical_ids": [
+      "grupo intermedia"
+    ],
+    "transcript_dates": 6,
+    "in_period": 6,
+    "matches": 4,
+    "unmatched": [
+      "2024-10-07"
+    ],
+    "coverage_gaps": [
+      "2024-11-04"
+    ],
+    "metadata_names": [
+      "Grupo Intermedia"
+    ],
+    "attendance_labels": [
+      "INTERMEDIA CANAL 44"
+    ],
+    "reporters": [
+      "tere mora guillen",
+      "tere moya guillen"
+    ],
+    "canonical_id": "grupo intermedia",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "Missing/sparse rosters: 2024-11-04. No verified label on: 2024-10-07. Do not infer absence.",
+    "recorded_attendance_dates": 160,
+    "all_attendance_dates": 161,
+    "after_coverage": 0,
+    "first_date": "2024-10-07",
+    "last_date": "2025-02-27"
+  },
+  {
+    "outlet": "laboratorio de periodismo y opinion publica",
+    "attendance_row": 93,
+    "canonical_ids": [
+      "laboratorio de periodismo y opinion publica"
+    ],
+    "transcript_dates": 15,
+    "in_period": 5,
+    "matches": 4,
+    "unmatched": [
+      "2025-01-13"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Laboratorio de Periodismo y Opinion Publica"
+    ],
+    "attendance_labels": [
+      "LABORATORIO DE PERIODISMO Y OPINIÓN PÚBLICA"
+    ],
+    "reporters": [
+      "arnoldo cuellar",
+      "carmen pizano",
+      "jeanette alcantar",
+      "veronica espinosa"
+    ],
+    "canonical_id": "laboratorio de periodismo y opinion publica",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2025-01-13. Do not infer absence.",
+    "recorded_attendance_dates": 14,
+    "all_attendance_dates": 14,
+    "after_coverage": 10,
+    "first_date": "2025-01-13",
+    "last_date": "2026-10-14"
+  },
+  {
+    "outlet": "universidad de guadalajara",
+    "attendance_row": 94,
+    "canonical_ids": [
+      "universidad de guadalajara"
+    ],
+    "transcript_dates": 10,
+    "in_period": 5,
+    "matches": 4,
+    "unmatched": [],
+    "coverage_gaps": [
+      "2024-11-04"
+    ],
+    "metadata_names": [
+      "Canal Universidad de Guadalajara"
+    ],
+    "attendance_labels": [
+      "RADIO UNIVERSIDAD DE GUADALAJARA EN P",
+      "RADIO UNIVERSIDAD DE GUADALAJARA EN PUERTO VALLARTA"
+    ],
+    "reporters": [
+      "susana carreno"
+    ],
+    "canonical_id": "universidad de guadalajara",
+    "dated_matches": [],
+    "status": "Matched except roster gaps",
+    "note": "User approved 2026-10-26; Susana Carreno joint introductions; use explicit UDG/Puerto Vallarta labels only, not generic CANAL 44. Missing/sparse rosters: 2024-11-04.",
+    "recorded_attendance_dates": 8,
+    "all_attendance_dates": 21,
+    "after_coverage": 5,
+    "first_date": "2024-11-04",
+    "last_date": "2026-08-26"
+  },
+  {
+    "outlet": "amarc",
+    "attendance_row": 95,
+    "canonical_ids": [
+      "amarc"
+    ],
+    "transcript_dates": 15,
+    "in_period": 5,
+    "matches": 5,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "AMARC (Red de radios comunitarias de México)"
+    ],
+    "attendance_labels": [
+      "AMARC MÉXICO V POLÍTICA Y ROCK AND ROLL RADIO",
+      "RADIO TEPOZTLÁN"
+    ],
+    "reporters": [
+      "alejandro cabral",
+      "raul benet"
+    ],
+    "canonical_id": "amarc",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "User approved 2026-10-26; Alejandro Cabral jointly identifies both; 4/4 covered Politica y Rock dates match the combined AMARC attendance label. Retain separate brands.",
+    "recorded_attendance_dates": 28,
+    "all_attendance_dates": 67,
+    "after_coverage": 10,
+    "first_date": "2024-12-13",
+    "last_date": "2026-10-07"
+  },
+  {
+    "outlet": "el economista",
+    "attendance_row": 96,
+    "canonical_ids": [
+      "el economista"
+    ],
+    "transcript_dates": 4,
+    "in_period": 4,
+    "matches": 3,
+    "unmatched": [
+      "2025-04-09"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "El Economista"
+    ],
+    "attendance_labels": [
+      "EL ECONOMISTA"
+    ],
+    "reporters": [
+      "arturo rojas",
+      "karol garcia"
+    ],
+    "canonical_id": "el economista",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2025-04-09. Do not infer absence.",
+    "recorded_attendance_dates": 26,
+    "all_attendance_dates": 47,
+    "after_coverage": 0,
+    "first_date": "2024-11-12",
+    "last_date": "2025-04-15"
+  },
+  {
+    "outlet": "associated press",
+    "attendance_row": 97,
+    "roster_row": 71,
+    "canonical_ids": [
+      "associated press"
+    ],
+    "transcript_dates": 3,
+    "in_period": 3,
+    "matches": 2,
+    "unmatched": [
+      "2024-11-08"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "AP",
+      "THE ASSOCIATED PRESS (AP)"
+    ],
+    "reporters": [
+      "fabiola sanchez",
+      "maria verza"
+    ],
+    "canonical_id": "associated press",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "Separate Alejandro Perez AP Noticias (2026-03-13) from Associated Press. Fabiola Sanchez and Maria Verza retain Associated Press. Do not use bare AP attendance to identify AP Noticias. No verified label on: 2024-11-08. Do not infer absence.",
+    "recorded_attendance_dates": 5,
+    "all_attendance_dates": 22,
+    "after_coverage": 0,
+    "first_date": "2024-10-15",
+    "last_date": "2025-01-21"
+  },
+  {
+    "outlet": "quequi",
+    "attendance_row": 98,
+    "roster_row": 50,
+    "canonical_ids": [
+      "quequi"
+    ],
+    "transcript_dates": 3,
+    "in_period": 3,
+    "matches": 3,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "QUEQUI CDMX",
+      "QUEQUI NOTICIAS"
+    ],
+    "reporters": [
+      "stephanie palacios"
+    ],
+    "canonical_id": "quequi",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 4,
+    "all_attendance_dates": 4,
+    "after_coverage": 0,
+    "first_date": "2024-11-21",
+    "last_date": "2025-01-03"
+  },
+  {
+    "outlet": "diario red latinoamerica",
+    "attendance_row": 99,
+    "canonical_ids": [
+      "diario red latinoamerica"
+    ],
+    "transcript_dates": 16,
+    "in_period": 2,
+    "matches": 2,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Diario Red Latinoamerica"
+    ],
+    "attendance_labels": [
+      "DIARIO.RED, PIEDEPAGINA.MX",
+      "LUCES DEL SIGLO"
+    ],
+    "reporters": [
+      "daniela pastrana",
+      "ricardo perez"
+    ],
+    "canonical_id": "diario red latinoamerica",
+    "dated_matches": [
+      "2024-10-03",
+      "2025-03-17"
+    ],
+    "status": "Resolved",
+    "note": "Dated co-affiliation links used without globally merging the other outlet.",
+    "recorded_attendance_dates": 7,
+    "all_attendance_dates": 7,
+    "after_coverage": 14,
+    "first_date": "2024-10-03",
+    "last_date": "2026-10-08"
+  },
+  {
+    "outlet": "meganoticias",
+    "attendance_row": 100,
+    "canonical_ids": [
+      "meganoticias"
+    ],
+    "transcript_dates": 15,
+    "in_period": 2,
+    "matches": 2,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Meganoticias"
+    ],
+    "attendance_labels": [
+      "MEGANOTICIAS - PCTV",
+      "MEGANOTICIAS QUERÉTARO"
+    ],
+    "reporters": [
+      "jorge chaparro",
+      "thelma herrera"
+    ],
+    "canonical_id": "meganoticias",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 43,
+    "all_attendance_dates": 137,
+    "after_coverage": 13,
+    "first_date": "2025-02-05",
+    "last_date": "2026-09-22"
+  },
+  {
+    "outlet": "rompeviento tv",
+    "attendance_row": 101,
+    "canonical_ids": [
+      "rompeviento tv"
+    ],
+    "transcript_dates": 10,
+    "in_period": 2,
+    "matches": 1,
+    "unmatched": [
+      "2025-06-23"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Rompeviento TV"
+    ],
+    "attendance_labels": [
+      "RADIO TEPOZTLÁN"
+    ],
+    "reporters": [
+      "ernesto ledesma",
+      "raul benet"
+    ],
+    "canonical_id": "rompeviento tv",
+    "dated_matches": [
+      "2025-08-22"
+    ],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "Dated co-affiliation links used without globally merging the other outlet. No verified label on: 2025-06-23. Do not infer absence.",
+    "recorded_attendance_dates": 1,
+    "all_attendance_dates": 1,
+    "after_coverage": 8,
+    "first_date": "2025-06-23",
+    "last_date": "2026-10-07"
+  },
+  {
+    "outlet": "alianza de medios independientes",
+    "attendance_row": 102,
+    "canonical_ids": [
+      "alianza de medios independientes"
+    ],
+    "transcript_dates": 3,
+    "in_period": 2,
+    "matches": 2,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "Alianza de Medios (Pie de Pagina, Altavoz,…)"
+    ],
+    "attendance_labels": [
+      "DIARIO.RED, PIEDEPAGINA.MX",
+      "PIE DE PÁGINA"
+    ],
+    "reporters": [
+      "daniela pastrana",
+      "isabel briseno"
+    ],
+    "canonical_id": "alianza de medios independientes",
+    "dated_matches": [
+      "2024-10-03",
+      "2024-10-31"
+    ],
+    "status": "Resolved",
+    "note": "Dated co-affiliation links used without globally merging the other outlet.",
+    "recorded_attendance_dates": 2,
+    "all_attendance_dates": 2,
+    "after_coverage": 1,
+    "first_date": "2024-10-03",
+    "last_date": "2025-11-14"
+  },
+  {
+    "outlet": "cnr canal 73",
+    "attendance_row": 103,
+    "roster_row": 56,
+    "canonical_ids": [
+      "cnr canal 73"
+    ],
+    "transcript_dates": 2,
+    "in_period": 2,
+    "matches": 1,
+    "unmatched": [
+      "2025-02-21"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "LÁNZATE CNR C. 73 CABLE BAJA CALIF. MÉXICO"
+    ],
+    "reporters": [
+      "jorge diaz"
+    ],
+    "canonical_id": "cnr canal 73",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2025-02-21. Do not infer absence.",
+    "recorded_attendance_dates": 5,
+    "all_attendance_dates": 73,
+    "after_coverage": 0,
+    "first_date": "2024-11-14",
+    "last_date": "2025-02-21"
+  },
+  {
+    "outlet": "sem mexico",
+    "attendance_row": 104,
+    "canonical_ids": [
+      "sem mexico"
+    ],
+    "transcript_dates": 2,
+    "in_period": 2,
+    "matches": 1,
+    "unmatched": [
+      "2024-11-08"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [
+      "SemMexico"
+    ],
+    "attendance_labels": [
+      "SEM MÉXICO"
+    ],
+    "reporters": [
+      "lizbeth alvarez",
+      "lizbeth alvarez martinez"
+    ],
+    "canonical_id": "sem mexico",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2024-11-08. Do not infer absence.",
+    "recorded_attendance_dates": 4,
+    "all_attendance_dates": 7,
+    "after_coverage": 0,
+    "first_date": "2024-11-08",
+    "last_date": "2025-08-01"
+  },
+  {
+    "outlet": "el heraldo",
+    "roster_row": 9,
+    "canonical_ids": [
+      "el heraldo"
+    ],
+    "transcript_dates": 82,
+    "in_period": 29,
+    "matches": 29,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "EL HERALDO DE MÉXICO"
+    ],
+    "reporters": [
+      "carlos navarro",
+      "cesar martinez",
+      "fernanda garcia",
+      "mayeli mariscal",
+      "noemi gutierrez"
+    ],
+    "canonical_id": "el heraldo",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 235,
+    "all_attendance_dates": 1398,
+    "after_coverage": 53,
+    "first_date": "2024-10-11",
+    "last_date": "2026-10-08"
+  },
+  {
+    "outlet": "noticieros hctv",
+    "roster_row": 12,
+    "canonical_ids": [
+      "noticieros hctv"
+    ],
+    "transcript_dates": 35,
+    "in_period": 20,
+    "matches": 20,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "HCTV"
+    ],
+    "reporters": [
+      "javier",
+      "javier perez"
+    ],
+    "canonical_id": "noticieros hctv",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 191,
+    "all_attendance_dates": 198,
+    "after_coverage": 15,
+    "first_date": "2024-10-10",
+    "last_date": "2026-10-08"
+  },
+  {
+    "outlet": "telesur",
+    "roster_row": 13,
+    "canonical_ids": [
+      "telesur"
+    ],
+    "transcript_dates": 33,
+    "in_period": 18,
+    "matches": 18,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "TELESUR"
+    ],
+    "reporters": [
+      "aissa garcia",
+      "issa garcia",
+      "patricia villegas"
+    ],
+    "canonical_id": "telesur",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 21,
+    "all_attendance_dates": 43,
+    "after_coverage": 15,
+    "first_date": "2024-10-23",
+    "last_date": "2026-09-23"
+  },
+  {
+    "outlet": "alcanzando el conocimiento",
+    "roster_row": 14,
+    "canonical_ids": [
+      "alcanzando el conocimiento"
+    ],
+    "transcript_dates": 28,
+    "in_period": 6,
+    "matches": 6,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "ALCANZANDO EL CONOCIMIENTO"
+    ],
+    "reporters": [
+      "bertha alicia",
+      "bertha alicia galindo"
+    ],
+    "canonical_id": "alcanzando el conocimiento",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "User approved 2026-10-26; Bertha Alicia Galindo joint introductions; 2/2 covered program dates match Alcanzando el Conocimiento. Retain separate brands.",
+    "recorded_attendance_dates": 112,
+    "all_attendance_dates": 138,
+    "after_coverage": 22,
+    "first_date": "2025-03-10",
+    "last_date": "2026-10-05"
+  },
+  {
+    "outlet": "canal del congreso",
+    "roster_row": 15,
+    "canonical_ids": [
+      "canal del congreso"
+    ],
+    "transcript_dates": 24,
+    "in_period": 14,
+    "matches": 14,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "CANAL DEL CONGRESO"
+    ],
+    "reporters": [
+      "eli robles",
+      "elizabeth robles",
+      "juan pablo guerrero"
+    ],
+    "canonical_id": "canal del congreso",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 135,
+    "all_attendance_dates": 136,
+    "after_coverage": 10,
+    "first_date": "2025-02-21",
+    "last_date": "2026-10-06"
+  },
+  {
+    "outlet": "zagazine",
+    "roster_row": 16,
+    "canonical_ids": [
+      "zagazine"
+    ],
+    "transcript_dates": 21,
+    "in_period": 10,
+    "matches": 10,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "ZAGAZINE"
+    ],
+    "reporters": [
+      "oscar zamudio"
+    ],
+    "canonical_id": "zagazine",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 26,
+    "all_attendance_dates": 26,
+    "after_coverage": 11,
+    "first_date": "2024-12-09",
+    "last_date": "2026-08-19"
+  },
+  {
+    "outlet": "subjetivo mx",
+    "roster_row": 18,
+    "canonical_ids": [
+      "subjetivo mx"
+    ],
+    "transcript_dates": 17,
+    "in_period": 1,
+    "matches": 1,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "SUBJETIVO"
+    ],
+    "reporters": [
+      "maximo allende"
+    ],
+    "canonical_id": "subjetivo mx",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 4,
+    "all_attendance_dates": 5,
+    "after_coverage": 16,
+    "first_date": "2025-09-26",
+    "last_date": "2026-10-01"
+  },
+  {
+    "outlet": "revista zocalo",
+    "roster_row": 22,
+    "canonical_ids": [
+      "revista zocalo"
+    ],
+    "transcript_dates": 11,
+    "in_period": 1,
+    "matches": 1,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "REVISTA ZÓCALO"
+    ],
+    "reporters": [
+      "carlos padilla"
+    ],
+    "canonical_id": "revista zocalo",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 7,
+    "all_attendance_dates": 14,
+    "after_coverage": 10,
+    "first_date": "2025-06-25",
+    "last_date": "2026-10-09"
+  },
+  {
+    "outlet": "canal 22",
+    "roster_row": 23,
+    "canonical_ids": [
+      "canal 22"
+    ],
+    "transcript_dates": 10,
+    "in_period": 2,
+    "matches": 2,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "CANAL 22"
+    ],
+    "reporters": [
+      "cemeli hernandez",
+      "maria jose alonso",
+      "perla velazquez"
+    ],
+    "canonical_id": "canal 22",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 7,
+    "all_attendance_dates": 8,
+    "after_coverage": 8,
+    "first_date": "2025-02-18",
+    "last_date": "2026-10-09"
+  },
+  {
+    "outlet": "enlace 13 television",
+    "roster_row": 24,
+    "canonical_ids": [
+      "enlace 13 television"
+    ],
+    "transcript_dates": 9,
+    "in_period": 5,
+    "matches": 5,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "ENLACE 13"
+    ],
+    "reporters": [
+      "adrian esquivel",
+      "arian esquivel",
+      "tatiana dimas"
+    ],
+    "canonical_id": "enlace 13 television",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 32,
+    "all_attendance_dates": 32,
+    "after_coverage": 4,
+    "first_date": "2025-01-13",
+    "last_date": "2026-06-24"
+  },
+  {
+    "outlet": "dime noticias",
+    "roster_row": 26,
+    "canonical_ids": [
+      "dime noticias"
+    ],
+    "transcript_dates": 8,
+    "in_period": 0,
+    "matches": 0,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [],
+    "reporters": [
+      "gerardo segoviano"
+    ],
+    "canonical_id": "dime noticias",
+    "dated_matches": [],
+    "status": "Outside attendance coverage",
+    "note": "",
+    "recorded_attendance_dates": 0,
+    "all_attendance_dates": 0,
+    "after_coverage": 8,
+    "first_date": "2026-03-20",
+    "last_date": "2026-07-30"
+  },
+  {
+    "outlet": "global energy",
+    "roster_row": 28,
+    "canonical_ids": [
+      "global energy"
+    ],
+    "transcript_dates": 9,
+    "in_period": 6,
+    "matches": 6,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "GLOBAL ENERGY"
+    ],
+    "reporters": [
+      "daniela caballero",
+      "wendy fernandez"
+    ],
+    "canonical_id": "global energy",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "User approved 2026-10-26; Daniela Caballero/Wendy Fernandez joint introductions; 6/6 covered Poder dates match Global Energy.",
+    "recorded_attendance_dates": 55,
+    "all_attendance_dates": 59,
+    "after_coverage": 3,
+    "first_date": "2025-03-03",
+    "last_date": "2026-08-27"
+  },
+  {
+    "outlet": "comunicante mx",
+    "roster_row": 29,
+    "canonical_ids": [
+      "comunicante mx"
+    ],
+    "transcript_dates": 6,
+    "in_period": 6,
+    "matches": 6,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "COMUNICANTE MX"
+    ],
+    "reporters": [
+      "gus garcia",
+      "gustavo garcia"
+    ],
+    "canonical_id": "comunicante mx",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "User approved 2026-10-26; Gustavo/Gus Garcia joint introductions; 5/5 Alerta dates match.",
+    "recorded_attendance_dates": 20,
+    "all_attendance_dates": 74,
+    "after_coverage": 0,
+    "first_date": "2024-10-31",
+    "last_date": "2025-04-16"
+  },
+  {
+    "outlet": "afp",
+    "roster_row": 30,
+    "canonical_ids": [
+      "afp"
+    ],
+    "transcript_dates": 5,
+    "in_period": 0,
+    "matches": 0,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [],
+    "reporters": [
+      "javier tovar"
+    ],
+    "canonical_id": "afp",
+    "dated_matches": [],
+    "status": "Outside attendance coverage",
+    "note": "",
+    "recorded_attendance_dates": 0,
+    "all_attendance_dates": 0,
+    "after_coverage": 5,
+    "first_date": "2026-06-10",
+    "last_date": "2026-08-24"
+  },
+  {
+    "outlet": "infopolitano",
+    "roster_row": 32,
+    "canonical_ids": [
+      "infopolitano"
+    ],
+    "transcript_dates": 5,
+    "in_period": 3,
+    "matches": 3,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "INFOPOLITANO"
+    ],
+    "reporters": [
+      "emmanuel lopez",
+      "juan manuel",
+      "manuel lopez"
+    ],
+    "canonical_id": "infopolitano",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 9,
+    "all_attendance_dates": 9,
+    "after_coverage": 2,
+    "first_date": "2025-02-06",
+    "last_date": "2026-06-15"
+  },
+  {
+    "outlet": "le monde",
+    "roster_row": 33,
+    "canonical_ids": [
+      "le monde"
+    ],
+    "transcript_dates": 5,
+    "in_period": 1,
+    "matches": 0,
+    "unmatched": [
+      "2025-05-20"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [],
+    "reporters": [
+      "anne vigna"
+    ],
+    "canonical_id": "le monde",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2025-05-20. Do not infer absence.",
+    "recorded_attendance_dates": 0,
+    "all_attendance_dates": 1,
+    "after_coverage": 4,
+    "first_date": "2025-05-20",
+    "last_date": "2026-06-09"
+  },
+  {
+    "outlet": "pulso sur",
+    "roster_row": 35,
+    "canonical_ids": [
+      "pulso sur"
+    ],
+    "transcript_dates": 5,
+    "in_period": 0,
+    "matches": 0,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [],
+    "reporters": [
+      "ines arroyo"
+    ],
+    "canonical_id": "pulso sur",
+    "dated_matches": [],
+    "status": "Outside attendance coverage",
+    "note": "",
+    "recorded_attendance_dates": 1,
+    "all_attendance_dates": 1,
+    "after_coverage": 5,
+    "first_date": "2026-07-16",
+    "last_date": "2026-09-17"
+  },
+  {
+    "outlet": "revolucion 30",
+    "roster_row": 36,
+    "canonical_ids": [
+      "revolucion 30"
+    ],
+    "transcript_dates": 5,
+    "in_period": 5,
+    "matches": 5,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "REVOLUCIÓN 3.0"
+    ],
+    "reporters": [
+      "jesus perez",
+      "jesus perez gaona"
+    ],
+    "canonical_id": "revolucion 30",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 25,
+    "all_attendance_dates": 45,
+    "after_coverage": 0,
+    "first_date": "2024-10-10",
+    "last_date": "2025-02-26"
+  },
+  {
+    "outlet": "ruido en la red",
+    "roster_row": 37,
+    "canonical_ids": [
+      "ruido en la red"
+    ],
+    "transcript_dates": 5,
+    "in_period": 5,
+    "matches": 5,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "RUIDO EN LA RED"
+    ],
+    "reporters": [
+      "jordana gonzalez"
+    ],
+    "canonical_id": "ruido en la red",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 42,
+    "all_attendance_dates": 46,
+    "after_coverage": 0,
+    "first_date": "2024-10-10",
+    "last_date": "2025-02-19"
+  },
+  {
+    "outlet": "siker",
+    "roster_row": 38,
+    "canonical_ids": [
+      "siker"
+    ],
+    "transcript_dates": 5,
+    "in_period": 3,
+    "matches": 3,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "SIKER"
+    ],
+    "reporters": [
+      "juan carlos sagredo"
+    ],
+    "canonical_id": "siker",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 6,
+    "all_attendance_dates": 6,
+    "after_coverage": 2,
+    "first_date": "2024-11-14",
+    "last_date": "2026-03-06"
+  },
+  {
+    "outlet": "telemundo",
+    "roster_row": 39,
+    "canonical_ids": [
+      "telemundo"
+    ],
+    "transcript_dates": 5,
+    "in_period": 4,
+    "matches": 4,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "TELEMUNDO"
+    ],
+    "reporters": [
+      "alejandra arteaga",
+      "issa osorio",
+      "marinee zavala"
+    ],
+    "canonical_id": "telemundo",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 13,
+    "all_attendance_dates": 45,
+    "after_coverage": 1,
+    "first_date": "2024-11-06",
+    "last_date": "2026-01-30"
+  },
+  {
+    "outlet": "chilango",
+    "roster_row": 40,
+    "canonical_ids": [
+      "chilango"
+    ],
+    "transcript_dates": 4,
+    "in_period": 0,
+    "matches": 0,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [],
+    "reporters": [
+      "alberto rivera"
+    ],
+    "canonical_id": "chilango",
+    "dated_matches": [],
+    "status": "Outside attendance coverage",
+    "note": "",
+    "recorded_attendance_dates": 0,
+    "all_attendance_dates": 0,
+    "after_coverage": 4,
+    "first_date": "2026-06-23",
+    "last_date": "2026-09-14"
+  },
+  {
+    "outlet": "noti 13",
+    "roster_row": 41,
+    "canonical_ids": [
+      "noti 13"
+    ],
+    "transcript_dates": 4,
+    "in_period": 0,
+    "matches": 0,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [],
+    "reporters": [
+      "bertha alicia galindo"
+    ],
+    "canonical_id": "noti 13",
+    "dated_matches": [],
+    "status": "Outside attendance coverage",
+    "note": "",
+    "recorded_attendance_dates": 0,
+    "all_attendance_dates": 1,
+    "after_coverage": 4,
+    "first_date": "2026-06-17",
+    "last_date": "2026-07-10"
+  },
+  {
+    "outlet": "te lo cuento",
+    "roster_row": 42,
+    "canonical_ids": [
+      "te lo cuento"
+    ],
+    "transcript_dates": 4,
+    "in_period": 0,
+    "matches": 0,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [],
+    "reporters": [
+      "eder suarez"
+    ],
+    "canonical_id": "te lo cuento",
+    "dated_matches": [],
+    "status": "Outside attendance coverage",
+    "note": "",
+    "recorded_attendance_dates": 0,
+    "all_attendance_dates": 0,
+    "after_coverage": 4,
+    "first_date": "2026-09-07",
+    "last_date": "2026-10-12"
+  },
+  {
+    "outlet": "al tanto guerrero",
+    "roster_row": 43,
+    "canonical_ids": [
+      "al tanto guerrero"
+    ],
+    "transcript_dates": 3,
+    "in_period": 3,
+    "matches": 3,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "AL TANTO GUERRERO"
+    ],
+    "reporters": [
+      "misael habana de los santos"
+    ],
+    "canonical_id": "al tanto guerrero",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 8,
+    "all_attendance_dates": 31,
+    "after_coverage": 0,
+    "first_date": "2025-02-12",
+    "last_date": "2025-05-12"
+  },
+  {
+    "outlet": "el ceo",
+    "roster_row": 44,
+    "canonical_ids": [
+      "el ceo"
+    ],
+    "transcript_dates": 3,
+    "in_period": 3,
+    "matches": 3,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "EL CEO"
+    ],
+    "reporters": [
+      "camila ayala"
+    ],
+    "canonical_id": "el ceo",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 8,
+    "all_attendance_dates": 66,
+    "after_coverage": 0,
+    "first_date": "2024-11-06",
+    "last_date": "2025-01-03"
+  },
+  {
+    "outlet": "la izquierda noticias",
+    "roster_row": 45,
+    "canonical_ids": [
+      "la izquierda noticias"
+    ],
+    "transcript_dates": 3,
+    "in_period": 0,
+    "matches": 0,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [],
+    "reporters": [
+      "nacho rodriguez"
+    ],
+    "canonical_id": "la izquierda noticias",
+    "dated_matches": [],
+    "status": "Outside attendance coverage",
+    "note": "",
+    "recorded_attendance_dates": 0,
+    "all_attendance_dates": 0,
+    "after_coverage": 3,
+    "first_date": "2026-05-25",
+    "last_date": "2026-09-21"
+  },
+  {
+    "outlet": "la orquesta mx",
+    "roster_row": 46,
+    "canonical_ids": [
+      "la orquesta mx"
+    ],
+    "transcript_dates": 3,
+    "in_period": 3,
+    "matches": 3,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "LA ORQUESTA"
+    ],
+    "reporters": [
+      "ana silva",
+      "jorge saldana"
+    ],
+    "canonical_id": "la orquesta mx",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 4,
+    "all_attendance_dates": 5,
+    "after_coverage": 0,
+    "first_date": "2025-01-29",
+    "last_date": "2025-07-08"
+  },
+  {
+    "outlet": "la silla rota",
+    "roster_row": 47,
+    "canonical_ids": [
+      "la silla rota"
+    ],
+    "transcript_dates": 3,
+    "in_period": 3,
+    "matches": 3,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "LA SILLA ROTA"
+    ],
+    "reporters": [
+      "fabian evaristo",
+      "jose manuel arteaga"
+    ],
+    "canonical_id": "la silla rota",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 37,
+    "all_attendance_dates": 50,
+    "after_coverage": 0,
+    "first_date": "2024-12-09",
+    "last_date": "2025-08-05"
+  },
+  {
+    "outlet": "neurona digital noticias",
+    "roster_row": 48,
+    "canonical_ids": [
+      "neurona digital noticias"
+    ],
+    "transcript_dates": 3,
+    "in_period": 0,
+    "matches": 0,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [],
+    "reporters": [
+      "javier perez"
+    ],
+    "canonical_id": "neurona digital noticias",
+    "dated_matches": [],
+    "status": "Outside attendance coverage",
+    "note": "",
+    "recorded_attendance_dates": 0,
+    "all_attendance_dates": 0,
+    "after_coverage": 3,
+    "first_date": "2025-10-17",
+    "last_date": "2026-01-02"
+  },
+  {
+    "outlet": "nopal times",
+    "roster_row": 49,
+    "canonical_ids": [
+      "nopal times"
+    ],
+    "transcript_dates": 3,
+    "in_period": 3,
+    "matches": 3,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "EL NOPAL TIMES",
+      "NOPAL TIMES"
+    ],
+    "reporters": [
+      "saul armando soltero",
+      "saul soltero"
+    ],
+    "canonical_id": "nopal times",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "User approved 2026-10-26; Saul Soltero jointly identifies both; 3/3 covered Charro dates match Nopal Times. Retain separate brands.",
+    "recorded_attendance_dates": 6,
+    "all_attendance_dates": 30,
+    "after_coverage": 0,
+    "first_date": "2024-10-30",
+    "last_date": "2025-07-09"
+  },
+  {
+    "outlet": "tv baja",
+    "roster_row": 52,
+    "canonical_ids": [
+      "tv baja"
+    ],
+    "transcript_dates": 3,
+    "in_period": 3,
+    "matches": 3,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "TV BAJA"
+    ],
+    "reporters": [
+      "lucio espinosa chavira",
+      "lucio espinoza chavira"
+    ],
+    "canonical_id": "tv baja",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 18,
+    "all_attendance_dates": 21,
+    "after_coverage": 0,
+    "first_date": "2025-01-13",
+    "last_date": "2025-04-01"
+  },
+  {
+    "outlet": "yo tambien",
+    "roster_row": 53,
+    "canonical_ids": [
+      "yo tambien"
+    ],
+    "transcript_dates": 3,
+    "in_period": 2,
+    "matches": 2,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "YO TAMBIEN"
+    ],
+    "reporters": [
+      "daniel robles haro",
+      "katia dartigues"
+    ],
+    "canonical_id": "yo tambien",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 4,
+    "all_attendance_dates": 7,
+    "after_coverage": 1,
+    "first_date": "2024-11-25",
+    "last_date": "2025-10-06"
+  },
+  {
+    "outlet": "bctneus",
+    "roster_row": 54,
+    "canonical_ids": [
+      "bctneus"
+    ],
+    "transcript_dates": 2,
+    "in_period": 1,
+    "matches": 1,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "BCT NEWS"
+    ],
+    "reporters": [
+      "gustavo morales"
+    ],
+    "canonical_id": "bctneus",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 4,
+    "all_attendance_dates": 4,
+    "after_coverage": 1,
+    "first_date": "2024-12-04",
+    "last_date": "2026-01-30"
+  },
+  {
+    "outlet": "el momento",
+    "roster_row": 57,
+    "canonical_ids": [
+      "el momento"
+    ],
+    "transcript_dates": 2,
+    "in_period": 0,
+    "matches": 0,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [],
+    "reporters": [
+      "erika gonzalez",
+      "nayeli mijangos"
+    ],
+    "canonical_id": "el momento",
+    "dated_matches": [],
+    "status": "Outside attendance coverage",
+    "note": "",
+    "recorded_attendance_dates": 0,
+    "all_attendance_dates": 1,
+    "after_coverage": 2,
+    "first_date": "2026-07-17",
+    "last_date": "2026-09-11"
+  },
+  {
+    "outlet": "enprivadoveracruzcommx",
+    "roster_row": 59,
+    "canonical_ids": [
+      "enprivadoveracruzcommx"
+    ],
+    "transcript_dates": 2,
+    "in_period": 2,
+    "matches": 2,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "EN PRIVADO VERACRUZ"
+    ],
+    "reporters": [
+      "ricardo ramirez juarez"
+    ],
+    "canonical_id": "enprivadoveracruzcommx",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "",
+    "recorded_attendance_dates": 7,
+    "all_attendance_dates": 8,
+    "after_coverage": 0,
+    "first_date": "2025-01-31",
+    "last_date": "2025-07-18"
+  },
+  {
+    "outlet": "fusion latina chicago",
+    "roster_row": 60,
+    "canonical_ids": [
+      "fusion latina chicago"
+    ],
+    "transcript_dates": 2,
+    "in_period": 1,
+    "matches": 1,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "FUSIÓN LATINA"
+    ],
+    "reporters": [
+      "patricia hernandez"
+    ],
+    "canonical_id": "fusion latina chicago",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "Reporter and platform verified by official bio https://www.fusionlatinachicago.org/about-8 and 2025-02-14 introduction. FUSION LATINA is the shortened same-day roster label.",
+    "recorded_attendance_dates": 1,
+    "all_attendance_dates": 1,
+    "after_coverage": 1,
+    "first_date": "2025-02-14",
+    "last_date": "2026-08-27"
+  },
+  {
+    "outlet": "nbc news",
+    "roster_row": 61,
+    "canonical_ids": [
+      "nbc news"
+    ],
+    "transcript_dates": 2,
+    "in_period": 1,
+    "matches": 0,
+    "unmatched": [
+      "2025-09-02"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [],
+    "reporters": [
+      "marinee zavala",
+      "ricardo medina"
+    ],
+    "canonical_id": "nbc news",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2025-09-02. Do not infer absence.",
+    "recorded_attendance_dates": 0,
+    "all_attendance_dates": 0,
+    "after_coverage": 1,
+    "first_date": "2025-09-02",
+    "last_date": "2026-01-30"
+  },
+  {
+    "outlet": "news san miguel",
+    "roster_row": 62,
+    "canonical_ids": [
+      "news san miguel"
+    ],
+    "transcript_dates": 2,
+    "in_period": 0,
+    "matches": 0,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [],
+    "reporters": [
+      "ana luz solis"
+    ],
+    "canonical_id": "news san miguel",
+    "dated_matches": [],
+    "status": "Outside attendance coverage",
+    "note": "",
+    "recorded_attendance_dates": 0,
+    "all_attendance_dates": 0,
+    "after_coverage": 2,
+    "first_date": "2026-02-20",
+    "last_date": "2026-09-18"
+  },
+  {
+    "outlet": "noticias el agro",
+    "roster_row": 63,
+    "canonical_ids": [
+      "noticias el agro"
+    ],
+    "transcript_dates": 2,
+    "in_period": 1,
+    "matches": 1,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "EL AGRO"
+    ],
+    "reporters": [
+      "luis flores"
+    ],
+    "canonical_id": "noticias el agro",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "Publisher author page confirms Luis Flores: https://elagro.com.mx/author/lonazkuo/. EL AGRO and NOTICIAS EL AGRO are full/short labels.",
+    "recorded_attendance_dates": 5,
+    "all_attendance_dates": 15,
+    "after_coverage": 1,
+    "first_date": "2025-02-28",
+    "last_date": "2026-01-09"
+  },
+  {
+    "outlet": "pridemx",
+    "roster_row": 65,
+    "canonical_ids": [
+      "pridemx"
+    ],
+    "transcript_dates": 2,
+    "in_period": 1,
+    "matches": 0,
+    "unmatched": [
+      "2025-07-25"
+    ],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [],
+    "reporters": [
+      "amanda"
+    ],
+    "canonical_id": "pridemx",
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2025-07-25. Do not infer absence. PRIDE is a possible shortened attendance label; identity not independently verified.",
+    "recorded_attendance_dates": 0,
+    "all_attendance_dates": 0,
+    "after_coverage": 1,
+    "first_date": "2025-07-25",
+    "last_date": "2026-06-26"
+  },
+  {
+    "outlet": "radio hit la xplosiva",
+    "roster_row": 66,
+    "canonical_ids": [
+      "radio hit la xplosiva"
+    ],
+    "transcript_dates": 2,
+    "in_period": 0,
+    "matches": 0,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [],
+    "reporters": [
+      "cristel nerina"
+    ],
+    "canonical_id": "radio hit la xplosiva",
+    "dated_matches": [],
+    "status": "Outside attendance coverage",
+    "note": "",
+    "recorded_attendance_dates": 0,
+    "all_attendance_dates": 0,
+    "after_coverage": 2,
+    "first_date": "2026-01-23",
+    "last_date": "2026-06-05"
+  },
+  {
+    "outlet": "radio tosepan limakxtum",
+    "roster_row": 67,
+    "canonical_ids": [
+      "radio tosepan limakxtum"
+    ],
+    "transcript_dates": 2,
+    "in_period": 2,
+    "matches": 2,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "RADIO TOSEPAN"
+    ],
+    "reporters": [
+      "nicasia lino"
+    ],
+    "canonical_id": "radio tosepan limakxtum",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "Official station website confirms full/short name and Cuetzalan location: https://radio.tosepan.coop/escucha/.",
+    "recorded_attendance_dates": 4,
+    "all_attendance_dates": 5,
+    "after_coverage": 0,
+    "first_date": "2025-06-19",
+    "last_date": "2025-08-26"
+  },
+  {
+    "outlet": "cultura colectiva",
+    "roster_row": 69,
+    "canonical_ids": [
+      "cultura colectiva"
+    ],
+    "transcript_dates": 7,
+    "in_period": 4,
+    "matches": 3,
+    "unmatched": [],
+    "coverage_gaps": [
+      "2025-03-31"
+    ],
+    "metadata_names": [],
+    "attendance_labels": [
+      "CULTURA COLECTIVA"
+    ],
+    "reporters": [
+      "cristian galarza"
+    ],
+    "canonical_id": "grupo tribu",
+    "dated_matches": [],
+    "status": "Matched except roster gaps",
+    "note": "User approved 2026-10-26; Cristian Galarza joint introductions; 3/4 covered dates match CULTURA COLECTIVA; 2025-03-31 has no attendance roster. Missing/sparse rosters: 2025-03-31.",
+    "recorded_attendance_dates": 118,
+    "all_attendance_dates": 118,
+    "after_coverage": 3,
+    "first_date": "2025-02-21",
+    "last_date": "2026-08-31"
+  },
+  {
+    "outlet": "reyna haydee (independiente)",
+    "roster_row": 70,
+    "canonical_ids": [
+      "reyna haydee (independiente)"
+    ],
+    "transcript_dates": 5,
+    "in_period": 4,
+    "matches": 4,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "REYNA HAYDEE RAMÍREZ HERNÁNDEZ"
+    ],
+    "reporters": [
+      "haydee ramirez",
+      "reyna haydee ramirez",
+      "reyna haydee ramirez hernandez"
+    ],
+    "canonical_id": "reyna haydee (independiente)",
+    "dated_matches": [],
+    "status": "Resolved",
+    "note": "Keep independent journalist category. Only exact reporter-name attendance can match; never assign generic INDEPENDIENTE.",
+    "recorded_attendance_dates": 84,
+    "all_attendance_dates": 173,
+    "after_coverage": 1,
+    "first_date": "2024-10-08",
+    "last_date": "2026-10-01"
+  },
+  {
+    "outlet": "agora digital",
+    "roster_row": 73,
+    "canonical_ids": [
+      "agora digital"
+    ],
+    "transcript_dates": 1,
+    "in_period": 0,
+    "matches": 0,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [],
+    "reporters": [
+      "gerardo romo"
+    ],
+    "canonical_id": "agora digital",
+    "dated_matches": [],
+    "status": "Outside attendance coverage",
+    "note": "Separate Gabriela Montejano Agora in Celaya (2026-02-20) from Gerardo Romo Agora Digital (2026-09-04). Preserve raw names. Both are outside attendance coverage.",
+    "recorded_attendance_dates": 0,
+    "all_attendance_dates": 1,
+    "after_coverage": 1,
+    "first_date": "2026-09-04",
+    "last_date": "2026-09-04"
+  },
+  {
+    "outlet": "lja",
+    "roster_row": 75,
+    "canonical_ids": [
+      "lja"
+    ],
+    "transcript_dates": 2,
+    "in_period": 1,
+    "matches": 1,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "metadata_names": [],
+    "attendance_labels": [
+      "SONORA POWER"
+    ],
+    "reporters": [
+      "demian duarte"
+    ],
+    "canonical_id": "lja",
+    "dated_matches": [
+      "2025-09-12"
+    ],
+    "status": "Resolved",
+    "note": "Retain separately. Historical La Jornada Aguascalientes name does not establish current group membership. Dated co-affiliation links used without globally merging the other outlet.",
+    "recorded_attendance_dates": 1,
+    "all_attendance_dates": 1,
+    "after_coverage": 1,
+    "first_date": "2025-09-12",
+    "last_date": "2025-11-06"
+  },
+  {
+    "outlet": "ap noticias",
+    "roster_row": 201,
+    "metadata_names": [],
+    "review_origin": "restored identity",
+    "canonical_id": "ap noticias",
+    "transcript_dates": 1,
+    "in_period": 0,
+    "matches": 0,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "dated_matches": [],
+    "status": "Outside attendance coverage",
+    "note": "",
+    "reporters": [
+      "alejandro perez"
+    ],
+    "attendance_labels": [],
+    "recorded_attendance_dates": 0,
+    "all_attendance_dates": 0,
+    "after_coverage": 1,
+    "first_date": "2026-03-13",
+    "last_date": "2026-03-13"
+  },
+  {
+    "outlet": "agora celaya",
+    "roster_row": 202,
+    "metadata_names": [],
+    "review_origin": "restored identity",
+    "canonical_id": "agora celaya",
+    "transcript_dates": 1,
+    "in_period": 0,
+    "matches": 0,
+    "unmatched": [],
+    "coverage_gaps": [],
+    "dated_matches": [],
+    "status": "Outside attendance coverage",
+    "note": "",
+    "reporters": [
+      "gabriela montejano"
+    ],
+    "attendance_labels": [],
+    "recorded_attendance_dates": 0,
+    "all_attendance_dates": 0,
+    "after_coverage": 1,
+    "first_date": "2026-02-20",
+    "last_date": "2026-02-20"
+  },
+  {
+    "outlet": "bloomberg linea",
+    "roster_row": 203,
+    "metadata_names": [],
+    "review_origin": "restored identity",
+    "canonical_id": "el financiero",
+    "transcript_dates": 42,
+    "in_period": 24,
+    "matches": 22,
+    "unmatched": [
+      "2025-06-03"
+    ],
+    "coverage_gaps": [
+      "2025-04-14"
+    ],
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "User approved 2026-10-26: combine El Financiero, Bloomberg News and Bloomberg Linea conference records while retaining all three brands. User approved 2026-10-26: combine El Financiero, Bloomberg News and Bloomberg Linea conference records while retaining all three brands. Missing/sparse rosters: 2025-04-14. No verified label on: 2025-06-03. Do not infer absence.",
+    "reporters": [
+      "angelica guerrero",
+      "arturo solis",
+      "diana benitez",
+      "eduardo ortega",
+      "fernando merino",
+      "maya averbuch",
+      "zenyazen flores"
+    ],
+    "attendance_labels": [
+      "BLOOMBERG LÍNEA",
+      "BLOOMBERG NEWS",
+      "EL FINANCIERO",
+      "EL FINANCIERO TV"
+    ],
+    "recorded_attendance_dates": 139,
+    "all_attendance_dates": 788,
+    "after_coverage": 18,
+    "first_date": "2024-10-10",
+    "last_date": "2026-10-05"
+  },
+  {
+    "outlet": "bloomberg",
+    "roster_row": 204,
+    "metadata_names": [],
+    "review_origin": "restored identity",
+    "canonical_id": "bloomberg",
+    "transcript_dates": 2,
+    "in_period": 2,
+    "matches": 1,
+    "unmatched": [
+      "2024-11-13"
+    ],
+    "coverage_gaps": [],
+    "dated_matches": [],
+    "status": "Reviewed; unmatched dates remain",
+    "note": "No verified label on: 2024-11-13. Do not infer absence.",
+    "reporters": [
+      "david alire"
+    ],
+    "attendance_labels": [
+      "BLOOMBERG"
+    ],
+    "recorded_attendance_dates": 4,
+    "all_attendance_dates": 137,
+    "after_coverage": 0,
+    "first_date": "2024-11-13",
+    "last_date": "2025-09-04"
+  }
+]

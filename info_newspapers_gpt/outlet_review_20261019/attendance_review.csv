@@ -1,0 +1,90 @@
+"medios","cargo","eligible_role","outlet_final","outlet_linkage_status","outlet_linkage_reason","records","first_date","last_date"
+"ABC AUSTRALIA","REPORTERO",TRUE,"abc australia","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",1,2019-12-13,2019-12-13
+"ABC NEWS","REPORTERO",TRUE,,"needs_review","Cannot distinguish Australian and US broadcaster.",2,2019-03-07,2019-08-26
+"ACI NOTICIAS","REPORTERO",TRUE,,"needs_review","Two Oaxaca attendance records; no evidence identifying them as ACI de Hidalgo.",2,2023-03-21,2023-11-24
+"ACIDEHIDALGO","REPORTERO",TRUE,"aci de hidalgo","reviewed","Exact label; supported by official brand links and shared journalist introductions. No additional attendance record is created.",23,2025-04-04,2025-09-26
+"AGUAQUEMADA","REPORTERO",TRUE,"agua quemada","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",52,2025-07-08,2025-09-29
+"AHORA NOTICIAS","REPORTERO",TRUE,"ahora tabasco","reviewed","Exact label; supported by official brand links and shared journalist introductions. No additional attendance record is created.",1,2023-12-15,2023-12-15
+"AHORA TABASCO","REPORTERO",TRUE,"ahora tabasco","reviewed","Exact label; supported by official brand links and shared journalist introductions. No additional attendance record is created.",3,2019-08-23,2023-03-17
+"AHORA TABASCO NOTICIAS","REPORTERO",TRUE,"ahora tabasco","reviewed","Exact label; supported by official brand links and shared journalist introductions. No additional attendance record is created.",72,2024-10-22,2025-09-30
+"ALBAVISIÓN CANAL 13","REPORTERO",TRUE,"albavision","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",228,2024-01-03,2025-09-30
+"AUSTRALIAN BROADCASTING CORPORATION","REPORTERO",TRUE,"abc australia","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",2,2025-06-05,2025-06-06
+"CANAL 13 ALBAVISION","REPORTERO",TRUE,"albavision","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",1,2023-12-15,2023-12-15
+"CANAL 13 GRUPO ALBAVISIÓN MÉXICO","REPORTERO",TRUE,"albavision","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",2,2024-02-19,2025-08-15
+"CANAL 13 TAPACHULA, GRUPO ALBAVISIÓN, MÉXICO","REPORTERO",TRUE,"albavision","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",1,2024-05-17,2024-05-17
+"CANAL 44","REPORTERO",TRUE,,"needs_review","Cannot distinguish UDG from Intermedia without station/location.",5,2021-08-09,2023-02-10
+"CANAL 44 / XHIJ-TV / CD. JUÁREZ","REPORTERO",TRUE,"grupo intermedia","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",1,2020-01-10,2020-01-10
+"CANAL 44 DE LA UDG","REPORTERO",TRUE,"canal 44 udg","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",8,2019-04-05,2020-01-08
+"CANAL13 TAPACHULA, GRUPO ALBAVISION MÉXICO","CAMARÓGRAFO",FALSE,"albavision","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",1,2024-05-17,2024-05-17
+"CODICE 21","REPORTERO",TRUE,"codice 21","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",1,2021-12-02,2021-12-02
+"CRITERIO Y RADIO MILED","REPORTERO",TRUE,,"needs_review","Two outlets on one attendance record.",1,2022-02-03,2022-02-03
+"CÓDICE 21","REPORTERO",TRUE,"codice 21","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",30,2019-05-20,2025-06-13
+"CÓDIGO ROJO QUINTANA ROO","REPORTERO",TRUE,"codigo rojo","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",1,2025-08-15,2025-08-15
+"DER SPIEGEL","REPORTERO",TRUE,"der spiegel","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",5,2019-04-26,2025-04-03
+"DIARIO RED","REPORTERO",TRUE,"diario red latinoamerica","reviewed","User confirmed equivalence 2026-10-16; observed eligible records are September 2025.",5,2025-09-11,2025-09-30
+"DIARIO.RED, PIEDEPAGINA.MX","REPORTERO",TRUE,,"needs_review","Mixed affiliations before the Latin America edition launch; do not duplicate or transfer the full record.",5,2024-10-02,2024-10-11
+"ECOS MEDIA MX","REPORTERO",TRUE,"ecos media","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",50,2024-08-30,2025-09-03
+"EL SUR DE GUERRERO","REPORTERO",TRUE,"el sur de acapulco","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",3,2019-09-06,2020-12-15
+"ENFOQUE OPORTUNO","REPORTERO",TRUE,"enfoque oportuno","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",5,2025-04-03,2025-09-09
+"EXCLUSIVAS PUEBLA","REPORTERO",TRUE,"exclusivas puebla","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",1,2019-10-04,2019-10-04
+"GRUPO SIETE 1440","REPORTERO",TRUE,"grupo siete noticias","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",8,2019-06-03,2019-10-11
+"GRUPO SIETE NOTICIAS","REPORTERO",TRUE,"grupo siete noticias","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",41,2024-10-03,2025-09-03
+"HELIOS COMUNICACIONES","REPORTERO",TRUE,"helios comunicacion","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",1,2025-01-20,2025-01-20
+"HIDALGO NEWS","REPORTERO",TRUE,"hidalgo news","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",85,2024-10-08,2025-09-23
+"IMAGEN - UNOTV","REPORTERO",TRUE,,"needs_review","Multiple affiliations or ambiguous station; no unique outlet linkage.",1,2023-12-15,2023-12-15
+"INTERMEDIA CANAL 44","REPORTERO",TRUE,"grupo intermedia","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",160,2024-10-24,2025-09-30
+"LA PANCARTA DE QUINTANA ROO, Y SABER P","REPORTERO",TRUE,,"needs_review","Two outlets on one attendance record.",1,2025-08-15,2025-08-15
+"LABORATORIO DE PERIODISMO Y OPINIÓN PÚBLICA","REPORTERO",TRUE,"poplab","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",13,2025-07-01,2025-09-26
+"LM NOTICIAS LORD MOLECULA","REPORTERO",TRUE,"lord molecula oficial","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",1,2025-01-17,2025-01-17
+"LORD MOLÉCULA OFICIAL","REPORTERO",TRUE,"lord molecula oficial","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",121,2025-01-03,2025-09-26
+"LORD MOLÉCULA OFICIAL","YOUTUBER",TRUE,"lord molecula oficial","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",163,2022-06-21,2024-12-30
+"LOS TUBOS","REPORTERO",TRUE,"los tubos","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",1,2024-08-30,2024-08-30
+"LOS TUBOS MONTERREY","REPORTERO",TRUE,"los tubos","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",2,2020-01-22,2020-01-23
+"MAXIMA FM/ CUARTO PODER","REPORTERO",TRUE,,"needs_review","Multiple affiliations or ambiguous station; no unique outlet linkage.",83,2024-10-07,2025-08-25
+"MAXIMAFM","REPORTERO",TRUE,,"needs_review","Multiple affiliations or ambiguous station; no unique outlet linkage.",1,2024-02-28,2024-02-28
+"MILED","REPORTERO",TRUE,"miled","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",66,2024-10-17,2025-03-03
+"MILED RADIO","REPORTERO",TRUE,"miled","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",1,2023-07-14,2023-07-14
+"MÁXIMA 969","REPORTERO",TRUE,"maxima fm","reviewed","Reporter Jonathan Lozada identifies Maxima FM 96.9 and 97.9 on his own podcast page.",1,2023-06-23,2023-06-23
+"MÁXIMA 979 Y MÁXIMA 969","REPORTERO",TRUE,"maxima fm","reviewed","Reporter Jonathan Lozada identifies Maxima FM 96.9 and 97.9 on his own podcast page.",1,2024-05-17,2024-05-17
+"MÁXIMA FM","REPORTERO",TRUE,,"needs_review","Multiple affiliations or ambiguous station; no unique outlet linkage.",1,2022-03-11,2022-03-11
+"MÁXIMA FM. RADIOSA","REPORTERO",TRUE,,"needs_review","Multiple affiliations or ambiguous station; no unique outlet linkage.",1,2024-03-22,2024-03-22
+"MÁXIMA NOTICIAS","REPORTERO",TRUE,,"needs_review","Multiple affiliations or ambiguous station; no unique outlet linkage.",1,2023-11-24,2023-11-24
+"MÁXIMA TLAXIACO","REPORTERO",TRUE,,"needs_review","Multiple affiliations or ambiguous station; no unique outlet linkage.",1,2023-10-25,2023-10-25
+"NOTICIAS DE FRENTE","FOTÓGRAFO",FALSE,"noticias de frente","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",3,2025-09-05,2025-09-22
+"NOTICIAS DE FRENTE","REPORTERO",TRUE,"noticias de frente","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",90,2024-08-30,2025-09-24
+"PERIODICO EL SUR DE GUERRERO","REPORTERO",TRUE,"el sur de acapulco","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",1,2024-01-10,2024-01-10
+"PERIÓDICO EL SUR","FOTÓGRAFO",FALSE,,"needs_review","No geographic qualifier; cannot select Acapulco namesake.",1,2024-02-15,2024-02-15
+"PERIÓDICO EL SUR","REPORTERO",TRUE,,"needs_review","No geographic qualifier; cannot select Acapulco namesake.",5,2021-07-19,2024-02-15
+"POSTA","FOTÓGRAFO",FALSE,"posta","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",100,2025-01-02,2025-07-18
+"POSTA","REPORTERO",TRUE,"posta","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",91,2024-11-06,2025-09-30
+"POSTA MX","REPORTERO",TRUE,"posta","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",2,2023-10-20,2023-11-03
+"POSTDATA.NEWS","REPORTERO",TRUE,"revista posdata","reviewed","User confirmed postdata.news as Revista Posdata.",1,2024-03-08,2024-03-08
+"PUENTE LIBRE","REPORTERO",TRUE,"puente libre","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",1,2021-08-09,2021-08-09
+"PUENTE LIBRE MX","REPORTERO",TRUE,"puente libre","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",1,2020-01-10,2020-01-10
+"PUNTOS SUSPENSIVOS RADIO","CORRESPONSAL",TRUE,"puntos suspensivos","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",9,2021-08-04,2021-12-20
+"PUNTOS SUSPENSIVOS RADIO","REPORTERO",TRUE,"puntos suspensivos","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",313,2019-03-07,2025-09-30
+"RADIO MÁXIMA","REPORTERO",TRUE,,"needs_review","Multiple affiliations or ambiguous station; no unique outlet linkage.",1,2019-09-02,2019-09-02
+"REVISTA FORTUNA","FOTÓGRAFO",FALSE,"revista fortuna","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",1,2019-03-11,2019-03-11
+"REVISTA FORTUNA","REPORTERO",TRUE,"revista fortuna","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",170,2024-07-31,2025-09-29
+"SEM MÉXICO","REPORTERO",TRUE,"semmexico","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",7,2020-11-24,2025-08-01
+"SOY VITTOR BLOGS OFICIAL","OTRO (ESPECIFICA",TRUE,"vittor blogs","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",2,2021-08-23,2021-12-27
+"SOY VITTOR BLOGS OFICIAL","REPORTERO",TRUE,"vittor blogs","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",85,2019-07-25,2024-08-09
+"SUPER ESTERO MILED","REPORTERO",TRUE,"miled","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",1,2024-10-25,2024-10-25
+"TIEMPO.COM.MX Y PUENTELIBRE.M","REPORTERO",TRUE,,"needs_review","Two outlets on one attendance record.",1,2021-12-10,2021-12-10
+"TRANSMITIENDO DESDE LA FRONTERA","REPORTERO",TRUE,"desde la frontera","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",9,2025-02-19,2025-09-04
+"TRANSMITIENDO DESDE LA FRONTERA CON JUAN FELIPE PRADO","REPORTERO",TRUE,"desde la frontera","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",5,2024-03-01,2024-09-27
+"TRIBU POLÍTICA","REPORTERO",TRUE,,"needs_review","No evidence linking this label to Grupo Tribu.",1,2024-08-30,2024-08-30
+"UDG","REPORTERO",TRUE,,"needs_review","University label does not distinguish radio and television.",5,2021-08-03,2021-09-22
+"UDG CANAL 44","REPORTERO",TRUE,"canal 44 udg","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",1,2021-09-29,2021-09-29
+"UNIRADIO Y UNOTV","REPORTERO",TRUE,,"needs_review","Multiple affiliations or ambiguous station; no unique outlet linkage.",1,2021-12-11,2021-12-11
+"UNO TV","ASISTENTE",TRUE,"unotv","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",2,2020-03-10,2020-03-18
+"UNO TV","CAMARÓGRAFO",FALSE,"unotv","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",4,2019-03-06,2020-03-06
+"UNO TV","REPORTERO",TRUE,"unotv","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",275,2019-03-01,2025-09-30
+"UNOTV","REPORTERO",TRUE,"unotv","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",1,2022-12-05,2022-12-05
+"UNOTV / UNIRADIO INFORMA","REPORTERO",TRUE,,"needs_review","Multiple affiliations or ambiguous station; no unique outlet linkage.",1,2022-08-19,2022-08-19
+"UNOTV, IMAGEN, UNIVISION, TULUM FM 104.6","REPORTERO",TRUE,,"needs_review","Multiple affiliations or ambiguous station; no unique outlet linkage.",1,2022-04-29,2022-04-29
+"UNOTV/UNIRADIO INFORMA","REPORTERO",TRUE,,"needs_review","Multiple affiliations or ambiguous station; no unique outlet linkage.",1,2022-02-17,2022-02-17
+"VICTOR BLOGS","REPORTERO",TRUE,"vittor blogs","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",4,2023-01-03,2023-06-12
+"VITTOR BLOGS","REPORTERO",TRUE,"vittor blogs","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",47,2022-11-07,2025-08-15
+"VOCES DEL PERIODISTA","FOTÓGRAFO",FALSE,"voces del periodista","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",4,2019-06-26,2021-06-11
+"VOCES DEL PERIODISTA","REPORTERO",TRUE,"voces del periodista","reviewed","Exact reviewed label; entity identity does not imply ownership or an additional attendee.",153,2019-03-26,2025-09-25

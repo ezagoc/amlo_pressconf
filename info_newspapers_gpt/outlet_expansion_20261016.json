@@ -107,7 +107,7 @@
     {
       "name": "Hidalgo News",
       "id": "hidalgo news",
-      "reviewed_at": "2026-10-16",
+      "reviewed_at": "2026-10-24",
       "fields": {
         "type_media": "digital",
         "state": "Hidalgo",
@@ -117,13 +117,13 @@
       "sources": [
         "https://hidalgonews.mx/"
       ],
-      "review_note": "Homepage links MarcoOlveraOficial1 on YouTube. A link alone is insufficient to merge the outlet or select that channel as Hidalgo News.",
+      "review_note": "User approved one analysis outlet on 2026-10-24: Mexico News World / Marco Olvera Oficial / Hidalgo News. Olvera explicitly names the newspaper and channel in all 22 in-period introductions; HIDALGO NEWS matches 21 dates. 2025-03-04 has only one attendance-source entry and remains unresolved. This analytic grouping does not establish legal ownership. Do not merge The Mexico News (Meme Yamel), Mexico News Daily, Enfasis, or Bajo Palabra.",
       "legal_entities": [],
       "youtube": {
         "url": "https://www.youtube.com/channel/UCRnrpzWcc20-BHRtSdzdSuw",
         "channel_id": "UCRnrpzWcc20-BHRtSdzdSuw",
         "source": "https://hidalgonews.mx/",
-        "status": "needs_identity_review",
+        "status": "merged_alias",
         "checked_at": "2026-10-16",
         "original_url": "https://www.youtube.com/@MarcoOlveraOficial1"
       },
@@ -132,7 +132,19 @@
         "year_founded",
         "founder_name"
       ],
-      "question_id": "hidalgo news"
+      "question_id": "mexico news world",
+      "linkage_id": "mexico news world",
+      "aliases": [
+        "HIDALGO NEWS",
+        "MEXICO NEWS WORLD",
+        "MARCO OLVERA OFICIAL",
+        "MARCO ANTONIO OLVERA OFICIAL",
+        "MEXICO NETWORK",
+        "MEXICONETWORK",
+        "NEWS WORLD"
+      ],
+      "analysis_merged_into": "mexico news world",
+      "youtube_check_status": "merged_alias"
     },
     {
       "name": "ABC Australia",
@@ -257,7 +269,7 @@
         "https://aguaquemada.mx/nosotros/",
         "https://aguaquemada.mx/"
       ],
-      "review_note": "Co-mentioned with Los Tubos and Postdata in a transcript; this is not ownership evidence.",
+      "review_note": "Co-mentioned with Los Tubos and Postdata in a transcript; this is not ownership evidence. User approved 2026-10-26; joint introductions by Luz Irene Castellanos and Claudia Reina/Reyna; 5/5 covered dates match AGUAQUEMADA.",
       "legal_entities": [],
       "youtube": {
         "url": "https://www.youtube.com/channel/UCdJ6WZH_4y43sdandQHMCDw",
@@ -291,7 +303,7 @@
         "https://lostubos.com/",
         "https://lostubos.com/politica-privacidad/"
       ],
-      "review_note": "Separate from Noreste. No verified common ownership.",
+      "review_note": "Separate from Noreste. No verified common ownership. User approved 2026-10-26; joint introductions by Luz Irene Castellanos and Claudia Reina/Reyna; 5/5 covered dates match AGUAQUEMADA.",
       "legal_entities": [],
       "youtube": {
         "url": "https://www.youtube.com/channel/UC2TNo5mdeEL5lBfI-DZh03w",
@@ -306,7 +318,7 @@
         "year_founded",
         "founder_name"
       ],
-      "question_id": "los tubos"
+      "question_id": "agua quemada"
     },
     {
       "name": "La Pancarta de Quintana Roo",
@@ -340,7 +352,7 @@
     {
       "name": "El Politico en las Redes",
       "id": "el politico en las redes",
-      "reviewed_at": "2026-10-16",
+      "reviewed_at": "2026-10-26",
       "fields": {
         "url": "https://revistaelpolitico.com/",
         "legal_name": "Comunicación y Tecnología en Medios del Centro, S.A. de C.V.",
@@ -358,7 +370,7 @@
         "https://www.gob.mx/presidencia/articulos/version-estenografica-conferencia-de-prensa-de-la-presidenta-claudia-sheinbaum-pardo-del-18-de-octubre-de-2024?idiom=es",
         "https://sinlineamx.com/wp-content/uploads/2025/06/Revista-SL-Vol-16-web.pdf"
       ],
-      "review_note": "User confirmed revistaelpolitico.com. Manuel Galeazzi Ramirez explicitly identifies Sin Linea and El Politico en las Redes together in the official 2024-10-18 transcript; also present in local transcripts 2025-01-09 and 2025-03-21. Affiliation with Grupo Editorial Sin Linea is documented, but legal ownership and historical common identity are not inferred. Keep separate brand IDs; do not transfer all Sin Linea attendance or duplicate question turns. POLITICO.MX attendance is a different outlet. Website footer 2021 is not a verified founding year.",
+      "review_note": "User approved 2026-10-26: Sin Linea and El Politico en las Redes are one analysis outlet, sin linea. Original brand records remain as provenance. This supersedes the previous separate-brand analysis instruction. Politico.mx, Animal Politico and El Charro Politico remain separate. Uncertain reporter spellings are not merged.",
       "legal_entities": [
         {
           "name": "Comunicación y Tecnología en Medios del Centro, S.A. de C.V.",
@@ -370,7 +382,10 @@
         "year_founded",
         "founder_name"
       ],
-      "question_id": "el politico en las redes"
+      "question_id": "sin linea",
+      "linkage_id": "sin linea",
+      "analysis_merged_into": "sin linea",
+      "youtube_check_status": "merged_alias"
     },
     {
       "name": "Helios Comunicacion",
@@ -604,7 +619,7 @@
       "reviewed_at": "2026-10-16",
       "fields": {},
       "sources": [],
-      "review_note": "Identity unresolved. Do not substitute Ecoosfera or merge with Ecos Media without evidence. No attendance label found. Checked ECOS DE HOY and ECOS MEDIA MX; no evidence establishes either as an alias. No exact match in the scanned AMLO/Sheinbaum introductions.",
+      "review_note": "Identity unresolved. Do not substitute Ecoosfera or merge with Ecos Media without evidence. No attendance label found. Checked ECOS DE HOY and ECOS MEDIA MX; no evidence establishes either as an alias. No exact match in the scanned AMLO/Sheinbaum introductions. User approved 2026-10-26; Cristian Galarza joint introductions; 3/4 covered dates match CULTURA COLECTIVA; 2025-03-31 has no attendance roster.",
       "legal_entities": [],
       "missing_fields": [
         "url",
@@ -613,7 +628,7 @@
         "founder_name",
         "state"
       ],
-      "question_id": "ecosfera",
+      "question_id": "grupo tribu",
       "youtube": {
         "url": "https://www.youtube.com/channel/UCm46ovknyl9Z0MLeEx9IMaQ",
         "channel_id": "UCm46ovknyl9Z0MLeEx9IMaQ",
@@ -769,7 +784,7 @@
         "https://www.animalesconderechos.com/",
         "https://www.gob.mx/amlo/articulos/version-estenografica-conferencia-de-prensa-del-presidente-andres-manuel-lopez-obrador-del-8-de-diciembre-de-2023?idiom=es"
       ],
-      "review_note": "Uniendo causas, conectando derechos is this project’s slogan, not a second outlet. Elideth Fernandez reports collaboration; not common ownership with Movimiento Consciencia. Official AMLO introductions confirm the co-affiliation on five dates in 2023-2024. No standalone attendance alias found; Movimiento Consciencia attendance is not automatically transferred.",
+      "review_note": "Uniendo causas, conectando derechos is this project’s slogan, not a second outlet. Elideth Fernandez reports collaboration; not common ownership with Movimiento Consciencia. Official AMLO introductions confirm the co-affiliation on five dates in 2023-2024. No standalone attendance alias found; Movimiento Consciencia attendance is not automatically transferred. User approved 2026-10-26; Elideth Fernandez joint introductions; 5/6 covered dates match, 2024-11-08 unmatched.",
       "legal_entities": [],
       "requested_aliases": [
         "Uniendo Causas con Derechos",
@@ -789,7 +804,7 @@
         "founder_name",
         "state"
       ],
-      "question_id": "animales con derechos"
+      "question_id": "movimiento conciencia"
     },
     {
       "name": "Exclusivas Puebla",
@@ -931,7 +946,7 @@
         "https://www.federicolamont.com/",
         "https://oem.com.mx/elsoldemexico/analisis/asi-lo-dice-la-mont-16739552"
       ],
-      "review_note": "Federico La Mont program/column, not automatically a separate incorporated newspaper. No exact attendance label found. Reporter La Mont appearing for other outlets does not establish attendance under this program name.",
+      "review_note": "Federico La Mont program/column, not automatically a separate incorporated newspaper. No exact attendance label found. Reporter La Mont appearing for other outlets does not establish attendance under this program name. User approved 2026-10-26: combine Asi lo dice La Mont, ABC Radio and Audiorama conference records; preserve separate brands. ABC RADIO 760 AM appears on all six covered La Mont dates. Exclude unrelated ABC outlets.",
       "legal_entities": [],
       "missing_fields": [
         "legal_name",
@@ -939,7 +954,7 @@
         "founder_name",
         "state"
       ],
-      "question_id": "asi lo dice la mont"
+      "question_id": "audiorama"
     },
     {
       "name": "SemMexico",
@@ -1019,7 +1034,7 @@
       "sources": [
         "https://news.culturacolectiva.com/noticias/nace-al-filo-la-nueva-apuesta-digital-de-tribu-y-cultura-colectiva/"
       ],
-      "review_note": "Cultura Colectiva identifies Grupo Tribu with El Fildeo and Al Filo. No evidence linking attendance TRIBU POLITICA to this group. Group official URL/legal name unresolved. TRIBU POLITICA has 1 eligible attendance record (2024-08-30); no corroborating question introduction was found for that equivalence.",
+      "review_note": "Cultura Colectiva identifies Grupo Tribu with El Fildeo and Al Filo. No evidence linking attendance TRIBU POLITICA to this group. Group official URL/legal name unresolved. TRIBU POLITICA has 1 eligible attendance record (2024-08-30); no corroborating question introduction was found for that equivalence. User approved 2026-10-26; Cristian Galarza joint introductions; 3/4 covered dates match CULTURA COLECTIVA; 2025-03-31 has no attendance roster.",
       "legal_entities": [],
       "missing_fields": [
         "url",
@@ -1047,14 +1062,14 @@
         "https://postdata.news/",
         "https://www.gob.mx/amlo/articulos/version-estenografica-conferencia-de-prensa-del-presidente-andres-manuel-lopez-obrador-del-3-de-diciembre-de-2021?idiom=es"
       ],
-      "review_note": "User confirmed postdata.news on 2026-10-16. POSTDATA.NEWS attendance (2024-03-08, 1 eligible record) now links to the stable revista posdata ID. Verónica García identifies Postdata in the official 2021-12-03 transcript. The cultural magazine revistaposdata.com / @revistaposdatamx is a rejected namesake. User reconfirmed the Posdata identity on 2026-10-16 after review of the conflicting cultural-publication wording. Accept the five dated Aguaquemada co-affiliation links (2025-07-11, 2025-08-01, 2025-08-08, 2025-09-03, 2025-09-22) under revista posdata, with user-confirmed provenance; do not globally merge Aguaquemada and PostData News. Official postdata.news links the verified Post Data YouTube channel @postdata8008.",
+      "review_note": "User confirmed postdata.news on 2026-10-16. POSTDATA.NEWS attendance (2024-03-08, 1 eligible record) now links to the stable revista posdata ID. Verónica García identifies Postdata in the official 2021-12-03 transcript. The cultural magazine revistaposdata.com / @revistaposdatamx is a rejected namesake. User reconfirmed the Posdata identity on 2026-10-16 after review of the conflicting cultural-publication wording. Accept the five dated Aguaquemada co-affiliation links (2025-07-11, 2025-08-01, 2025-08-08, 2025-09-03, 2025-09-22) under revista posdata, with user-confirmed provenance; do not globally merge Aguaquemada and PostData News. Official postdata.news links the verified Post Data YouTube channel @postdata8008. User approved 2026-10-26; joint introductions by Luz Irene Castellanos and Claudia Reina/Reyna; 5/5 covered dates match AGUAQUEMADA.",
       "legal_entities": [],
       "missing_fields": [
         "legal_name",
         "year_founded",
         "founder_name"
       ],
-      "question_id": "revista posdata",
+      "question_id": "agua quemada",
       "rejected_youtube_candidates": [
         {
           "url": "https://www.youtube.com/channel/UC4HHqCM8HXAzA6JgaOTl59g",
@@ -1116,7 +1131,7 @@
     {
       "name": "Empuje Migrante",
       "id": "empuje migrante",
-      "reviewed_at": "2026-10-16",
+      "reviewed_at": "2026-10-26",
       "fields": {
         "journalist": "Nancy Rodríguez"
       },
@@ -1124,7 +1139,7 @@
         "https://www.te.gob.mx/media/SentenciasN/pdf/especializada/SRE-PSC-0426-2024.pdf",
         "https://www.gob.mx/amlo/articulos/version-estenografica-conferencia-de-prensa-del-presidente-andres-manuel-lopez-obrador-del-4-de-junio-de-2021"
       ],
-      "review_note": "No reliable official website/legal identity found. No matching attendance label found. Nancy Rodríguez is documented with Oro Sólido and Empuje Migrante; channel is Oro Sólido, not a separate verified Empuje Migrante channel. Reporter co-affiliation with Oro Sólido documented; does not establish common ownership. Exact label occurs in AMLO questions and official introductions. AMIGO MIGRANTE, MITOTE MIGRANTE and CONEXION MIGRANTE are unverified attendance candidates, not accepted aliases.",
+      "review_note": "User approved 2026-10-26: Empuje Migrante and Oro Solido share conference key oro solido. Nancy Rodriguez explicitly names both on 13 Sheinbaum dates. Retain distinct brands and existing ownership/channel metadata. Six of eight dates within attendance coverage match Oro Solido. 2025-03-04 has only one raw attendance entry; 2025-05-06 has no matching label among 48 entries. No attendance imputed. No separate Empuje Migrante website, legal entity or channel verified. Amigo Migrante, Mitote Migrante and Conexion Migrante are not accepted aliases. Source: official introductions, including https://www.gob.mx/presidencia/articulos/version-estenografica-conferencia-de-prensa-de-la-presidenta-claudia-sheinbaum-pardo-del-26-de-noviembre-de-2024?idiom=es",
       "legal_entities": [],
       "missing_fields": [
         "url",
@@ -1133,7 +1148,7 @@
         "founder_name",
         "state"
       ],
-      "question_id": "empuje migrante",
+      "question_id": "oro solido",
       "youtube": {
         "url": "https://www.youtube.com/channel/UCL4oM3s9E3fQn8UhEZHfv8w",
         "channel_id": "UCL4oM3s9E3fQn8UhEZHfv8w",
@@ -1260,14 +1275,14 @@
         "https://www.gob.mx/amlo/articulos/version-estenografica-conferencia-de-prensa-del-presidente-andres-manuel-lopez-obrador-del-29-de-junio-de-2023?idiom=es",
         "https://www.gob.mx/amlo/articulos/version-estenografica-conferencia-de-prensa-del-presidente-andres-manuel-lopez-obrador-del-8-de-mayo-de-2024?idiom=es"
       ],
-      "review_note": "Susana Carreño identifies the Red Periodistica alongside Radio Universidad de Guadalajara / Canal 44 in official transcripts. Red de Periodistas de Puerto Vallarta is a confirmed question-label variant. Do not relabel all Radio Universidad attendance as the network. Mentioned as recently formed in June 2023; 2026-01-13 legal constitution report is not a verified project founding date.",
+      "review_note": "Susana Carreño identifies the Red Periodistica alongside Radio Universidad de Guadalajara / Canal 44 in official transcripts. Red de Periodistas de Puerto Vallarta is a confirmed question-label variant. Do not relabel all Radio Universidad attendance as the network. Mentioned as recently formed in June 2023; 2026-01-13 legal constitution report is not a verified project founding date. User approved 2026-10-26; Susana Carreno joint introductions; use explicit UDG/Puerto Vallarta labels only, not generic CANAL 44.",
       "legal_entities": [],
       "missing_fields": [
         "legal_name",
         "year_founded",
         "founder_name"
       ],
-      "question_id": "red periodistica de puerto vallarta"
+      "question_id": "universidad de guadalajara"
     },
     {
       "name": "Lord Molecula Oficial",
@@ -1301,7 +1316,7 @@
     {
       "name": "PuenteLibreMX",
       "id": "puente libre",
-      "reviewed_at": "2026-10-16",
+      "reviewed_at": "2026-10-26",
       "fields": {
         "year_founded": 2008,
         "founding_date": "2008-06-16",
@@ -1317,7 +1332,7 @@
         "https://puentelibre.mx/",
         "https://reposipot.imss.gob.mx/logistica/CABCS/2020/Adjudicaciones%204To%20Trim/AA-050GYR019-E165-2020/Anexo%202%20Justificacion_AA-E165.pdf"
       ],
-      "review_note": "Homepage explicitly dates online launch 2008-06-16. IMSS provider list ties legal entity to domain. Attendance exact Puente Libre labels are separate from Movimiento Consciencia.",
+      "review_note": "User approved 2026-10-26: retain Tiempo La Noticia Digital and PuenteLibreMX as separate brands and metadata rows; share tiempo la noticia digital for attendance and question records. Do not merge legal entities, ownership, websites or YouTube channels. Count a joint introduction once and never create a second physical attendee. Panel/report rebuilding is deferred.",
       "legal_entities": [
         {
           "name": "Impresora Digital Puente Libre, S.A. de C.V.",
@@ -1336,7 +1351,8 @@
       "missing_fields": [
         "founder_name"
       ],
-      "question_id": "puente libre mx"
+      "question_id": "tiempo la noticia digital",
+      "linkage_id": "tiempo la noticia digital"
     },
     {
       "name": "Mexico Informa",
@@ -1400,23 +1416,24 @@
     {
       "name": "Frecuencia CAD",
       "id": "frecuencia cad",
-      "reviewed_at": "2026-10-16",
+      "reviewed_at": "2026-10-26",
       "fields": {
-        "year_founded": null
+        "year_founded": null,
+        "url": "https://frecuenciacad.com/"
       },
       "sources": [
-        "https://mx.linkedin.com/in/alfredo-far%C3%ADas-42b2115"
+        "https://mx.linkedin.com/in/alfredo-far%C3%ADas-42b2115",
+        "https://frecuenciacad.com/"
       ],
-      "review_note": "Alfredo Farias educational project is not proven equivalent to the asking journalist or Jaime Farias Informa. Existing group ID retained with warning. Prior 2019 founding value came from podcast activity, not verified founding; cleared. Channel identifies Centro de Estudios en Alta Dirección. Connection to Jaime Farias attendance ID remains unverified.",
+      "review_note": "Reviewed 2026-10-26: official introductions jointly identify Frecuencia CAD, JF Informa and Es Ahora AM. The official Frecuencia CAD website lists Es Ahora with Alberto Marroquin Espinoza. User approved shared conference key jaime farias informa, retaining separate brands, ownership details and channels. Eight of nine Frecuencia CAD dates match attendance; 2024-11-06 remains unmatched. Legal identity, ownership, founding date and location remain unverified. YouTube channel verification is separate. Sources: https://frecuenciacad.com/ ; official transcript introductions.",
       "legal_entities": [],
       "missing_fields": [
-        "url",
         "legal_name",
         "year_founded",
         "founder_name",
         "state"
       ],
-      "question_id": "frecuencia cad",
+      "question_id": "jaime farias informa",
       "youtube": {
         "url": "https://www.youtube.com/channel/UCjDtc7TStZk3bwKEYgWyD5g",
         "channel_id": "UCjDtc7TStZk3bwKEYgWyD5g",
@@ -1491,7 +1508,7 @@
       "reviewed_at": "2026-10-16",
       "fields": {},
       "sources": [],
-      "review_note": "User-confirmed Julio Omar Gomez Sanchez association with Medios Digitales del Pacifico and Informando la Transformacion. No independently verified official URL or founding date found.",
+      "review_note": "User-confirmed Julio Omar Gomez Sanchez association with Medios Digitales del Pacifico and Informando la Transformacion. No independently verified official URL or founding date found. User approved 2026-10-26; Julio Omar Gomez jointly identifies both; 8/8 Sin Puntos dates match.",
       "legal_entities": [],
       "missing_fields": [
         "url",
@@ -1509,6 +1526,89 @@
         "checked_at": "2026-10-16",
         "original_url": null
       }
+    },
+    {
+      "name": "Ahora Tabasco",
+      "id": "ahora tabasco",
+      "linkage_id": "ahora tabasco",
+      "question_id": "ahora tabasco",
+      "registry_row": 243,
+      "reviewed_at": "2026-10-19",
+      "aliases": [
+        "Ahora Noticias",
+        "Ahora Tabasco Noticias"
+      ],
+      "fields": {
+        "url": "https://ahoratabasco.com/",
+        "additional_url": "https://ahoranoticias.com.mx/",
+        "state": "Tabasco",
+        "municipality": "Centro / Villahermosa",
+        "year_founded": 2011,
+        "founding_date": "2011-11-19",
+        "founder_name": "Alejandro Carlos Tovar Domínguez",
+        "type_media": "periodico impreso / radio / digital",
+        "coverage_scope": "state / regional / national"
+      },
+      "sources": [
+        "https://ahoranoticias.com.mx/",
+        "https://ahoranoticias.com.mx/directorio/",
+        "https://ahoratabasco.com/directorio/",
+        "https://www.europapress.es/comunicados/internacional-00907/noticia-comunicado-intrahistoria-alejandro-carlos-tovar-dominguez-ahora-tabasco-20220509143152.html"
+      ],
+      "review_note": "Reviewed 2026-10-19. Ahora Noticias (https://ahoranoticias.com.mx/) is the affiliated national brand: both directories publish the same leadership, reserve certificate 04-2019-061312223500-101 and title/content certificate 16675. Retain existing ahora tabasco linkage ID without adding a duplicate entity. National office: Balboa 407, Portales Norte, C.P. 03300, Benito Juarez, Ciudad de Mexico. Alejandro Tovar Dominguez is president; Gabriel Aysa Marin is director general, not confirmed owner. The 2011-11-19 founding date and founder Alejandro Carlos Tovar Dominguez refer to Ahora Tabasco, per a 2022 press release; national-brand launch remains unverified. Existing legal name retained, not newly verified; no exact normalized beneficiary-name match in ComSoc 2012-2024. Sources: https://ahoranoticias.com.mx/; https://ahoranoticias.com.mx/directorio/; https://ahoratabasco.com/directorio/; https://www.europapress.es/comunicados/internacional-00907/noticia-comunicado-intrahistoria-alejandro-carlos-tovar-dominguez-ahora-tabasco-20220509143152.html",
+      "legal_entities": [
+        {
+          "name": "A Diario Tabasco, S. de R.L. de C.V.",
+          "source": "newspaper_metadata.xlsx#Hoja1!K244",
+          "relationship": "existing metadata legal name; not independently reverified",
+          "status": "existing_metadata_unverified"
+        }
+      ],
+      "youtube": {
+        "url": "https://www.youtube.com/@AhoraNoticiasMexico",
+        "channel_id": null,
+        "source": "https://ahoranoticias.com.mx/directorio/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-19"
+      },
+      "youtube_check_status": "verified_official_link"
+    },
+    {
+      "name": "ACI de Hidalgo",
+      "id": "aci de hidalgo",
+      "linkage_id": "aci de hidalgo",
+      "question_id": "aci de hidalgo",
+      "registry_row": 288,
+      "reviewed_at": "2026-10-19",
+      "aliases": [
+        "ACI México",
+        "ACI de México",
+        "ACI Hidalgo",
+        "ACIDEHIDALGO",
+        "ACIMEXICO"
+      ],
+      "fields": {
+        "url": "https://www.acidehidalgo.com/",
+        "state": "Hidalgo",
+        "type_media": "digital / video",
+        "coverage_scope": "state / regional / national"
+      },
+      "sources": [
+        "https://www.acidehidalgo.com/",
+        "https://www.acidehidalgo.com/2026/06/cdmx-pueblo-da-su-respaldo-presidenta.html",
+        "https://pulsosur.com/entrevista-con-camila-martinez-secretaria-nacional-de-comunicacion-difusion-y-propaganda-de-morena/",
+        "https://www.gob.mx/presidencia/articulos/version-estenografica-conferencia-de-prensa-de-la-presidenta-claudia-sheinbaum-pardo-del-26-de-junio-de-2026?idiom=es"
+      ],
+      "review_note": "Reviewed 2026-10-19. ACI de Hidalgo and ACI Mexico are jointly identified by the official site and presidential introductions. Journalists: Hector Herrera Ocampo and Ines Arroyo. Pulso Sur identifies Hector Herrera Ocampo as director of ACI de Hidalgo and Mally Arroyo as director of ACI Mexico, not legal owners. Hidalgo is the regional association; headquarters/address, founding date, founder, legal name and ownership are unverified. ComSoc linkage unresolved without a verified legal entity. Official-site YouTube link verified; API metadata not collected. ACIDEHIDALGO has 23 eligible attendance records; two ACI NOTICIAS records in Oaxaca remain ambiguous. Do not merge Pulso Sur or American Concrete Institute namesakes. Sources: https://www.acidehidalgo.com/; https://www.acidehidalgo.com/2026/06/cdmx-pueblo-da-su-respaldo-presidenta.html; https://pulsosur.com/entrevista-con-camila-martinez-secretaria-nacional-de-comunicacion-difusion-y-propaganda-de-morena/; https://www.gob.mx/presidencia/articulos/version-estenografica-conferencia-de-prensa-de-la-presidenta-claudia-sheinbaum-pardo-del-26-de-junio-de-2026?idiom=es",
+      "legal_entities": [],
+      "youtube": {
+        "url": "https://www.youtube.com/channel/UC-ItI0iYn1RE4LIx63F8gxg",
+        "channel_id": "UC-ItI0iYn1RE4LIx63F8gxg",
+        "source": "https://www.acidehidalgo.com/",
+        "status": "verified_official_link",
+        "checked_at": "2026-10-19"
+      },
+      "youtube_check_status": "verified_official_link"
     }
   ]
 }

@@ -2,6 +2,21 @@
 
 Research date: 2026-09-16
 
+Conference linkage update, 2026-10-26: the user approved keeping PuenteLibreMX
+and Tiempo La Noticia Digital as separate brands while combining attendance
+and question records under `tiempo la noticia digital`. Both brand metadata
+rows, legal entities and YouTube channels remain distinct. All 24 Puente Libre
+introductions name Tiempo as well: Juan Fierro on 19 dates, Liliana Piña on five.
+One further Tiempo-only date gives 25 combined appearances. All 15 combined dates
+within attendance coverage match TIEMPO LA NOTICIA DIGITAL. Exact historic Puente
+Libre labels and the single joint attendance label map to the same conference ID
+without adding or deleting physical attendee rows. Panels and reports are deferred.
+
+Both outlets' websites currently list Miguel Fierro Serna as director general
+and Mario Rosales Espinoza as manager. Shared management does not establish
+identical legal ownership. Sources: https://www.tiempo.com.mx/ and
+https://puentelibre.mx/ (checked 2026-10-26).
+
 ## Proposed metadata
 
 | Field | Proposed value |

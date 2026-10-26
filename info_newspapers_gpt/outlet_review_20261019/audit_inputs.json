@@ -1,0 +1,9 @@
+{
+  "attendance_file": "/Users/ezagoc/Dropbox/Media/data/02-conferences/raw/attendance/merged/attendance_merged_dedup.xlsx",
+  "attendance_rows": 71899,
+  "contracts_file": "/Users/ezagoc/Dropbox/Media/data/06-outcomes/comsoc/contracts_2012_2024_clean.parquet",
+  "contracts_rows": 131335,
+  "contract_years": [2001, 2002, 2004, 2007, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2026, 2105],
+  "generated_at": "2026-10-19 18:49:57 UTC",
+  "note": "Attendance counts cover only labels in the reviewed alias table, not all legacy matches. Counts are dataset records, not people or unique contracts; no exact match is not proof of no government advertising."
+}

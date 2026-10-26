@@ -99,3 +99,43 @@ Sheinbaum same-date review
 Postdata confirmation (2026-10-16): user reconfirmed PostData News; five dated
 Aguaquemada links are now usable with explicit user-confirmed identity provenance.
 Stable ID remains revista posdata. Global attendance aliases are unchanged.
+
+YouTube extraction and older-video backfill — 2026-10-19
+  Public metadata collected for all 40 accepted channels. The uploads API scan
+  saved 232,195 unique video records. Four large uploads playlists reported only
+  20,000 items and ended at 400 pages despite higher channel video counts.
+  uploads_complete means pagination ended, NOT full historical coverage;
+  inspect coverage_status for api_limit_suspected. This flag remains set after
+  supplemental playlist videos are added.
+
+  Initial oldest videos (UTC): Uno TV 2025-03-13; ABC Australia 2025-02-21;
+  Canal Universidad de Guadalajara 2025-01-23; Sin Embargo 2023-06-24.
+  Adapted the existing curated-playlist approach with page checkpoints,
+  verified video ownership, video-ID deduplication, and older-playlist priority.
+  Playlist backfill added 9,526 videos: total 241,721. It recovered 5,652 videos
+  dated 2021–2022. Oldest recovered dates: Uno TV 2022-01-28; ABC Australia
+  2022-04-26; UDG 2021-01-04; Sin Embargo 2020-05-21. These endpoints do not
+  establish continuous or exhaustive coverage. All four backfills remain partial.
+  The first configured key reached quota; no automatic key rotation occurred.
+
+  Saved under MEDIA_ROOT/data/06-outcomes/youtube/reviewed_outlets:
+    youtube_channels.csv / .parquet (40 rows)
+    youtube_videos.csv / .parquet (241,721 rows)
+    checkpoint.sqlite3 (raw API payloads, upload and curated-playlist cursors)
+    youtube_outlet_coverage.csv, playlist_backfill_coverage.csv
+    extraction_status.json, playlist_backfill_status.json
+    api_limit_diagnostics.json, extraction_manifest.json, README.txt
+  Existing historical video datasets were not overwritten or merged.
+
+  Resume curated playlists after quota is available:
+    python3 code/06-outcomes/youtube/08-backfill_reviewed_playlists.py --execute
+  Omitting --execute is read-only. It selects the four capped channels by
+  default; --outlet can select a saved reviewed identity explicitly.
+  After extraction, refresh Parquet with the installed R arrow package:
+    Rscript scripts/export_reviewed_youtube_parquet.R
+  The older 02-getYB_videoinfo_large.py also contains date-window search, but
+  it was inspected rather than run: it needs reviewed-channel selection and
+  quota-aware adaptation. Its >=30,000-video threshold would miss Sin Embargo.
+
+  Verified: SQLite integrity; unique video IDs; CSV/checkpoint counts; Parquet
+  row-count round trips; 7 extractor/backfill unit tests. No API keys printed.

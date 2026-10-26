@@ -8,7 +8,8 @@ normalize_outlet_name <- function(x) {
     key,
     "sintesis pueba" = "sintesis puebla",
     "latitudes press" = "latitude press",
-    "diario de yucatan" = "el diario de yucatan"
+    "diario de yucatan" = "el diario de yucatan",
+    "marco olvera oficial" = "mexico news world"
   )
 }
 
@@ -42,7 +43,80 @@ merge_newspaper_metadata <- function(meta, news) {
 # Reviewed source-ID corrections. Keep workbook data untouched; apply these
 # after merging so regenerated panels use the same IDs as the source cleaners.
 apply_reviewed_conference_keys <- function(metadata) {
+  # Alias rows stay in the workbooks as provenance, but are not separate panel
+  # units. Filter AFTER merge_newspaper_metadata assigns IDs to preserve every
+  # unrelated outlet's existing metadata_id.
+  if ("analysis_merged_into" %in% names(metadata)) {
+    metadata <- metadata[is.na(metadata$analysis_merged_into) |
+                           !nzchar(trimws(metadata$analysis_merged_into)), ]
+  }
   name <- normalize_outlet_name(metadata$name.page)
+  olvera <- name %in% "mexico news world"
+  metadata$names.conference[olvera] <- "mexico news world"
+  metadata$names.transcripts[olvera] <- "mexico news world"
+  sin_linea <- name %in% "sin linea mx"
+  metadata$names.conference[sin_linea] <- "sin linea"
+  metadata$names.transcripts[sin_linea] <- "sin linea"
+  # Retain both brand rows and their other source IDs; combine conferences only.
+  tiempo_puente <- name %in% c("tiempo la noticia digital", "puentelibremx")
+  metadata$names.conference[tiempo_puente] <- "tiempo la noticia digital"
+  metadata$names.transcripts[tiempo_puente] <- "tiempo la noticia digital"
+  w_radio <- name %in% c("w radio", "teleurban", "tele urban", "grupo teleurban")
+  metadata$names.conference[w_radio] <- "w radio"
+  metadata$names.transcripts[w_radio] <- "w radio"
+  jf_group <- name %in% c("jaime farias informa", "es ahora am", "frecuencia cad")
+  metadata$names.conference[jf_group] <- "jaime farias informa"
+  metadata$names.transcripts[jf_group] <- "jaime farias informa"
+  oro_empuje <- name %in% c("oro solido", "empuje migrante")
+  metadata$names.conference[oro_empuje] <- "oro solido"
+  metadata$names.transcripts[oro_empuje] <- "oro solido"
+  # BEGIN approved flagged metadata 2026-10-26
+  selected <- name %in% c("sin puntos ni comas", "medios digitales del pacifico", "informando la transformacion")
+  metadata$names.conference[selected] <- "medios digitales del pacifico"
+  metadata$names.transcripts[selected] <- "medios digitales del pacifico"
+  selected <- name %in% c("movimiento consciencia", "animales con derechos", "iztaccihuatl en el sendero de la luna")
+  metadata$names.conference[selected] <- "movimiento conciencia"
+  metadata$names.transcripts[selected] <- "movimiento conciencia"
+  selected <- name %in% c("sonora power", "lobos cadena 7")
+  metadata$names.conference[selected] <- "sonora power"
+  metadata$names.transcripts[selected] <- "sonora power"
+  selected <- name %in% c("comunicante mx", "alerta multimedia")
+  metadata$names.conference[selected] <- "comunicante mx"
+  metadata$names.transcripts[selected] <- "comunicante mx"
+  selected <- name %in% c("agua quemada", "los tubos", "revista posdata", "el portal del noreste")
+  metadata$names.conference[selected] <- "agua quemada"
+  metadata$names.transcripts[selected] <- "agua quemada"
+  selected <- name %in% c("grupo tribu", "cultura colectiva", "ecosfera", "el fildeo")
+  metadata$names.conference[selected] <- "grupo tribu"
+  metadata$names.transcripts[selected] <- "grupo tribu"
+  selected <- name %in% c("imagen digital", "excelsior")
+  metadata$names.conference[selected] <- "grupo imagen"
+  metadata$names.transcripts[selected] <- "grupo imagen"
+  selected <- name %in% c("poder mexico", "global energy")
+  metadata$names.conference[selected] <- "global energy"
+  metadata$names.transcripts[selected] <- "global energy"
+  selected <- name %in% c("efectos colaterales el chapucero", "efecto colateral")
+  metadata$names.conference[selected] <- "efecto colateral"
+  metadata$names.transcripts[selected] <- "efecto colateral"
+  selected <- name %in% c("canal universidad de guadalajara", "red periodistica de puerto vallarta")
+  metadata$names.conference[selected] <- "universidad de guadalajara"
+  metadata$names.transcripts[selected] <- "universidad de guadalajara"
+  selected <- name %in% c("amarc (red de radios comunitarias de mexico)", "politica y rock and roll radio")
+  metadata$names.conference[selected] <- "amarc"
+  metadata$names.transcripts[selected] <- "amarc"
+  selected <- name %in% c("alcanzando el conocimiento", "el regreso de donald trump")
+  metadata$names.conference[selected] <- "alcanzando el conocimiento"
+  metadata$names.transcripts[selected] <- "alcanzando el conocimiento"
+  selected <- name %in% c("nopal times", "el charro politico")
+  metadata$names.conference[selected] <- "nopal times"
+  metadata$names.transcripts[selected] <- "nopal times"
+  selected <- name %in% c("el financiero", "bloomberg news", "bloomberg linea")
+  metadata$names.conference[selected] <- "el financiero"
+  metadata$names.transcripts[selected] <- "el financiero"
+  selected <- name %in% c("asi lo dice la mont", "abc radio", "grupo audiorama")
+  metadata$names.conference[selected] <- "audiorama"
+  metadata$names.transcripts[selected] <- "audiorama"
+  # END approved flagged metadata 2026-10-26
   reporteros <- name %in% c("los reporteros mx", "el quintana roo mx")
   metadata$names.conference[reporteros] <- "reporteros mx"
   metadata$names.transcripts[reporteros] <- "losreporterosmx"
