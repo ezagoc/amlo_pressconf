@@ -41,7 +41,8 @@ The extension:
   contribute saved videos but do not establish all-video coverage by themselves.
 - Leaves unavailable dates and unknown engagement metrics missing. Of the dated
   archived videos, 506,568 fall outside supported all-video intervals and remain
-  in the archived-video export, not regression totals. This is principally a
+  in the archived-video export, not complete-coverage daily outcome totals.
+  The available-data historical covariates described below also use those saved videos. This is principally a
   completeness restriction on older/capped archives, not removal of those raw files.
 - Quarantines 19 videos with conflicting publication dates across saved snapshots;
   all candidate channel-days are marked unavailable. These conflicts are in 2026,
@@ -80,8 +81,20 @@ recorded attendance entry on jointly covered dates, using fresh panels and the
 new role filter. Ambiguous attendance/question source pairs are missing. Distinct
 contract beneficiaries and physical YouTube channels are each counted once per
 unit. Contracts and nine YouTube histories use log(1+x), no winsorization. Per-video
-means are ratios of window totals. Complete channel grids are required for YouTube
-histories; individual tests use observed 12-month histories and informative dates.
+means use metric-specific observed video counts. At the user's request, YouTube
+histories no longer require complete channel grids, full-year archives, or jointly
+observed engagement metrics. They use deduplicated saved videos published within
+the historical window, including partial archives. Each total sums recorded
+values for that metric; interactions require likes and comments on the same video.
+Means divide by the number of videos with that metric recorded. An entirely
+unobserved counter on existing videos stays missing. Per the user's convention,
+a linked channel with no saved videos in the window contributes zero uploads
+and engagement (including zero per-video measures). Unlinked outlets stay missing.
+This zero convention does not establish that the archive is complete. These are observed archive totals, not
+estimated full-year totals, so archive completeness can affect comparisons.
+`youtube_histories.csv` records observed video counts by metric, channel counts,
+and complete-grid diagnostics. Current daily outcome eligibility is unchanged.
+Individual tests use available histories and informative dates.
 Unlike the older multi-window AMLO exercise, no availability in additional 18/24-
 month windows is required here. Joint history fits use placeholders plus distinct
 missingness indicators, leaving the original missing histories intact.
@@ -110,12 +123,18 @@ by the user's June 15 cutoff.
 
 | Sample | Metadata joint p | Histories joint p |
 |---|---:|---:|
-| Full | 0.0000223 | 0.0001025 |
-| YouTube coverage | 0.00901 | 0.0001866 |
+| Full | 0.0000223 | 1.91e-13 |
+| YouTube coverage | 0.00901 | 8.05e-9 |
+
+Available-history rows now contain 96 outlets for videos, views, likes and their
+per-video measures; 94 for comments/interactions and their means (full sample).
+The YouTube-overlap history rows contain 89 outlets. The previous 48-outlet
+complete-history results are superseded. Prior AMLO access remains 85 outlets
+and contracts 61 in the full sample; neither required full-year complete grids.
 
 These are descriptive selection diagnostics, not evidence of random assignment
 or causal effects. History covariances are highly ill-conditioned (correlation
-condition numbers about 14.7m and 13.1m); interpret their joint tests cautiously.
+condition numbers about 0.88m and 1.46m); interpret their joint tests cautiously.
 The joint values were independently calculated and checked for invariance to
 centering. Missingness patterns and row-specific individual sample sizes are
 exported. Tests independently recover all 42 individual coefficients using
@@ -132,6 +151,7 @@ Run from the repository root:
 .venv/bin/python code/08-results/04-sheinbaum-balance/00-build.py
 Rscript code/08-results/04-sheinbaum-balance/01-estimate.R
 Rscript tests/test_sheinbaum_balance.R
+.venv/bin/python -m unittest discover -s tests -p 'test_sheinbaum_available_histories.py'
 python code/08-results/04-sheinbaum-balance/02-report.py
 ```
 

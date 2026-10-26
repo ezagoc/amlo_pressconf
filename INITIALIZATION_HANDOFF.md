@@ -15,7 +15,14 @@ conference is June 13, 2025. Keep later attendance source records, but exclude
 them from this balance/regression sample. Exposure is explicit transcript identification, a
 speaking proxy; exhaustive question coding remains incomplete. Nine metadata and
 12 prior-year histories, separate joint tests. Main YouTube sample metadata joint
-p = .00901; history p = .0001866, with ill-conditioned covariance explicitly flagged.
+p = .00901; history p = 8.05e-9, with ill-conditioned covariance explicitly flagged.
+User removed the complete-history requirement: use available archived videos,
+metric-specific observed values/denominators, and retain missing rather than
+zero for unknown counters on existing videos. User explicitly requests zero
+activity when linked channels have no videos in the window; unlinked outlets
+remain missing. Full-sample YouTube histories now have
+96 outlets (videos/views/likes) or 94 (comments/interactions), instead of 48;
+YouTube-overlap histories have 89. Prior AMLO ratio remains 85 in the full sample.
 The preliminary 70-outlet / 55-date result and the later 93-outlet / 235-date
 September-window result are superseded. Source linkage,
 coverage, missingness, saved models and tests are in the new workflow. PDF tables:
