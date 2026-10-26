@@ -1,5 +1,10 @@
 # Project status — October 26, 2026
 
+**Subsequent update:** the user authorized and completed a panel rebuild and
+initial Sheinbaum participation analysis. See [the rebuild record](PANEL_REBUILD_2026-10-26.md).
+The following is the earlier consolidation snapshot; its panel-deferral status
+is superseded by that update. Question–answer extraction remains incomplete.
+
 ## Scope and status
 
 This snapshot consolidates the official transcript workflows, reviewed journalist/outlet identities, attendance reconciliation, and the existing panel, YouTube, balance, and effect-of-asking work. All current project changes were authorized for versioning. No panel rebuild or new model/API run was performed during consolidation.

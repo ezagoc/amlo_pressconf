@@ -1,5 +1,15 @@
 # Initialization Handoff
 
+## Panel rebuild completed — October 26, 2026
+
+The user subsequently authorized rebuilding panels and starting analysis.
+See [the rebuild record](docs/PANEL_REBUILD_2026-10-26.md) and
+[Sheinbaum participation workflow](code/08-results/03-sheinbaum-participation/README.md).
+Metadata, attendance, historical final/source panels, and a separate Sheinbaum
+participation panel are rebuilt and validated. Earlier deferral notes below are
+superseded. The analysis measures explicit identification days; the 503-date
+question–answer analysis is still incomplete. No historical models were refit.
+
 ## October 26, 2026 consolidation
 
 Start with [the verified project recap](docs/PROJECT_STATUS_2026-10-26.md).

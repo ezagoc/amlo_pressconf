@@ -2,6 +2,11 @@
 
 ## Project status and workflow map
 
+Latest: [panel rebuild and initial Sheinbaum analysis](docs/PANEL_REBUILD_2026-10-26.md).
+The finalized mappings have now been propagated through the panels. The new
+[participation workflow](code/08-results/03-sheinbaum-participation/README.md)
+adds outlet/date summaries using explicit transcript identities and attendance.
+
 The [October 26, 2026 project recap](docs/PROJECT_STATUS_2026-10-26.md)
 records completed extraction and outlet reconciliation, dataset definitions,
 validation, and pending work. The current Sheinbaum archive contains 503
@@ -17,8 +22,8 @@ conferences through October 15, 2026; later dates have not been collected.
 
 Code, reviewed alias/evidence tables, and selected publication figures/tables
 are versioned here. Raw transcripts, model checkpoints, bulk datasets, and
-local recovery backups are not. The latest outlet changes have not yet been
-propagated through a fresh panel/model rebuild.
+local recovery backups are not. Panels reflect the latest outlet changes;
+historical model estimates have not been re-estimated.
 
 This repository is for code, notes, and reproducible workflows. The media data
 stays in Dropbox. Configure the path for the current machine, for example:
