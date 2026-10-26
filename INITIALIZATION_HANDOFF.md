@@ -3,30 +3,31 @@
 ## Sheinbaum balance / current YouTube data — October 26, 2026
 
 Start at [the new workflow](code/08-results/04-sheinbaum-balance/README.md).
-The user requested repeating the AMLO YouTube analysis, beginning with balance,
-and corrected the outdated 2024 YouTube cutoff. Raw downloads do extend into 2026.
-`09-build_extended_panel.py` now writes current physical-channel outcomes and
-coverage under `MEDIA_ROOT/data/06-outcomes/youtube/extended/`, through October 18,
-2026 for the latest snapshots. Use this source for Sheinbaum, not the legacy panel.
-User then specified a lottery-period cutoff: October 1, 2024-June 15, 2025.
-Balance has been rerun: 162 outlets / 164 dates in the full metadata sample;
-89 outlets / 161 dates in the current YouTube-coverage sample. Actual last
-conference is June 13, 2025. Keep later attendance source records, but exclude
-them from this balance/regression sample. Exposure is explicit transcript identification, a
-speaking proxy; exhaustive question coding remains incomplete. Nine metadata and
-12 prior-year histories, separate joint tests. Main YouTube sample metadata joint
-p = .00901; history p = 8.05e-9, with ill-conditioned covariance explicitly flagged.
-User removed the complete-history requirement: use available archived videos,
-metric-specific observed values/denominators, and retain missing rather than
-zero for unknown counters on existing videos. User explicitly requests zero
-activity when linked channels have no videos in the window; unlinked outlets
-remain missing. Full-sample YouTube histories now have
-96 outlets (videos/views/likes) or 94 (comments/interactions), instead of 48;
-YouTube-overlap histories have 89. Prior AMLO ratio remains 85 in the full sample.
-The preliminary 70-outlet / 55-date result and the later 93-outlet / 235-date
-September-window result are superseded. Source linkage,
-coverage, missingness, saved models and tests are in the new workflow. PDF tables:
-`output/pdf/sheinbaum_balance_12m.pdf`. No Sheinbaum YouTube effect models yet.
+User explicitly corrected the added YouTube archive-completeness restrictions:
+**follow the original `04-build_panel.py` balanced-calendar construction**.
+`09-build_extended_panel.py` now creates every channel/day, aggregates recovered
+videos and counters, fills no-video days and missing counters with zero, and
+uses all recovered videos as per-video denominators (zero if no videos).
+Archive completeness is diagnostic only. Never drop a date because no video
+was published or an archive interval is incomplete. Only channels with no
+recovered videos anywhere in the entire period are excluded, as in the original.
+Sources extend through 2026. Current panel: 189 channels x 3,213 days = 607,257
+rows, January 1, 2018–October 18, 2026; 1,640,344 unique dated recovered videos.
+Legacy AMLO source/results remain unchanged; use `youtube/extended/` for current
+Sheinbaum analysis. Outlet aggregation: 125 canonical outlets x 3,213 days in
+`output/balance/sheinbaum_12m/youtube_outlet_daily.parquet`.
+
+Attendance analysis stays October 1, 2024–June 15, 2025 (user lottery cutoff);
+last observed conference June 13. Full balance: 162 outlets / 164 dates;
+YouTube-linked: 96 outlets / 163 dates / 6,230 outlet-days, including 1,387
+zero-video days. All nine YouTube history measures have 96 outlets. Prior AMLO
+ratio remains 85 and contracts 61 in the full sample. Earlier 48/89-outlet
+history/YouTube-sample results were artifacts of the rejected completeness rule
+and are superseded. Keep later source attendance records outside this sample.
+Exposure is explicit transcript identification, a speaking proxy, not exhaustive
+question coding. Nine metadata and twelve prior-year histories, separate joint
+tests. Report and audits: `output/balance/sheinbaum_12m/`; PDF:
+`output/pdf/sheinbaum_balance_12m.pdf`. No YouTube effect regressions yet.
 
 ## Attendance eligibility tightened — October 26, 2026
 

@@ -58,11 +58,11 @@ story=[p('Sheinbaum: balance of speaking access','TitleLocal'),p('Recorded atten
  p('Analysis window: October 1, 2024-June 15, 2025, using the user-specified lottery stopping date. Later attendance records are excluded from these estimates.','SmallLocal'),
  p('Samples','HeadLocal')]
 sdata=[['Sample','Outlet-days','Outlets','Dates','Identified']]
-for key,title in [('all_recorded','All recorded attendees'),('full','Metadata-linked balance'),('youtube_overlap','YouTube regression coverage')]:
+for key,title in [('all_recorded','All recorded attendees'),('full','Metadata-linked balance'),('youtube_overlap','YouTube-linked sample')]:
     r=flow[key];sdata.append([p(title,'CellLocal'),count(r['n']),r['units'],r['dates'],count(r['identified_days'])])
 story += [table(sdata,[208,85,65,60,86]),Spacer(1,12),p('Joint balance tests','HeadLocal')]
 jdata=[['Sample / block','F statistic','p-value']]
-for s,title in [('full','Full'),('youtube_overlap','YouTube coverage')]:
+for s,title in [('full','Full'),('youtube_overlap','YouTube linked')]:
     for b in ['metadata','histories']:
         r=test(s,b);jdata.append([title+' / '+b,num(r['F']),pv(r['p_value'])])
 story += [table(jdata,[285,110,109]),Spacer(1,12),
@@ -73,7 +73,7 @@ html_parts=['<!doctype html><html lang="en"><meta charset="utf-8"><title>Sheinba
  '<h1>Sheinbaum: balance of speaking access</h1><p>Same nine metadata and twelve history measures as the latest AMLO balance; date fixed effects and outlet-clustered inference.</p>',
  '<div class="note">Explicit transcript identification is the speaking proxy, not an exhaustive question indicator. Only directly recorded REPORTERO/YOUTUBER attendees enter. YouTube outcomes now use the extended archives through 2026; the user-specified lottery-period cutoff limits this balance exercise to June 15, 2025.</div>',
  '<p><a href="../../pdf/sheinbaum_balance_12m.pdf">PDF tables</a></p>']
-for s,title in [('full','Full attendance-period sample'),('youtube_overlap','YouTube outcome-coverage sample')]:
+for s,title in [('full','Full attendance-period sample'),('youtube_overlap','YouTube-linked sample')]:
     r=flow[s]
     html_parts.append(f"<h2>{title}</h2><p>{count(r['n'])} outlet-days, {r['units']} outlets, {r['dates']} conferences, {count(r['identified_days'])} identified speaking days; {r['date_from']} through {r['date_to']}.</p>")
     for block in ['metadata','histories']:
@@ -97,10 +97,10 @@ for s,title in [('full','Full attendance-period sample'),('youtube_overlap','You
             p('Geographic definitions repeat the earlier provisional coding: Mexico City means headquarters-state code 9; metropolitan-area coverage means an explicit metropolitan label for any metropolitan area. It is not specifically a Mexico City metro indicator. Metadata describe the current registry, not verified historical status. No age or history control enters this metadata model.','SmallLocal')]
         else:
             story += [p('All histories cover October 1, 2023-September 30, 2024. Prior access uses AMLO question counts divided by recorded attendance entries on dates covered by both sources. Ambiguous prior source pairs remain missing. It is a ratio of totals, not a speaking probability.','SmallLocal'),
-            p('Contract and YouTube measures use log(1+x), without winsorization. YouTube histories use available archived videos, without requiring a complete year or channel bundle. Each metric sums its recorded values; per-video means use videos observed for that metric. Unknown histories remain missing. Joint models use zero placeholders plus distinct missingness indicators; the reported null excludes these indicators. No metadata covariates enter the history model.','SmallLocal'),
+            p('Contract and YouTube measures use log(1+x), without winsorization. YouTube histories sum the balanced daily panel, following the original AMLO construction. Days with no recovered videos contribute zero; missing counters are zero in daily sums. Per-video means divide by all recovered videos. Unmatched outlets remain missing. Joint models use zero placeholders plus distinct missingness indicators; the reported null excludes these indicators. No metadata covariates enter the history model.','SmallLocal'),
             p(f"Covariance correlation condition number: {float(jt['covariance_condition']):,.0f}. The joint history test is numerically sensitive to highly correlated predictors, despite independent calculation and centering checks. Missingness controls: {jt['missingness_controls']}.",'SmallLocal'),
-            p('YouTube counters are archived cumulative engagement for videos published in the historical window, not engagement verified as measured before October 2024. Partial archives contribute observed historical totals, which can understate full-year activity. Missing counters are excluded per metric; interactions require both likes and comments. Per user convention, linked channels with no saved videos have zero activity; unlinked outlets remain missing. Engagement balance is descriptive.','SmallLocal')]
-html_parts += ['<p>Historical covariates: October 2023-September 2024. Log(1+x) for contracts and YouTube; raw prior-access ratio. Joint history tests use missingness indicators and have highly correlated predictors. Engagement snapshots were collected later, so they are not verified pre-treatment outcomes.</p>',
+            p('YouTube counters are archived cumulative engagement for videos published in the historical window, not engagement verified as measured before October 2024. Every recovered channel has every calendar day. Archive-completeness flags are diagnostic only and never filter the sample. Interactions equal likes plus comments; all per-video measures are zero on no-video days. These are recovered-video totals, not proof of complete archives. Engagement balance is descriptive.','SmallLocal')]
+html_parts += ['<p>YouTube uses the original balanced-calendar sum-and-zero-fill rule; archive completeness does not filter rows. Historical covariates: October 2023-September 2024. Log(1+x) for contracts and YouTube; raw prior-access ratio. Joint history tests use missingness indicators and have highly correlated predictors. Engagement snapshots were collected later, so they are not verified pre-treatment outcomes.</p>',
  '<p>CSV tables, source linkage, coverage, and missingness audits are saved alongside this report. No YouTube effect regression has yet been estimated.</p></html>']
 (DATA/'index.html').write_text('\n'.join(html_parts))
 OUT.parent.mkdir(parents=True,exist_ok=True)

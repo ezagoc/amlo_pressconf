@@ -1,8 +1,8 @@
-"""Build current all-video YouTube outcomes with explicit channel/date coverage.
+"""Build a balanced daily panel of recovered YouTube videos through 2026.
 
 Reads existing local archives only. Legacy 2018-2024 panels remain reproducible.
-Uploads intervals support zero-video days; curated playlists alone do not prove
-all-video coverage. Counters are archived cumulative snapshots, not daily accrual.
+Matches the original panel's sum-and-zero-fill convention. Archive completeness
+is diagnostic only. Counters are cumulative snapshots, not daily accrual.
 """
 import argparse
 import hashlib
@@ -37,8 +37,10 @@ def dates(v):
     return pd.to_datetime(v,utc=True,errors='coerce',format='mixed').dt.tz_localize(None).dt.normalize()
 
 
-def strict_sum(s):
-    return s.sum() if s.notna().all() else np.nan
+def recovered_daily(videos):
+    return videos.groupby(['channel_id','date']).agg(
+        n_videos=('videoId','size'), viewCount=('viewCount','sum'),
+        likeCount=('likeCount','sum'), commentCount=('commentCount','sum')).reset_index()
 
 
 def main():
@@ -143,27 +145,32 @@ def main():
     unknown.groupby('channel_id').size().rename('videos').to_csv(out/'unmapped_raw_channels.csv')
     videos=videos[videos.channel_id.isin(dim.channel_id)]
     videos.to_parquet(out/'deduplicated_video_metrics.parquet',index=False)
-    daily=videos.groupby(['channel_id','date']).agg(n_videos=('videoId','size'),viewCount=('viewCount',strict_sum),likeCount=('likeCount',strict_sum),commentCount=('commentCount',strict_sum)).reset_index()
+    # As in the original panel, a channel needs at least one recovered video
+    # somewhere in the panel period, but never needs a video on each date.
+    no_data=dim[~dim.channel_id.isin(videos.channel_id)]
+    no_data.to_csv(out/'channels_without_recovered_videos.csv',index=False)
+    dim=dim[dim.channel_id.isin(videos.channel_id)].copy()
+    daily=recovered_daily(videos)
     calendar=pd.date_range(start,end)
     panel=pd.MultiIndex.from_product([dim.channel_id,calendar],names=['channel_id','date']).to_frame(index=False)
     panel=panel.merge(dim,on='channel_id',validate='many_to_one').merge(daily,on=['channel_id','date'],how='left',validate='one_to_one')
-    panel['source_date_observed']=False
+    panel['archive_complete_interval']=False
     for r in intervals.itertuples():
-        panel.loc[panel.channel_id.eq(r.channel_id)&panel.date.between(r.date_from,r.date_to),'source_date_observed']=True
+        panel.loc[panel.channel_id.eq(r.channel_id)&panel.date.between(r.date_from,r.date_to),'archive_complete_interval']=True
     # Conflicting publication dates leave every candidate channel/day unavailable.
     if len(conflict_rows):
         invalid=pd.MultiIndex.from_frame(conflict_rows[['channel_id','date']].drop_duplicates())
-        panel.loc[pd.MultiIndex.from_frame(panel[['channel_id','date']]).isin(invalid),'source_date_observed']=False
-    # Actual video rows outside supported upload intervals remain in the archive,
-    # but neither their partial totals nor unobserved zeros enter regressions.
-    present=panel.n_videos.notna()
+        panel.loc[pd.MultiIndex.from_frame(panel[['channel_id','date']]).isin(invalid),'archive_complete_interval']=False
+    # Balanced recovered-video panel: diagnostic archive intervals never mask
+    # outcomes or remove dates. The original sum convention treats absent
+    # counters as zero; dates with no recovered uploads have all-zero activity.
     for c in ['n_videos','viewCount','likeCount','commentCount']:
-        panel.loc[~present&panel.source_date_observed,c]=0
-        panel.loc[~panel.source_date_observed,c]=np.nan
-    panel['published']=panel.n_videos.gt(0).astype(float).where(panel.source_date_observed)
+        panel[c]=panel[c].fillna(0)
+    panel['published']=panel.n_videos.gt(0).astype(int)
     for c in ['viewCount','likeCount','commentCount']:
         panel[c+'_per_video']=panel[c].div(panel.n_videos.where(panel.n_videos.gt(0))).mask(panel.n_videos.eq(0),0)
-    panel['source_entity_matched']=panel.channel_id.isin(intervals.channel_id)
+    panel['source_entity_matched']=True
+    panel['source_date_observed']=True  # Calendar present in recovered-video panel, not archive completeness.
     panel.to_parquet(out/'panel_daily.parquet',index=False)
     entity=panel.rename(columns={'channel_id':'entity_id','n_videos':'youtube_n_videos','viewCount':'youtube_views','likeCount':'youtube_likes','commentCount':'youtube_comments','published':'youtube_published','viewCount_per_video':'youtube_views_per_video','likeCount_per_video':'youtube_likes_per_video','commentCount_per_video':'youtube_comments_per_video'})
     entity.to_parquet(out/'youtube_entity_daily_panel.parquet',index=False)
@@ -173,8 +180,10 @@ def main():
     covered_years.to_csv(out/'covered_outcomes_by_year.csv')
     assert hashes=={str(p):digest(p) for p in paths},'Source changed during build'
     assert not panel.duplicated(['channel_id','date']).any()
-    assert panel.loc[~panel.source_date_observed,['n_videos','viewCount','likeCount','commentCount']].isna().all().all()
-    result={'date_from':str(start.date()),'date_to':str(end.date()),'channels':len(dim),'rows':len(panel),'unique_archived_videos':len(videos),'quarantined_conflicting_video_dates':len(conflict_ids),'archived_videos_outside_coverage':int(len(videos)-panel.n_videos.sum()),'metadata_urls':len(cw),'matched_metadata_urls':int(cw.entity_id.notna().sum()),'ambiguous_aliases':sorted(bad),'input_sha256':hashes,'inputs_unchanged':True,'coverage_policy':'Full uploads snapshots support historical zeros. Capped snapshots support only dates strictly after their uploads lower boundary. Retrieval days are excluded. Curated playlists contribute videos but do not establish complete all-video coverage. These are archive coverage flags, not independent proof of API completeness.','engagement_policy':'Maximum archived cumulative counters for each globally unique video ID; unavailable metrics stay NA. Counts belong to publication dates, not dates engagement accrued.'}
+    assert len(panel)==len(dim)*len(calendar)
+    assert panel[['n_videos','viewCount','likeCount','commentCount']].notna().all().all()
+    assert int(panel.n_videos.sum())==len(videos)
+    result={'date_from':str(start.date()),'date_to':str(end.date()),'channels':len(dim),'rows':len(panel),'unique_archived_videos':len(videos),'quarantined_conflicting_video_dates':len(conflict_ids),'archived_videos_outside_coverage':0,'channels_without_any_recovered_video':len(no_data),'metadata_urls':len(cw),'matched_metadata_urls':int(cw.entity_id.notna().sum()),'ambiguous_aliases':sorted(bad),'input_sha256':hashes,'inputs_unchanged':True,'coverage_policy':'Balanced channel-by-calendar-day panel over the common period. Channels with any recovered video are retained on every date; no-video days are zero. Archive completeness intervals are diagnostic only and never filter dates or outcomes. source_date_observed denotes calendar inclusion, not archive completeness.','engagement_policy':'Maximum archived cumulative counters for each globally unique video ID, then daily sums with missing counters treated as zero, matching the original panel. Per-video means divide by all recovered videos; zero on no-video days. Counts belong to publication dates, not dates engagement accrued.'}
     (out/'build_audit.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps({k:v for k,v in result.items() if k!='input_sha256'},indent=2));print(years.to_string());print(covered_years.to_string())
 

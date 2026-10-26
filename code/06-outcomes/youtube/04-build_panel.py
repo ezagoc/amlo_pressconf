@@ -1,6 +1,6 @@
 # Legacy 2018-2024 export retained for AMLO reproduction.
 # For current Sheinbaum outcomes through the latest archived retrieval, use
-# 09-build_extended_panel.py (explicit channel/date coverage; reviewed downloads).
+# 09-build_extended_panel.py (same balanced-calendar convention; reviewed downloads).
 # =========================
 # CONFIG
 # =========================

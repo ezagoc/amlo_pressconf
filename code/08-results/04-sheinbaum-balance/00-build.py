@@ -49,20 +49,6 @@ def complete_sum(s):
     return s.sum() if len(s) and s.notna().all() else np.nan
 
 
-def available_video_history(videos):
-    """Observed archive totals; metric means use their own observed videos."""
-    row = {'videos': len(videos)}
-    metrics = {'views': videos.viewCount, 'likes': videos.likeCount,
-               'comments': videos.commentCount,
-               'interactions': videos.likeCount + videos.commentCount}
-    for name, values in metrics.items():
-        n = int(values.notna().sum())
-        row[name + '_observed_videos'] = n
-        row[name] = float(values.sum()) if n else (0 if not len(videos) else np.nan)
-        row[name + '_per_video'] = float(values.mean()) if n else (0 if not len(videos) else np.nan)
-    return row
-
-
 def informative(d):
     counts = d.groupby('date').speaking_identified.nunique()
     return d[d.date.isin(counts[counts.eq(2)].index)].copy()
@@ -74,7 +60,6 @@ def main():
     paths={name:folder/f'{name}_entity_daily_panel.parquet' for name in ['attendance','questions','contracts','youtube']}
     paths['youtube']=media_path('data/06-outcomes/youtube/extended/youtube_entity_daily_panel.parquet')
     paths['youtube_crosswalk']=media_path('data/06-outcomes/youtube/extended/metadata_youtube_crosswalk.csv')
-    paths['youtube_videos']=media_path('data/06-outcomes/youtube/extended/deduplicated_video_metrics.parquet')
     paths.update(metadata=media_path('data/00-newspaper_data/processed/newspaper_metadata_geocoded.parquet'),
       crosswalk=folder/'metadata_outcome_crosswalk.parquet',
       participation=media_path('data/02-conferences-sheinbaum/participation_panel/through-2026-10-15/outlet_conference_daily.parquet'))
@@ -143,24 +128,15 @@ def main():
     yp['covered']=covered(yp)&yp[yc].notna().all(axis=1)
     yt=ylinks.merge(yp,on='entity_id',validate='many_to_many')
     assert not yt.duplicated(['unit_id','entity_id','date']).any()
-    archived=source(paths['youtube_videos'])
-    archived=archived[archived.date.between(START,END)].rename(columns={'channel_id':'entity_id'})
-    archived=ylinks.merge(archived,on='entity_id',validate='many_to_many')
-    assert not archived.duplicated(['unit_id','videoId']).any()
-    video_groups={u:g for u,g in archived.groupby('unit_id')}
-    empty=archived.iloc[:0]
     yh=[]
     for u,g in yt[yt.date.between(START,END)].groupby('unit_id'):
         expected=g.entity_id.nunique()*((END-START).days+1)
         complete=len(g)==expected and g.covered.all()
         row={'unit_id':u,'linked_entities':g.entity_id.nunique(),'observed_entity_days':int(g.covered.sum()),'expected_entity_days':expected,'complete_grid':bool(complete)}
-        v=video_groups.get(u,empty)
-        source_complete=len(g)==expected and covered(g).all()
-        # User convention: linked channels with no saved videos in the window
-        # receive zero activity; missing counters on existing videos stay NA.
-        row.update(available_video_history(v))
-        row['archived_channels']=v.entity_id.nunique()
-        row['archive_source_complete']=bool(source_complete)
+        row.update({k:float(g[c].sum()) for k,c in zip(['videos','views','likes','comments'],yc)})
+        row['interactions']=row['likes']+row['comments']
+        for k in ['views','likes','comments','interactions']:
+            row[k+'_per_video']=row[k]/row['videos'] if row['videos']>0 else 0
         yh.append(row)
     yh=pd.DataFrame(yh).set_index('unit_id');yh.to_csv(OUT/'youtube_histories.csv')
     hist=hist.join(yh[HIST[3:]])
@@ -170,11 +146,19 @@ def main():
     units=units.merge(transformed.reset_index(),on='unit_id',validate='one_to_one')
     units.to_csv(OUT/'unit_covariates.csv',index=False)
 
-    # Prospective YouTube sample: covered complete channel bundle, no ambiguous
-    # shared entities; observed zero-video days remain in the sample.
-    ypost=yt[yt.date.ge('2024-10-01')].groupby(['unit_id','date']).agg(yt_covered=('covered','all'),shared=('shared_across_conference_units','any'),n_entities=('entity_id','nunique'),videos=('youtube_n_videos','sum'))
-    counts=ylinks.groupby('unit_id').entity_id.nunique()
-    ypost['yt_eligible']=ypost.yt_covered & ~ypost.shared & ypost.n_entities.eq(ypost.index.get_level_values('unit_id').map(counts))
+    # Aggregate every calendar day across distinct recovered channels per outlet.
+    # No-video days remain zero and do not determine outlet/date eligibility.
+    outlet_daily=yt.groupby(['unit_id','date']).agg(
+        channels=('entity_id','nunique'), videos=('youtube_n_videos','sum'),
+        views=('youtube_views','sum'), likes=('youtube_likes','sum'),
+        comments=('youtube_comments','sum'), shared=('shared_across_conference_units','any'))
+    outlet_daily['interactions']=outlet_daily.likes+outlet_daily.comments
+    for k in ['views','likes','comments','interactions']:
+        outlet_daily[k+'_per_video']=outlet_daily[k].div(outlet_daily.videos.where(outlet_daily.videos.gt(0))).fillna(0)
+    outlet_daily['published']=outlet_daily.videos.gt(0).astype(int)
+    outlet_daily.reset_index().to_parquet(OUT/'youtube_outlet_daily.parquet',index=False)
+    ypost=outlet_daily[outlet_daily.index.get_level_values('date')>=POST_FROM].copy()
+    ypost['yt_eligible']=~ypost.shared
     ypost.reset_index().to_parquet(OUT/'youtube_date_coverage.parquet',index=False)
     p=p.merge(ypost[['yt_eligible']].reset_index(),how='left',on=['unit_id','date'],validate='one_to_one')
     p['yt_eligible']=p.yt_eligible.eq(True)

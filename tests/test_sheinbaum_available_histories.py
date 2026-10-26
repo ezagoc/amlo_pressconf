@@ -1,47 +1,39 @@
-import importlib.util
+"""Check balance histories and sample membership against the daily video panel."""
 from pathlib import Path
 import unittest
-
 import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location('balance_build', ROOT / 'code/08-results/04-sheinbaum-balance/00-build.py')
-build = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(build)
+OUT = ROOT / 'output/balance/sheinbaum_12m'
 
 
-class AvailableHistoriesTest(unittest.TestCase):
-    def test_metric_specific_observations(self):
-        videos = pd.DataFrame({'viewCount': [10, 20, 30], 'likeCount': [2, np.nan, 4],
-                               'commentCount': [np.nan, 3, 1]})
-        r = build.available_video_history(videos)
-        self.assertEqual(r['videos'], 3)
-        self.assertEqual(r['views'], 60)
-        self.assertEqual(r['likes'], 6)
-        self.assertEqual(r['likes_per_video'], 3)
-        self.assertEqual(r['comments_per_video'], 2)
-        self.assertEqual(r['interactions'], 5)
-        self.assertEqual(r['interactions_per_video'], 5)
-        self.assertEqual(r['interactions_observed_videos'], 1)
+class DailyPanelHistoriesTest(unittest.TestCase):
+    def test_histories_equal_daily_totals(self):
+        d = pd.read_parquet(OUT / 'youtube_outlet_daily.parquet')
+        h = pd.read_csv(OUT / 'youtube_histories.csv').set_index('unit_id')
+        metrics = ['videos', 'views', 'likes', 'comments', 'interactions']
+        expected = d[d.date.between('2023-10-01', '2024-09-30')].groupby('unit_id')[metrics].sum()
+        pd.testing.assert_frame_equal(h[metrics].sort_index(), expected.sort_index(), check_dtype=False)
+        for metric in metrics[1:]:
+            mean = expected[metric].div(expected.videos.where(expected.videos.gt(0))).fillna(0)
+            np.testing.assert_allclose(h.loc[mean.index, metric+'_per_video'], mean)
 
-    def test_no_videos_is_zero_but_unknown_counters_are_not(self):
-        empty = pd.DataFrame(columns=['viewCount', 'likeCount', 'commentCount'])
-        self.assertEqual(build.available_video_history(empty)['videos'], 0)
-        self.assertEqual(build.available_video_history(empty)['views'], 0)
-        missing = pd.DataFrame({'viewCount': [np.nan], 'likeCount': [np.nan], 'commentCount': [np.nan]})
-        r = build.available_video_history(missing)
-        self.assertEqual(r['videos'], 1)
-        self.assertTrue(np.isnan(r['views']))
-
-    def test_saved_partial_archives_are_retained(self):
-        p = ROOT / 'output/balance/sheinbaum_12m'
-        h = pd.read_csv(p / 'youtube_histories.csv').set_index('unit_id')
-        self.assertTrue((~h.complete_grid & h.videos.notna()).any())
-        self.assertTrue((h.likes_observed_videos < h.videos).any())
-        for metric in ['views', 'likes', 'comments', 'interactions']:
-            d = h[h[metric + '_observed_videos'].gt(0)]
-            np.testing.assert_allclose(d[metric] / d[metric + '_observed_videos'], d[metric + '_per_video'])
+    def test_every_day_and_zero_video_rows_retained(self):
+        d = pd.read_parquet(OUT / 'youtube_outlet_daily.parquet')
+        self.assertFalse(d.duplicated(['unit_id', 'date']).any())
+        days = (d.date.max()-d.date.min()).days+1
+        self.assertTrue(d.groupby('unit_id').size().eq(days).all())
+        z = d[d.videos.eq(0)]
+        self.assertGreater(len(z), 0)
+        self.assertTrue(z[['views','likes','comments','interactions','published']].eq(0).all().all())
+        full = pd.read_parquet(OUT / 'full_sample.parquet')
+        linked = full[full.unit_id.isin(d.loc[~d.shared, 'unit_id'])]
+        self.assertTrue(linked.yt_eligible.all())
+        sample = pd.read_parquet(OUT / 'youtube_overlap_sample.parquet')
+        merged = sample[['unit_id','date']].merge(d, on=['unit_id','date'], validate='one_to_one')
+        self.assertEqual(len(merged), len(sample))
+        self.assertGreater(int(merged.videos.eq(0).sum()), 0)
 
 
 if __name__ == '__main__':
