@@ -1,5 +1,26 @@
 # Initialization Handoff
 
+## Sheinbaum main regressions — October 26, 2026
+
+Completed the user's next step: main pooled daily YouTube results. Entry point:
+[main workflow](code/08-results/05-sheinbaum-main/README.md). Copied AMLO's six
+upper-p99 log1p outcomes, outlet/date FE, baseline and prior-AMLO-ratio-by-quarter
+adjusted models, plus 9,999-draw outlet wild-bootstrap inference. Uncapped log1p
+sensitivity uses the same rows. No new FEct/heterogeneity/event study here.
+
+Sample: 6,228 rows / 94 outlets / 163 dates after two singleton outlets; 683
+identified speaking days. All 1,387 zero-video days remain. Every outcome/model
+uses identical rows. Adjusted coefficients are positive but all wild p>.05:
+videos .330, interactions .157, mean interactions .151, likes .206, comments
+.219, views .063. Baseline views are marginal (wild p=.049). Interpret as
+conditional associations with an identification proxy and later engagement
+snapshots, not established causal effects. Both model variants validated.
+
+Data/models/HTML: `MEDIA_ROOT/results/sheinbaum/main_results/lottery-through-2025-06-15/`.
+PDF: `output/pdf/sheinbaum_main_results.pdf`. Scripts 01/02 in the new folder;
+`tests/test_sheinbaum_main.R` independently checks coefficients, sources,
+singleton exclusions, caps and all 119,988 saved bootstrap draws.
+
 ## Sheinbaum balance / current YouTube data — October 26, 2026
 
 Start at [the new workflow](code/08-results/04-sheinbaum-balance/README.md).
@@ -27,7 +48,7 @@ and are superseded. Keep later source attendance records outside this sample.
 Exposure is explicit transcript identification, a speaking proxy, not exhaustive
 question coding. Nine metadata and twelve prior-year histories, separate joint
 tests. Report and audits: `output/balance/sheinbaum_12m/`; PDF:
-`output/pdf/sheinbaum_balance_12m.pdf`. No YouTube effect regressions yet.
+`output/pdf/sheinbaum_balance_12m.pdf`. Main regressions are now completed above.
 
 ## Attendance eligibility tightened — October 26, 2026
 

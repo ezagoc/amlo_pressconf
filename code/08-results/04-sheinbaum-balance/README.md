@@ -1,7 +1,8 @@
 # Sheinbaum balance and current YouTube panel
 
 Updated October 26, 2026. This repeats the AMLO YouTube-outcome workflow,
-starting with balance. No Sheinbaum YouTube effect regressions have been run.
+starting with balance. Main regressions are now completed in
+`code/08-results/05-sheinbaum-main/`; see that workflow for estimates.
 
 ## Original panel construction restored
 
@@ -155,4 +156,5 @@ confirm raw inputs were not modified.
 
 Reports, samples, CSV tables, model RDS, mappings and audits:
 `output/balance/sheinbaum_12m/`. PDF: `output/pdf/sheinbaum_balance_12m.pdf`.
-Next step: estimate the AMLO-style outcome regressions from the corrected panel.
+Main AMLO-style outcome regressions are now saved by the adjacent
+`05-sheinbaum-main` workflow, using this corrected panel.
