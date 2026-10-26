@@ -134,3 +134,12 @@ excluded from attendance, while Angélica Guerrero explicitly introduces herself
 and asks a question in the transcript. This is a roster-role discrepancy, not
 evidence that a photographer asked the question. Attendance has no person names,
 so roles cannot be assigned to individual speakers from outlet matching alone.
+
+## Subsequent lottery-period analysis
+
+For the new balance and YouTube regression workflow, the user specified
+October 1, 2024-June 15, 2025 as the analysis window. The unrestricted descriptive
+report above remains a full-source coverage audit. Use
+`code/08-results/04-sheinbaum-balance/README.md` for the restricted regression
+samples and updated YouTube outcomes extending into 2026. Do not carry this
+report's September attendance endpoint into the lottery-period estimates.

@@ -1,5 +1,26 @@
 # Initialization Handoff
 
+## Sheinbaum balance / current YouTube data — October 26, 2026
+
+Start at [the new workflow](code/08-results/04-sheinbaum-balance/README.md).
+The user requested repeating the AMLO YouTube analysis, beginning with balance,
+and corrected the outdated 2024 YouTube cutoff. Raw downloads do extend into 2026.
+`09-build_extended_panel.py` now writes current physical-channel outcomes and
+coverage under `MEDIA_ROOT/data/06-outcomes/youtube/extended/`, through October 18,
+2026 for the latest snapshots. Use this source for Sheinbaum, not the legacy panel.
+User then specified a lottery-period cutoff: October 1, 2024-June 15, 2025.
+Balance has been rerun: 162 outlets / 164 dates in the full metadata sample;
+89 outlets / 161 dates in the current YouTube-coverage sample. Actual last
+conference is June 13, 2025. Keep later attendance source records, but exclude
+them from this balance/regression sample. Exposure is explicit transcript identification, a
+speaking proxy; exhaustive question coding remains incomplete. Nine metadata and
+12 prior-year histories, separate joint tests. Main YouTube sample metadata joint
+p = .00901; history p = .0001866, with ill-conditioned covariance explicitly flagged.
+The preliminary 70-outlet / 55-date result and the later 93-outlet / 235-date
+September-window result are superseded. Source linkage,
+coverage, missingness, saved models and tests are in the new workflow. PDF tables:
+`output/pdf/sheinbaum_balance_12m.pdf`. No Sheinbaum YouTube effect models yet.
+
 ## Attendance eligibility tightened — October 26, 2026
 
 User confirmed keeping REPORTERO and YOUTUBER only (clear variants and REPORTETO
