@@ -1,5 +1,24 @@
 # Initialization Handoff
 
+## Sheinbaum alignment heterogeneity — October 26, 2026
+
+Completed pooled aligned versus opposition+independent interactions, matching
+AMLO's combined specification. Scripts 03/04 in `code/08-results/05-sheinbaum-main/`.
+Six upper-p99 log1p outcomes, baseline/quarter-history adjustment, shared date
+and outlet FE, main-sample caps unchanged; 36 null-imposed 9,999-draw wild tests.
+Sample 5,221 rows / 80 outlets / 161 dates: 30 aligned and 50 comparison outlets,
+583 identified-speaking days and all 1,230 zero-video days retained.
+Eight missing and six conflicting classifications excluded under the AMLO rule;
+full list is in the report. Independent label corresponds to registry `unclear`.
+
+No adjusted difference is statistically detectable: difference wild p=.852
+(videos), .999 (interactions), .898 (mean interactions), .881 (likes), .303
+(comments), .867 (views). Do not infer equality from imprecise estimates.
+Report: `output/pdf/sheinbaum_heterogeneity.pdf`. Models/HTML/audits in main
+results subfolder `pooled_interactions_combined/`. Validation passed independent
+coefficients, group-slope reparameterization, classifications/sample and all
+359,964 bootstrap draws. Original pooled-main outputs remain unchanged.
+
 ## Sheinbaum main regressions — October 26, 2026
 
 Completed the user's next step: main pooled daily YouTube results. Entry point:

@@ -98,3 +98,61 @@ outcomes to the source panel, verifies zero-video rows remain, reconstructs
 all 24 coefficients via within-fixed-effect OLS, checks CIs, and reproduces
 all twelve bootstrap p-values from 119,988 saved finite draws. The final PDF
 is rendered and visually checked.
+
+## Alignment heterogeneity — completed October 26, 2026
+
+Scripts `03-heterogeneity.R` and `04-report-heterogeneity.py` reproduce the AMLO
+pooled interaction specification from `09-pooled-interactions.R --combine` and
+the six-outcome/wild-bootstrap extensions. This is one pooled model per outcome,
+with speaking and speaking x aligned, shared date FE, outlet FE and common
+history slopes. Report both group effects and their directly tested difference.
+Baseline and adjusted fits share every observation and the original main-sample
+p99 caps; caps are not recomputed by group or after classification exclusions.
+
+Existing metadata `ideology.4t` codes are linked through the canonical outlet's
+metadata IDs. `aligned` is Aligned; `opp` and `unclear` are Opposition and the
+AMLO-labeled Independent category, combined for the comparison. `unclear` is not
+verified political neutrality. As in AMLO, linked-brand code conflicts or missing
+classifications remain excluded, without changing any registry assignments.
+The classification audit lists all members and codes.
+
+Of the 94 main-sample outlets, 8 have missing codes and 6 have conflicting codes:
+Jaime Farias Informa, La Jornada, Medios Digitales del Pacifico, MMM Otros,
+Movimiento Conciencia and Sonora Power. The latter six are listed for transparent
+review, not silently assigned to either group. After excluding 14 outlets and
+two dates with no remaining speaking variation (67 rows), the sample has
+**5,221 outlet-days, 80 outlets, 161 dates and 583 identified-speaking days**.
+No further singleton removal is needed. All **1,230 zero-video days** remain.
+Aligned: 30 outlets / 1,994 rows / 296 speaking days. Opposition + independent:
+50 outlets / 3,227 rows / 287 speaking days (16 opposition, 34 unclear-coded outlets).
+
+Adjusted results, upper-p99 log1p outcomes:
+
+| Outcome | Opp. + independent | Aligned | Aligned minus comparison | Wild p for difference |
+|---|---:|---:|---:|---:|
+| Videos | 0.014 | 0.022 | 0.008 | 0.852 |
+| Total interactions | 0.125 | 0.125 | 0.000 | 0.999 |
+| Interactions/video | 0.108 | 0.092 | -0.016 | 0.898 |
+| Likes | 0.102 | 0.127 | 0.024 | 0.881 |
+| Comments | 0.171 | 0.024 | -0.148 | 0.303 |
+| Views | 0.180 | 0.217 | 0.036 | 0.867 |
+
+There is no statistically detectable difference for any outcome. Estimates are
+imprecise; this does not establish equality. Group-specific adjusted effects also
+have wild p>.05. Classifications are current-registry codes, not separately
+validated Sheinbaum-period positions. All main-report interpretation limits
+continue to apply, including speaking-proxy exposure and archived engagement.
+
+Run `Rscript tests/test_sheinbaum_heterogeneity.R` after estimation. Validation
+reconstructs classifications and the estimation sample from source metadata,
+checks zero-video retention, independently recovers all 12 within-FE coefficient
+vectors, validates 36 group contrasts and CIs, and reproduces 36 bootstrap
+p-values from **359,964 saved finite draws**. Group slopes and clustered SEs also
+match an equivalent direct-group-slope parameterization.
+
+Outputs are in the main results directory's `pooled_interactions_combined/`
+subfolder: fits, samples, effects/differences, classification/member/exclusion
+and sample-flow audits, all bootstrap objects, source hashes and HTML report.
+PDF: `output/pdf/sheinbaum_heterogeneity.pdf` (adjusted, baseline and classification
+audit pages; rendered and visually checked). Existing pooled-main files remain
+unchanged.
