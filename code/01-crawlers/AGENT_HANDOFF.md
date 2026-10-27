@@ -1932,8 +1932,11 @@ python .\code\01-crawlers\scripts\crawl_polemon_articles.py export --out-dir <fo
 ```
 
 `collect` and `sitemap` make requests; `build`, `clean` and `export` are
-offline. `export` writes `<out-dir>/polemon/` in the WordPress article schema
-(one gzip Parquet part) with `manifest.json`, `README.md` and `audit/`. Four
+offline. `export` writes `<out-dir>/polemon/` (default
+`crawler/articles/polemon/`, next to the other WordPress sources):
+`articles.parquet.gzip` in the WordPress article schema, `crawl_report.json`
+with the same fields as La Voz de Michoacán and Quadratín, plus `README.md`,
+`manifest.json` and `audit/`. It never touches `wordpress_articles.sqlite`. Four
 invalid pages (three test posts and a site-verification page) are excluded by
 rule; short, image-only, video, duplicate-title and duplicate-body posts are
 kept and flagged in `audit/quality_flags.csv`. Tag names were not collected.

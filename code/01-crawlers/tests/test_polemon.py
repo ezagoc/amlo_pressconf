@@ -19,6 +19,7 @@ from crawler_core.polemon import (  # noqa: E402
     collect_posts,
     export_delivery,
 )
+from crawler_core.wordpress_articles import article_fields_from_post, base_article_row  # noqa: E402
 
 
 def sample_post(post_id: int, date: str, title: str, content: str, author: str = "Jorge Gómez Naredo") -> dict[str, object]:
@@ -88,7 +89,7 @@ def test_collect_and_export_match_wordpress_article_schema(tmp_path: Path) -> No
 
     report = export_delivery(tmp_path, tmp_path / "out", "2026-10-27")
     target = tmp_path / "out" / "polemon"
-    articles = pd.read_parquet(target / "articles_part_000001.parquet.gzip")
+    articles = pd.read_parquet(target / "articles.parquet.gzip")
 
     assert list(articles.columns) == WORDPRESS_ARTICLE_COLUMNS
     assert report["rows_collected"] == 4
@@ -112,9 +113,25 @@ def test_collect_and_export_match_wordpress_article_schema(tmp_path: Path) -> No
     excluded = pd.read_csv(target / "audit" / "excluded_invalid.csv", encoding="utf-8-sig")
     assert excluded["wp_post_id"].tolist() == [26]
 
+    report_file = json.loads((target / "crawl_report.json").read_text(encoding="utf-8"))
+    assert list(report_file) == ["source_id", "source_name", "rows", "output_file", "row_groups", "errors",
+                                 "missing_main_text", "min_date", "max_date", "exported_at"]
+    assert report_file["rows"] == 3
+    assert report_file["output_file"] == "articles.parquet.gzip"
+    assert report_file["missing_main_text"] == 2  # the video page and the image-only post
+    assert (report_file["min_date"], report_file["max_date"]) == ("2019-09-03T16:44:15", "2019-10-02T09:00:00")
+
     manifest = json.loads((target / "manifest.json").read_text(encoding="utf-8"))
     assert manifest["rows"] == 3
-    assert manifest["parts"][0]["file"] == "articles_part_000001.parquet.gzip"
+    assert manifest["files"][0]["file"] == "articles.parquet.gzip"
+
+
+def test_columns_match_wordpress_extractor_rows() -> None:
+    # A row as extract_wordpress_articles builds it: discovery fields, then the post's fields.
+    row = base_article_row(pd.Series(dtype=object))
+    row.update(article_fields_from_post(sample_post(1, "2019-01-01T00:00:00", "t", "<p>x</p>")))
+    assert WORDPRESS_ARTICLE_COLUMNS == list(row)
+    assert len(WORDPRESS_ARTICLE_COLUMNS) == 28
 
 
 def test_block_stops_at_once_without_retry(tmp_path: Path) -> None:

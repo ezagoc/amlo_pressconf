@@ -30,7 +30,7 @@ from project_paths import media_output_path  # noqa: E402
 
 
 DEFAULT_STATE_DIR = REPO_ROOT / "tmp" / "articles_polemon"
-DEFAULT_OUT_DIR = media_output_path("data", "00-newspaper_data", "crawler", ".keep").parent
+DEFAULT_OUT_DIR = media_output_path("data", "00-newspaper_data", "crawler", "articles", ".keep").parent
 
 
 def parse_args() -> argparse.Namespace:
@@ -44,7 +44,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--state-dir", type=Path, default=DEFAULT_STATE_DIR,
                         help="Raw API responses and request log. Default: <repo>/tmp/articles_polemon")
     parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUT_DIR,
-                        help="export writes <out-dir>/polemon/. Default: MEDIA_ROOT/data/00-newspaper_data/crawler")
+                        help="export writes <out-dir>/polemon/. Default: MEDIA_ROOT/data/00-newspaper_data/crawler/articles")
     parser.add_argument("--pause-seconds", type=float, default=2.5)
     parser.add_argument("--export-date", default=dt.date.today().isoformat())
     return parser.parse_args()

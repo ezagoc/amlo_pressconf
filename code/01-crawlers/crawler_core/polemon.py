@@ -13,10 +13,10 @@ Steps (run through scripts/crawl_polemon_articles.py):
 
     collect  raw/posts/<year>/page_NNN.json, raw/categories, raw/users, requests.jsonl
     sitemap  raw/sitemap/*, plus API links dated outside 2015-2025 (for the reconciliation)
-    build    polemon_posts.parquet, monthly_counts.csv, sitemap reconciliation (offline)
-    clean    polemon_posts_clean.parquet and excluded_invalid.csv (offline)
-    export   polemon/articles_part_000001.parquet.gzip in the WordPress article schema, with
-             manifest.json, README.md and audit/ (offline)
+    build    polemon_posts.parquet, one row per collected post (offline)
+    clean    reports delivered and excluded posts (offline)
+    export   polemon/articles.parquet.gzip in the WordPress article schema, with crawl_report.json,
+             README.md, manifest.json and audit/ (offline)
 """
 
 from __future__ import annotations
@@ -53,9 +53,10 @@ USER_AGENT = (
 CURL = "curl.exe" if sys.platform == "win32" else "curl"
 MAX_TRIES = 3
 MAX_CONSECUTIVE_ERRORS = 3
-PART_ROWS = 50_000  # same chunk size as scripts/export_wordpress_articles_by_source.py
+OUTPUT_FILE = "articles.parquet.gzip"  # name used by write_article_outputs in wordpress_articles.py
 
-# Same columns, in the same order, as the WordPress article parts under crawler/articles/<source_id>/.
+# Same columns, in the same order, as the WordPress article rows: base_article_row plus the two
+# name columns that article_fields_from_post adds (crawler_core/wordpress_articles.py).
 WORDPRESS_ARTICLE_COLUMNS = [
     *base_article_row(pd.Series(dtype=object)).keys(),
     "category_names",
@@ -559,21 +560,19 @@ def sha256_file(path: Path) -> str:
 
 
 def export_delivery(state_dir: Path, out_dir: Path, export_date: str) -> dict:
-    """Write <out_dir>/polemon/: WordPress-schema parts, manifest.json, README.md and audit/ (offline)."""
+    """Write <out_dir>/polemon/ (offline): articles.parquet.gzip, crawl_report.json, README.md,
+    manifest.json and audit/. `out_dir` is the crawler/articles folder of the WordPress sources."""
     posts = build_posts_table(state_dir, save=False)
     clean, excluded = clean_posts_table(posts)
     articles = to_wordpress_articles(clean)
     target = out_dir / SOURCE_ID
     audit = target / "audit"
     audit.mkdir(parents=True, exist_ok=True)
-    for old in target.glob("articles_part_*.parquet.gzip"):
-        old.unlink()
 
-    parts = []
-    for number, start in enumerate(range(0, len(articles), PART_ROWS), start=1):
-        name = f"articles_part_{number:06d}.parquet.gzip"
-        articles.iloc[start:start + PART_ROWS].to_parquet(target / name, index=False, compression="gzip")
-        parts.append({"file": name, "rows": len(articles.iloc[start:start + PART_ROWS]), "sha256": sha256_file(target / name)})
+    # Same file and writer as write_article_outputs in crawler_core/wordpress_articles.py.
+    articles.to_parquet(target / OUTPUT_FILE, index=False, compression="gzip")
+    crawl_report = build_crawl_report(target / OUTPUT_FILE, articles)
+    (target / "crawl_report.json").write_text(json.dumps(crawl_report, indent=2) + "\n", encoding="utf-8", newline="\n")
 
     csv = {"index": False, "encoding": "utf-8-sig", "lineterminator": "\n"}
     flags = clean[["post_id", "url", "date", "date_gmt", "body_chars", "flags", *FLAG_LABELS,
@@ -593,7 +592,7 @@ def export_delivery(state_dir: Path, out_dir: Path, export_date: str) -> dict:
     not_in_api.to_csv(audit / "sitemap_urls_not_in_api.csv", **csv)
     not_in_sitemap.to_csv(audit / "api_urls_not_in_sitemap.csv", **csv)
 
-    checks = read_back_checks(target, parts, articles)
+    checks = read_back_checks(target / OUTPUT_FILE, articles)
     ledger = load_ledger(state_dir)
     report = {
         "source_id": SOURCE_ID,
@@ -622,16 +621,36 @@ def export_delivery(state_dir: Path, out_dir: Path, export_date: str) -> dict:
     (audit / f"polemon_export_audit_{export_date}.md").write_text(audit_markdown(report, export_date), encoding="utf-8", newline="\n")
     (audit / "CLEANING_RULES.md").write_text(cleaning_rules_markdown(report, excluded), encoding="utf-8", newline="\n")
     (target / "README.md").write_text(readme_markdown(report), encoding="utf-8", newline="\n")
-    manifest = {"source_id": SOURCE_ID, "rows": len(articles), "parts": parts,
-                "audit_files": [{"file": f"audit/{p.name}", "bytes": p.stat().st_size, "sha256": sha256_file(p)}
-                                for p in sorted(audit.iterdir())]}
+    files = [target / OUTPUT_FILE, target / "crawl_report.json", target / "README.md", *sorted(audit.iterdir())]
+    manifest = {"source_id": SOURCE_ID, "rows": len(articles),
+                "files": [{"file": p.relative_to(target).as_posix(), "bytes": p.stat().st_size, "sha256": sha256_file(p)}
+                          for p in files]}
     (target / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     return report
 
 
-def read_back_checks(target: Path, parts: list[dict], articles: pd.DataFrame) -> dict:
-    """Read every part back and check rows, keys, required fields and dates."""
-    back = pd.concat([pd.read_parquet(target / p["file"]) for p in parts], ignore_index=True)
+def build_crawl_report(path: Path, articles: pd.DataFrame) -> dict:
+    """crawl_report.json with the fields of the other crawler/articles/<source_id>/ folders."""
+    import pyarrow.parquet as pq
+
+    blank_text = articles["main_text"].isna() | articles["main_text"].astype(str).str.strip().eq("")
+    return {
+        "source_id": SOURCE_ID,
+        "source_name": SOURCE_NAME,
+        "rows": len(articles),
+        "output_file": path.name,
+        "row_groups": pq.ParquetFile(path).metadata.num_row_groups,
+        "errors": int(articles["error"].notna().sum()),
+        "missing_main_text": int(blank_text.sum()),
+        "min_date": articles["date_published"].min(),
+        "max_date": articles["date_published"].max(),
+        "exported_at": now(),
+    }
+
+
+def read_back_checks(path: Path, articles: pd.DataFrame) -> dict:
+    """Read the exported file back and check rows, keys, required fields and dates."""
+    back = pd.read_parquet(path)
     blank = lambda col: back[col].isna() | back[col].astype(str).str.strip().eq("")  # noqa: E731
     checks = {
         "rows_read_back": len(back),
@@ -666,7 +685,7 @@ def audit_markdown(report: dict, export_date: str) -> str:
         f"{report['collection']['first_fetch_utc'][:16]} to {report['collection']['last_fetch_utc'][:16]} UTC.",
         f"- {report['rows_excluded_invalid']} invalid pages excluded (test posts and a site-verification page); "
         "listed in `excluded_invalid.csv`. Rules: `CLEANING_RULES.md`.",
-        f"- Every part read back: {c['rows_read_back']:,} rows; zero duplicate post IDs or URLs, blank titles, "
+        f"- `{OUTPUT_FILE}` read back: {c['rows_read_back']:,} rows; zero duplicate post IDs or URLs, blank titles, "
         "missing dates, dates outside the range, other sources or error rows.",
         f"- {c['blank_main_text']} rows have no body text; they are image or video posts and are flagged, not removed.",
         f"- Review flags kept (`quality_flags.csv`): " + "; ".join(f"{k} {v:,}" for k, v in report["flag_counts"].items()) + ".",
@@ -684,7 +703,7 @@ def readme_markdown(report: dict) -> str:
         "# Polemon article export",
         "",
         f"{report['rows_delivered']:,} posts from polemon.mx published {report['date_range_local'].replace('..', ' to ')} "
-        "(local publication date), in one gzip Parquet part. Includes short and image-only posts.",
+        f"(local publication date), in `{OUTPUT_FILE}` (gzip Parquet). Includes short, image-only and video posts.",
         f"{report['rows_excluded_invalid']} invalid pages (test posts and a site-verification page) are excluded and",
         "listed in `audit/excluded_invalid.csv`.",
         "",
@@ -696,8 +715,9 @@ def readme_markdown(report: dict) -> str:
         "because tag names were not collected; `tag_ids` are kept.",
         "",
         "All posts were collected through the WordPress REST API only, 2.5 seconds between requests,",
-        "with code `code/01-crawlers/crawler_core/polemon.py`. `manifest.json` lists the row count and",
-        "SHA-256 of every file. `audit/` holds the export audit, cleaning rules, per-post review flags",
+        "with code `code/01-crawlers/crawler_core/polemon.py`. `crawl_report.json` has the same fields as",
+        "the other sources in `crawler/articles/`; `manifest.json` lists the size and SHA-256 of every",
+        "file. `audit/` holds the export audit, cleaning rules, per-post review flags",
         "(`quality_flags.csv`, joined on `wp_post_id`), monthly counts and the sitemap reconciliation.",
         "",
     ])
