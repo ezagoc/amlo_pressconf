@@ -1906,3 +1906,34 @@ GDELT gap command:
 ```powershell
 python .\code\01-crawlers\scripts\discover_gdelt_urls.py --source-id reforma --source-id elnorte --from-date 2023-05-27 --to-date 2026-06-27 --state-db .\tmp\gdelt_grupo_reforma\gdelt.sqlite --output-dir .\tmp\gdelt_grupo_reforma\discovery --reports-dir .\tmp\gdelt_grupo_reforma\reports --window-days 7 --request-interval-seconds 6 --request-retries 3 --retry-backoff-seconds 10 --timeout 90 --resume
 ```
+
+## Polemon (WordPress REST API, own adapter)
+
+Polemon (`polemon.mx`, registry `source_id` `polemon`) is a WordPress site collected
+with its own adapter rather than the generic discover/extract pipeline:
+
+- `crawler_core/polemon.py`
+- `scripts/crawl_polemon_articles.py`
+- `tests/test_polemon.py`
+
+Posts are listed by local publication year through `/wp-json/wp/v2/posts`
+(`after`/`before`, 100 full post objects per request), so 196 requests collected
+all 14,809 posts dated 2015-01-01 to 2025-12-31. Every API response is kept
+unchanged with its headers, and every request is logged with its fetch time and
+SHA-256. Agreed access rules: API only, 2.5 seconds between requests, stop at
+once on a block or after 3 errors in a row, no other access method, deleted
+posts not recovered. Authors come from `yoast_head_json.author` because the
+users endpoint answers HTTP 401.
+
+```powershell
+python .\code\01-crawlers\scripts\crawl_polemon_articles.py collect
+python .\code\01-crawlers\scripts\crawl_polemon_articles.py sitemap
+python .\code\01-crawlers\scripts\crawl_polemon_articles.py export --out-dir <folder>
+```
+
+`collect` and `sitemap` make requests; `build`, `clean` and `export` are
+offline. `export` writes `<out-dir>/polemon/` in the WordPress article schema
+(one gzip Parquet part) with `manifest.json`, `README.md` and `audit/`. Four
+invalid pages (three test posts and a site-verification page) are excluded by
+rule; short, image-only, video, duplicate-title and duplicate-body posts are
+kept and flagged in `audit/quality_flags.csv`. Tag names were not collected.
