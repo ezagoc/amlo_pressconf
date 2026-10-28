@@ -317,6 +317,18 @@ INVALID_RULES = {
     "I2": f"placeholder: body under {PLACEHOLDER_MAX_CHARS} characters with no space and no media",
     "I3": "system page: the title is a site-verification or configuration file name",
 }
+# What each review flag means, for the generic CLEANING_RULES.md.
+FLAG_RULES = {
+    "flag_video_page": f"body under {SHORT_CHARS} characters and an embedded video player (`<iframe>` or `<video>`).",
+    "flag_cover_page": "a daily front-page post, by its title; kept.",
+    "flag_empty_body": "empty body; these posts are images, video or embedded documents and are kept.",
+    "flag_short_body": f"1 to {SHORT_CHARS - 1} characters of body text.",
+    "flag_dup_title": "same title after normalizing quotes, spaces and case; `dup_title_group` links them.",
+    "flag_dup_body": f"same body after normalizing spaces, bodies of {DUP_BODY_MIN_CHARS}+ characters; `dup_body_group` links them.",
+    "flag_legacy_url": "the URL's last segment holds characters the site no longer resolves; kept as given.",
+    "flag_dup_url": "two or more post IDs carry the same URL with different text; `dup_url_group` links them.",
+    "flag_no_title": "the post has an empty title; kept.",
+}
 
 
 class WordPressSource:
@@ -834,8 +846,8 @@ class WordPressSource:
             "",
             f"- {n(report['rows_delivered'])} posts in {len(report['rows_delivered_by_year'])} years "
             f"({report['date_range_local']}, local publication date), WordPress article schema, gzip Parquet.",
-            f"- Collected {n(report['rows_collected'])} posts with {n(report['collection']['requests'])} WordPress API "
-            f"requests ({report['collection']['failed_attempts']} failed attempts), "
+            f"- Collected {n(report['rows_collected'])} posts; {n(report['collection']['requests'])} requests to the site "
+            f"(WordPress API and sitemaps, {report['collection']['failed_attempts']} failed attempts), "
             f"{report['collection']['first_fetch_utc'][:16]} to {report['collection']['last_fetch_utc'][:16]} UTC.",
             f"- {n(report['rows_excluded_invalid'])} invalid pages excluded; listed in `excluded_invalid.csv`. "
             "Rules: `CLEANING_RULES.md`.",
@@ -895,11 +907,13 @@ class WordPressSource:
             "",
             *[f"- **{rule}**: {text}." for rule, text in INVALID_RULES.items()],
             "",
-            f"{n(len(excluded))} posts excluded; see `excluded_invalid.csv`.",
+            f"{n(len(excluded))} posts excluded, listed in `excluded_invalid.csv`" + (":" if 0 < len(excluded) <= 40 else "."),
+            *([""] + [f"- {r.post_id} ({r.date[:10]}, rule {r.exclude_rule}): {r.title or '(no title)'}"
+                      for r in excluded.itertuples()] if 0 < len(excluded) <= 40 else []),
             "",
             "## Kept with flags",
             "",
-            *[f"- {label}" for label in self.flag_labels.values()],
+            *[f"- **{label}**: {FLAG_RULES[col]}" for col, label in self.flag_labels.items()],
             "",
             "Counts: " + "; ".join(f"{k} {n(v)}" for k, v in report["flag_counts"].items()) + ".",
             "",
