@@ -42,7 +42,7 @@ from crawler_core.wordpress import clean_html
 from crawler_core.wordpress_articles import base_article_row, normalize_articles_for_output
 
 
-SOURCES = ("polemon", "noticiasdequeretaro")  # modules crawler_core/<source_id>.py
+SOURCES = ("polemon", "noticiasdequeretaro", "exclusivaspuebla")  # modules crawler_core/<source_id>.py
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/141.0 Safari/537.36"
@@ -144,7 +144,8 @@ class Client:
                 tmp.replace(target)
                 self.errors_in_a_row = 0
                 return status, data, headers
-            tmp.replace(target.with_name(f"{target.name}.failed{attempt}"))
+            if tmp.exists():  # curl writes no body when the connection fails (e.g. exit code 35, TLS error)
+                tmp.replace(target.with_name(f"{target.name}.failed{attempt}"))
             if blocked:
                 raise Stop(f"blocked (HTTP {status}) at {url}")
             self.errors_in_a_row += 1

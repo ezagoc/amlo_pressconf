@@ -187,3 +187,20 @@ def test_load_source_by_registry_id() -> None:
         pass
     else:
         raise AssertionError("an unknown source must be refused")
+
+
+def test_connection_error_without_body_is_retried(tmp_path: Path) -> None:
+    # 2026-10-28: a TLS error (curl exit 35) left no body file; the client must log it and retry, not crash.
+    calls: list[str] = []
+
+    def flaky(url: str, body_path: Path, header_path: Path) -> tuple[int, int]:
+        calls.append(url)
+        if len(calls) == 1:
+            return 0, 35
+        body_path.write_text("[]", encoding="utf-8")
+        return 200, 0
+
+    status, data, _ = Client(tmp_path, 0, fetcher=flaky).get("https://polemon.mx/wp-json/wp/v2/posts", "posts/page_001.json")
+    assert (status, data, len(calls)) == (200, b"[]", 2)
+    ledger = [json.loads(line) for line in (tmp_path / "requests.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert [e["problem"] for e in ledger] == ["curl_rc=35 http=0", None]
