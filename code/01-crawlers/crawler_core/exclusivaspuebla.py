@@ -13,13 +13,16 @@ Kevin had it resumed an hour later at 5 s between requests.
 
 from __future__ import annotations
 
+import datetime as dt
 import html
+import json
 import re
 from pathlib import Path
+from types import SimpleNamespace
 
 import pandas as pd
 
-from crawler_core.wordpress_api import WordPressSource, n, norm_url
+from crawler_core.wordpress_api import CSV, WordPressSource, n, norm_url
 
 
 class ExclusivasPuebla(WordPressSource):
@@ -80,6 +83,89 @@ class ExclusivasPuebla(WordPressSource):
         }
         return not_in_api, not_in_sitemap, totals
 
+    # Wayback Machine CDX counts (Kevin 2026-10-28: at most 20 requests, counts only, no archived page opened),
+    # saved by tools/wayback_count.py in <state_dir>/wayback/raw/<window>.json. Capture dates, not publication dates.
+    WAYBACK_WINDOWS = {"mar": "2022-03-01..2022-03-31", "apr01_28": "2022-04-01..2022-04-28",
+                       "apr29_may": "2022-04-29..2022-05-31"}
+    NOT_ARTICLE = re.compile(r"^(?:wp-content|wp-json|wp-admin|wp-includes|category|tag|author|page|feed|comments)(?:/|$)")
+
+    def wayback_check(self, state_dir: Path, posts: pd.DataFrame, sitemap_only: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
+        """Archived article URLs (one path segment, HTTP 200) per capture window, matched to the collected posts
+        and to the sitemap-only URLs; returns the April 1-28 URLs found in neither, and the totals."""
+        api_month = {norm_url(u): d[:7] for u, d in zip(posts["url"], posts["date"])}
+        sitemap = {norm_url(u) for u in sitemap_only["url"]}
+        totals, missing = {}, pd.DataFrame(columns=["url", "first_capture_utc"])
+        for label, window in self.WAYBACK_WINDOWS.items():
+            path = state_dir / "wayback" / "raw" / f"{label}.json"
+            if not path.exists():
+                continue
+            rows = json.loads(path.read_text(encoding="utf-8"))[1:]  # urlkey, timestamp, original, mimetype, statuscode
+            first: dict[str, tuple[str, str]] = {}
+            for _, ts, url, _, status in rows:
+                key = norm_url(url)
+                slug = key.partition("/")[2]
+                if status == "200" and slug and "/" not in slug and not self.NOT_ARTICLE.match(slug):
+                    if key not in first or ts < first[key][0]:
+                        first[key] = (ts, url)
+            in_api = [api_month[k] for k in first if k in api_month]
+            neither = {k: v for k, v in first.items() if k not in api_month and k not in sitemap}
+            start, end = window.split("..")
+            totals[window] = {
+                "captures": len(rows),
+                "collected_posts_dated_in_window": int(posts["date"].str[:10].between(start, end).sum()),
+                "article_urls": len(first),
+                "in_api": len(in_api),
+                "in_api_by_month": pd.Series(in_api, dtype=str).value_counts().sort_index().to_dict(),
+                "sitemap_only": sum(1 for k in first if k not in api_month and k in sitemap),
+                "in_neither": len(neither),
+                "in_neither_by_capture_day": pd.Series([ts[:8] for ts, _ in neither.values()], dtype=str)
+                .value_counts().sort_index().to_dict(),
+            }
+            if label == "apr01_28":
+                missing = pd.DataFrame(
+                    [{"url": url, "first_capture_utc": dt.datetime.strptime(ts, "%Y%m%d%H%M%S").strftime("%Y-%m-%dT%H:%M:%SZ")}
+                     for ts, url in sorted(neither.values(), key=lambda v: (v[0], v[1]))],
+                    columns=["url", "first_capture_utc"])
+        return missing, totals
+
+    def write_sitemap_check(self, ctx: SimpleNamespace, audit: Path) -> dict | None:
+        totals = super().write_sitemap_check(ctx, audit)
+        not_in_api, _, _ = self.sitemap_reconciliation(ctx.state_dir, ctx.posts)
+        missing, ctx.wayback = self.wayback_check(ctx.state_dir, ctx.posts, not_in_api)
+        if ctx.wayback:
+            missing.to_csv(audit / "wayback_2022_04_01_28_urls_not_on_site.csv", **CSV)
+        return totals
+
+    def report(self, ctx: SimpleNamespace) -> dict:
+        report = super().report(ctx)
+        if ctx.wayback:
+            report["wayback_cdx_counts"] = ctx.wayback
+        return report
+
+    def wayback_note(self, report: dict) -> list[str]:
+        w = report.get("wayback_cdx_counts")
+        if not w:
+            return []
+        mar, apr, may = (w["2022-03-01..2022-03-31"], w["2022-04-01..2022-04-28"], w["2022-04-29..2022-05-31"])
+        bulk = sum(v for d, v in may["in_neither_by_capture_day"].items() if d >= "20220517")
+        return [
+            f"Wayback Machine check (CDX index only, {n(len(w))} requests 5 s apart on 2026-10-28; no archived page "
+            f"was opened). The archive captured {n(apr['article_urls'])} article URLs of the site between 1 and 28 April "
+            f"2022: {n(apr['in_api'])} are collected posts (all dated March 2022 or earlier) and {n(apr['in_neither'])} "
+            "are neither in the API nor in the sitemaps (listed in `wayback_2022_04_01_28_urls_not_on_site.csv`), first "
+            "captured on every one of the 28 days. For comparison, of the "
+            f"{n(mar['article_urls'])} article URLs captured in March 2022, {n(mar['in_api'])} are collected posts. So "
+            "the site did publish in early April 2022 and those posts are no longer on it. Capture dates are not "
+            f"publication dates; at the March capture rate ({n(mar['in_api_by_month'].get('2022-03', 0))} of the "
+            f"{n(mar['collected_posts_dated_in_window'])} March posts) the lost posts would number about "
+            f"{round(apr['in_neither'] * mar['collected_posts_dated_in_window'] / mar['in_api_by_month']['2022-03'], -2):,.0f} "
+            "(inference).",
+            f"Captures from 29 April to 31 May 2022 include {n(may['in_neither'])} article URLs that the site no longer "
+            f"has; {n(bulk)} of them come from five deep crawls on 17-29 May that also picked up older posts. Their "
+            "publication dates are unknown without opening the archived pages (not done), so they may include other "
+            "posts deleted before or during the 2022 move.",
+        ]
+
     NOTES = [
         "Posts dated 2018 to July 2022 were moved into WordPress in one batch, newest first: along the publication "
         "date their post IDs fall (87,762 in January 2018 down to 2,229 in July 2022), and the modified time equals "
@@ -104,7 +190,7 @@ class ExclusivasPuebla(WordPressSource):
 
     def audit_markdown(self, report: dict, export_date: str) -> str:
         s = report["sitemap_reconciliation"]
-        notes = self.NOTES + [
+        notes = self.NOTES + self.wayback_note(report) + [
             f"The post sitemaps repeat {n(s['sitemap_entries_repeated'])} entries and lack {n(s['api_not_in_sitemap'])} "
             "collected posts (`api_urls_not_in_sitemap.csv`). Nearly all are one file: post-sitemap299.xml came back "
             "with the same posts as post-sitemap.xml instead of the January 2019 posts it should hold; the rest sit at "
@@ -114,11 +200,14 @@ class ExclusivasPuebla(WordPressSource):
     def readme_markdown(self, report: dict) -> str:
         base = super().readme_markdown(report).replace(
             "5 seconds between requests,", "2.5 and then 5 seconds between requests (see below),")
+        w = report.get("wayback_cdx_counts", {}).get("2022-04-01..2022-04-28")
+        april = (f"1-28 April 2022; the Wayback Machine captured {n(w['in_neither'])} article URLs in those days that"
+                 "\nthe site no longer has" if w else "1-28 April 2022 (missing on the site itself)")
         return base + "\n" + "\n".join([
             "**Dates.** Posts dated 2018 to July 2022 were moved into WordPress in one batch from an earlier system;",
             "their dates look right to the day, but times of day are less certain. There are no posts from",
-            "1-28 April 2022 (missing on the site itself) and none dated 2016-2017; one post is dated 2015-12-11,",
-            "probably wrongly. The first 140 API pages were requested 2.5 seconds apart, the rest 5 seconds apart",
+            f"{april}. None are dated 2016-2017; one post is dated 2015-12-11, probably wrongly.",
+            "The first 140 API pages were requested 2.5 seconds apart, the rest 5 seconds apart",
             "(after the site stopped answering three times in a row). See the export audit in `audit/`.",
             "",
         ])
