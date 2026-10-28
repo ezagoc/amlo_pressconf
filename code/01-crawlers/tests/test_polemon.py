@@ -12,13 +12,8 @@ CRAWLER_DIR = Path(__file__).resolve().parents[1]
 if str(CRAWLER_DIR) not in sys.path:
     sys.path.insert(0, str(CRAWLER_DIR))
 
-from crawler_core.polemon import (  # noqa: E402
-    WORDPRESS_ARTICLE_COLUMNS,
-    Client,
-    Stop,
-    collect_posts,
-    export_delivery,
-)
+from crawler_core.polemon import SOURCE  # noqa: E402
+from crawler_core.wordpress_api import WORDPRESS_ARTICLE_COLUMNS, Client, Paused, Stop, load_source  # noqa: E402
 from crawler_core.wordpress_articles import article_fields_from_post, base_article_row  # noqa: E402
 
 
@@ -79,7 +74,7 @@ def fake_api(requested: list[str]):
 
 def test_collect_and_export_match_wordpress_article_schema(tmp_path: Path) -> None:
     requested: list[str] = []
-    collect_posts(tmp_path, 0, client=Client(tmp_path, 0, fetcher=fake_api(requested)))
+    SOURCE.collect_posts(tmp_path, 0, client=Client(tmp_path, 0, fetcher=fake_api(requested)))
 
     assert sum("/posts?" in url for url in requested) == 11  # one request per year 2015-2025
     year_2019 = parse_qs(urlparse(requested[4]).query)
@@ -87,7 +82,7 @@ def test_collect_and_export_match_wordpress_article_schema(tmp_path: Path) -> No
     assert year_2019["before"] == ["2020-01-01T00:00:00"]
     assert (tmp_path / "raw" / "users" / "page_001.json.status401").exists()
 
-    report = export_delivery(tmp_path, tmp_path / "out", "2026-10-27")
+    report = SOURCE.export_delivery(tmp_path, tmp_path / "out", "2026-10-27")
     target = tmp_path / "out" / "polemon"
     articles = pd.read_parquet(target / "articles.parquet.gzip")
 
@@ -168,3 +163,27 @@ def test_three_errors_in_a_row_stop(tmp_path: Path) -> None:
     assert len(calls) == 3
     ledger = (tmp_path / "requests.jsonl").read_text(encoding="utf-8").splitlines()
     assert len(ledger) == 3
+
+
+def test_pause_request_stops_before_the_next_request(tmp_path: Path) -> None:
+    calls: list[str] = []
+    (tmp_path / "PAUSE_REQUESTED").write_text("", encoding="utf-8")
+    try:
+        Client(tmp_path, 0, fetcher=lambda url, body, header: calls.append(url) or (200, 0)).get(
+            "https://polemon.mx/wp-json/wp/v2/posts", "posts/page_001.json")
+    except Paused:
+        pass
+    else:
+        raise AssertionError("a pause request must stop collection")
+    assert calls == []
+
+
+def test_load_source_by_registry_id() -> None:
+    assert load_source("polemon") is SOURCE
+    assert SOURCE.api == "https://polemon.mx/wp-json/wp/v2"
+    try:
+        load_source("unknown")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("an unknown source must be refused")

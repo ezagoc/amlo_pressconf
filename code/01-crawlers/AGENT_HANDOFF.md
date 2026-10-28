@@ -1907,36 +1907,52 @@ GDELT gap command:
 python .\code\01-crawlers\scripts\discover_gdelt_urls.py --source-id reforma --source-id elnorte --from-date 2023-05-27 --to-date 2026-06-27 --state-db .\tmp\gdelt_grupo_reforma\gdelt.sqlite --output-dir .\tmp\gdelt_grupo_reforma\discovery --reports-dir .\tmp\gdelt_grupo_reforma\reports --window-days 7 --request-interval-seconds 6 --request-retries 3 --retry-backoff-seconds 10 --timeout 90 --resume
 ```
 
-## Polemon (WordPress REST API, own adapter)
+## WordPress REST API collector (Polemon, Noticias de Querétaro)
 
-Polemon (`polemon.mx`, registry `source_id` `polemon`) is a WordPress site collected
-with its own adapter rather than the generic discover/extract pipeline:
+WordPress sources collected through the REST API only share one collector, with
+the newspaper as a parameter (its registry `source_id`), rather than the generic
+discover/extract pipeline:
 
-- `crawler_core/polemon.py`
-- `scripts/crawl_polemon_articles.py`
-- `tests/test_polemon.py`
+- `crawler_core/wordpress_api.py`: client, collection, body text, cleaning, export
+- `crawler_core/polemon.py`, `crawler_core/noticiasdequeretaro.py`: one
+  `WordPressSource` subclass per newspaper (site, years, cleaning options, audit
+  texts); a new source is a new module listed in `wordpress_api.SOURCES`
+- `scripts/crawl_wordpress_api.py`
+- `tests/test_polemon.py`, `tests/test_noticiasdequeretaro.py`
 
 Posts are listed by local publication year through `/wp-json/wp/v2/posts`
-(`after`/`before`, 100 full post objects per request), so 196 requests collected
-all 14,809 posts dated 2015-01-01 to 2025-12-31. Every API response is kept
-unchanged with its headers, and every request is logged with its fetch time and
-SHA-256. Agreed access rules: API only, 2.5 seconds between requests, stop at
+(`after`/`before`, 100 full post objects per request). Every API response is
+kept unchanged with its headers, and every request is logged with its fetch time
+and SHA-256. Agreed access rules: API only, 2.5 seconds between requests, stop at
 once on a block or after 3 errors in a row, no other access method, deleted
-posts not recovered. Authors come from `yoast_head_json.author` because the
-users endpoint answers HTTP 401.
+posts not recovered. Network steps resume where they stopped (saved pages are
+skipped); `RUNNING.lock`, `PAUSE_REQUESTED` / `PAUSED.txt`, `STOPPED.txt` and
+`<STEP>_DONE.txt` in the state folder give the run state.
 
 ```powershell
-python .\code\01-crawlers\scripts\crawl_polemon_articles.py collect
-python .\code\01-crawlers\scripts\crawl_polemon_articles.py sitemap
-python .\code\01-crawlers\scripts\crawl_polemon_articles.py export --out-dir <folder>
+python .\code\01-crawlers\scripts\crawl_wordpress_api.py collect --source polemon
+python .\code\01-crawlers\scripts\crawl_wordpress_api.py sitemap --source polemon
+python .\code\01-crawlers\scripts\crawl_wordpress_api.py export --source polemon --out-dir <folder>
+python .\code\01-crawlers\scripts\crawl_wordpress_api.py export --source noticiasdequeretaro --state-dir <folder> --out-dir <folder> --sample-dir <sample run>
 ```
 
 `collect` and `sitemap` make requests; `build`, `clean` and `export` are
-offline. `export` writes `<out-dir>/polemon/` (default
-`crawler/articles/polemon/`, next to the other WordPress sources):
+offline. `export` writes `<out-dir>/<source_id>/` (default
+`crawler/articles/<source_id>/`, next to the other WordPress sources):
 `articles.parquet.gzip` in the WordPress article schema, `crawl_report.json`
 with the same fields as La Voz de Michoacán and Quadratín, plus `README.md`,
-`manifest.json` and `audit/`. It never touches `wordpress_articles.sqlite`. Four
-invalid pages (three test posts and a site-verification page) are excluded by
-rule; short, image-only, video, duplicate-title and duplicate-body posts are
-kept and flagged in `audit/quality_flags.csv`. Tag names were not collected.
+`manifest.json` and `audit/`. It never touches `wordpress_articles.sqlite`.
+Invalid pages are excluded by rule (I1-I3); short, image-only, video,
+duplicate-title and duplicate-body posts are kept and flagged in
+`audit/quality_flags.csv`. Tag names were not collected.
+
+- Polemon (`polemon`): 2015-2025, 14,809 posts in 196 requests. Four invalid
+  pages (three test posts and a site-verification page) are excluded. Authors
+  come from `yoast_head_json.author` because the users endpoint answers HTTP 401.
+- Noticias de Querétaro (`noticiasdequeretaro`): 2012-2025, 273,067 posts in
+  2,740 requests (2018-2025 first). Authors come from `yoast_head_json.author`.
+  A featured image or gallery format counts as content, so the daily front-page
+  ("portada") galleries are kept and flagged (C); legacy 2012-2016 URLs that no
+  longer open are kept unrepaired and flagged (L); identical copies of a post
+  under one URL keep only the lowest post id (D, `audit/excluded_duplicate_import.csv`)
+  and posts sharing a URL with different text are kept and flagged (U).
