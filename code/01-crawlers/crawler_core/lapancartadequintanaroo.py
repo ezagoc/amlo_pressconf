@@ -12,6 +12,8 @@ The full run (2026-10-29, 1,080 API requests and 118 sitemap requests) had no fa
 
 from __future__ import annotations
 
+import pandas as pd
+
 from crawler_core.exclusivaspuebla import ExclusivasPuebla
 from crawler_core.wordpress_api import WordPressSource, n
 
@@ -62,6 +64,17 @@ class LaPancartaDeQuintanaRoo(WordPressSource):
             f"The sitemaps repeat {n(s['sitemap_entries_repeated'])} entries and lack {n(s['api_not_in_sitemap'])} "
             "collected posts (`api_urls_not_in_sitemap.csv`)."]
         return super().audit_markdown(report, export_date).rstrip("\n") + "\n" + "".join(f"- {t}\n" for t in notes)
+
+    def cleaning_rules_markdown(self, report: dict, excluded: pd.DataFrame) -> str:
+        return super().cleaning_rules_markdown(report, excluded).replace("## Kept with flags", "\n".join([
+            "## Excluded (posted twice)",
+            "",
+            "- **D, duplicate import**: two post IDs carry the same URL with exactly the same title and main text",
+            "  (consecutive IDs, posted twice). The lower post ID is kept and the other is excluded:",
+            f"  {n(report['rows_excluded_duplicate_import'])} posts, listed in `excluded_duplicate_import.csv` with the "
+            "kept post ID (`kept_wp_post_id`).",
+            "",
+            "## Kept with flags"]), 1)
 
     def readme_markdown(self, report: dict) -> str:
         return super().readme_markdown(report) + "\n" + "\n".join([
