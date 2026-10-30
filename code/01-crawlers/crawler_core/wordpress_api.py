@@ -42,7 +42,7 @@ from crawler_core.wordpress import clean_html
 from crawler_core.wordpress_articles import base_article_row, normalize_articles_for_output
 
 
-SOURCES = ("polemon", "noticiasdequeretaro", "exclusivaspuebla", "lapancartadequintanaroo")  # modules crawler_core/<source_id>.py
+SOURCES = ("polemon", "noticiasdequeretaro", "exclusivaspuebla", "lapancartadequintanaroo", "traficozmg")  # modules crawler_core/<source_id>.py
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/141.0 Safari/537.36"
