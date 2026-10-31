@@ -32,6 +32,28 @@ class TraficoZMG(WordPressSource):
     fetch_posts_outside = False
     flag_no_title = True  # one post has an empty title; kept and flagged (rule N)
 
+    # In 3,905 posts the Yoast byline is "[email protected]" (with a no-break space): the text Cloudflare's
+    # e-mail obfuscation puts where it hides an address, not an author name. These posts are delivered with
+    # no author; the byline is kept in quality_flags.csv (author_blanked). Kevin, 2026-10-31.
+    AUTHOR_PLACEHOLDER = re.compile(r"^\[email\s+protected\]$")
+    ACCOUNT_NAME = "chanito.pruebas"  # a site account name, kept as given
+    quality_flag_columns = [*WordPressSource.quality_flag_columns, "author_blanked"]
+
+    def clean_posts_table(self, posts: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+        clean, excluded, duplicates = super().clean_posts_table(posts)
+        placeholder = clean["author"].str.match(self.AUTHOR_PLACEHOLDER)
+        clean["author_blanked"] = clean["author"].where(placeholder, "")
+        clean.loc[placeholder, ["author", "author_source"]] = ""
+        return clean, excluded, duplicates
+
+    def report(self, ctx) -> dict:
+        report = super().report(ctx)
+        report["author_notes"] = {
+            "blanked_cloudflare_email_placeholder": int(ctx.clean["author_blanked"].ne("").sum()),
+            f"account_name {self.ACCOUNT_NAME}": int(ctx.clean["author"].eq(self.ACCOUNT_NAME).sum()),
+        }
+        return report
+
     # The site has Jetpack sitemaps (sitemap-1.xml ... sitemap-36.xml: posts and pages together), not Yoast
     # post-sitemaps, and every post URL carries /YYYY/MM/, so sitemap-only URLs are classified by that path.
     JETPACK_SITEMAP = re.compile(r"^sitemap-\d+\.xml$")
@@ -84,8 +106,9 @@ class TraficoZMG(WordPressSource):
     # Checks of 2026-10-30 on the collected posts (offline).
     NOTES = [
         "The site posts regularly from October 2015. Before that the API has five posts: two dated 2013 and three "
-        "dated 2014. Their IDs (4991-19669) and modified times (October 2015 to August 2016) suggest they were entered "
-        "or re-dated when the site started (inference); they are kept as dated.",
+        "dated 2014. The two 2013 posts have IDs 19666 and 19669, above those of October 2015 (15513 onwards), and all "
+        "five were last modified between October 2015 and August 2016, which suggests they were entered or re-dated "
+        "when the site started (inference); they are kept as dated.",
         "2018-2025 has posts in every month (136 to 507), so no Wayback Machine check was made.",
         "Post IDs rise with the publication date: the monthly ID ranges never step back, and only 16 posts have an "
         "ID above the median ID of every day a week or more later. Three posts have IDs far below their day (created "
@@ -93,16 +116,23 @@ class TraficoZMG(WordPressSource):
         "Dates were checked as for Exclusivas Puebla: where the text says \"este lunes\" and so on (7,131 posts), the "
         "weekday is the publication day or the day before in 85% of posts (81-92% by year). The dates look right to "
         "the day.",
-        "Authors come from Yoast metadata (/users needs a login). The names are as the site gives them: of the "
-        "delivered posts, 8,763 carry the account name \"chanito.pruebas\" and 3,905 carry \"[email protected]\" (the "
-        "site hides an e-mail address there); 5,231 carry \"Redacción\".",
         "One post has an empty title; it is kept and flagged (rule N).",
     ]
+
+    def author_markdown(self, report: dict) -> str:
+        a = report["author_notes"]
+        return (f"In {n(a['blanked_cloudflare_email_placeholder'])} posts the site's byline is \"[email protected]\", the "
+                "text Cloudflare shows where it hides an e-mail address, not an author name: `authors` is empty for these "
+                "posts and the byline is kept in `audit/quality_flags.csv` (column `author_blanked`). "
+                f"\"{self.ACCOUNT_NAME}\" ({n(a[f'account_name {self.ACCOUNT_NAME}'])} posts) is a site account name, kept "
+                "as given; it is not necessarily the real author.")
 
     def audit_markdown(self, report: dict, export_date: str) -> str:
         s = report["sitemap_reconciliation"]
         span = self.year_span.replace("-", "_")
         notes = self.NOTES + [
+            "Authors come from Yoast metadata (/users needs a login) and are otherwise as the site gives them. "
+            + self.author_markdown(report),
             f"The {n(s['sitemap_files'])} Jetpack sitemaps list {n(s['sitemap_urls'])} URLs, posts and pages together "
             f"({n(s['sitemap_entries_repeated'])} repeated). All {n(s[f'api_urls_{span}'])} collected posts are in them. "
             "The URLs not collected (counts above) are 2026 posts, which were not requested (the API's total for all "
@@ -113,8 +143,9 @@ class TraficoZMG(WordPressSource):
         return super().readme_markdown(report) + "\n" + "\n".join([
             "**Coverage and dates.** Regular posting starts in October 2015; five earlier posts are dated 2013-2014.",
             "2018-2025 has posts in every month. Post IDs and the weekdays named in the text show no sign of a batch",
-            "move, and the dates look right to the day. Author names are as the site gives them, including an",
-            "account name and a hidden e-mail address. See the export audit in `audit/`.",
+            "move, and the dates look right to the day. See the export audit in `audit/`.",
+            "",
+            "**Authors.** " + self.author_markdown(report),
             "",
         ])
 
